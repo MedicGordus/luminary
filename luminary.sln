@@ -1,0 +1,24 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "luminary", "luminary.csproj", "{68AA3B23-3633-0A46-5A74-9FD6DCD49532}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{68AA3B23-3633-0A46-5A74-9FD6DCD49532}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68AA3B23-3633-0A46-5A74-9FD6DCD49532}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68AA3B23-3633-0A46-5A74-9FD6DCD49532}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68AA3B23-3633-0A46-5A74-9FD6DCD49532}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8A644789-8A10-42CB-B387-F8E2BD4F53F6}
+	EndGlobalSection
+EndGlobal
