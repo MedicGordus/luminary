@@ -40,8 +40,6 @@ public class MappingConfig
     
     public Prism Execute(JsonDocument inputPayload)
     {
-        var _context = new MappingContext();
-
         //// build empty prism operator from expected input
         //
         SchemaJson _schema = JsonSerializer.Deserialize<SchemaJson>(ExpectedInputPrismSchema) ?? throw new ArgumentException("Could not parse json element into json schema.");
@@ -52,7 +50,7 @@ public class MappingConfig
         
         //// map data from the payload (this way the entire input isn't "wastefully" mapped, only what is defined in the schema)
         //
-        Helper.MapDataPerSchema(_inputPayloadPrismDictionary, inputPayload);
+        Helper.MapDataPerSchema(_inputPayloadPrismDictionary, inputPayload.RootElement);
         //
         ////
         

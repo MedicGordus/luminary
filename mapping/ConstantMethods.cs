@@ -8,22 +8,22 @@ public static class ConstantMethods
 {
     public struct MethodNames
     {
-        public static string String = "string";
-        public static string Integer = "integer";
-        public static string BigInteger = "biginteger";
-        public static string Double = "double";
-        public static string Decimal = "decimal";
-        public static string Date = "date";
-        public static string Time = "time";
-        public static string DateTimeZone = "datetimezone";
-        public static string Array = "array";
-        public static string Duration = "duration";
-        public static string DateTimeZoneWithDuration = "datetimezonewithduration";
-        public static string IntegerUnits = "integerunits";
-        public static string BigIntegerUnits = "bigintegerunits";
-        public static string DoubleUnits = "doubleunits";
-        public static string DecimalUnits = "decimalunits";
-        public static string Boolean = "boolean";
+        public const string String = "string";
+        public const string Integer = "integer";
+        public const string BigInteger = "biginteger";
+        public const string Double = "double";
+        public const string Decimal = "decimal";
+        public const string Date = "date";
+        public const string Time = "time";
+        public const string DateTimeZone = "datetimezone";
+        public const string Array = "array";
+        public const string Duration = "duration";
+        public const string DateTimeZoneWithDuration = "datetimezonewithduration";
+        public const string IntegerUnits = "integerunits";
+        public const string BigIntegerUnits = "bigintegerunits";
+        public const string DoubleUnits = "doubleunits";
+        public const string DecimalUnits = "decimalunits";
+        public const string Boolean = "boolean";
     }
 
     public static Dictionary<string, Func<string[], OperatorValue>> MethodCall = new()
@@ -212,20 +212,24 @@ public static class ConstantMethods
     
     public static OperatorValue ArrayConstant(string[] parameters)
     {
+        // this is a special case where the ArrayOperator is created blank and the caller fills it
+
+
+
         if(parameters == null || parameters.Length == 0)
         {
             throw new ArgumentException("Cannot create a ArrayConstant, null or missing parameter.");
         }
-        
-        if(Array.TryParse(parameters[0], out Array _value))
+
+        if(OperatorValue.OperatorValueTypeLookup.TryGetValue(parameters[0], out var _arrayType))
         {
-            return new ArrayOperator(_value);
+            return new ArrayOperator(_arrayType, []);
         }
         else
         {
-            throw new ArgumentException(
+            throw new Exception(
                 string.Format(
-                    "Cannot parse input '{0}' to ArrayOperator.",
+                    "Unable to build blank array, specified type '{0}' null or unknown.",
                     parameters[0]
                 )
             );

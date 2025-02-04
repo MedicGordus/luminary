@@ -19,13 +19,54 @@ class Program
         //// test mapper usage
         //
         var _config = new MappingConfig(
-            todo(),
-            new List<MappingStepConfig> {
-                new MappingStepConfig (1,MappingFunctions.Step1)
+            JsonDocument.Parse(
+                "{" +
+                    "\"type\":\"object\"," +
+                    "\"properties\":" +
+                    "{" +
+                        "\"Test\":" +
+                        "{" +
+                            "\"type\":\"string\"" +
+                        "}" +
+                    "}" +
+                "}"
+                ),
+            new Dictionary<ulong, MappingStepConfig> {
+                {
+                    0,
+                    new MappingStepConfig(
+                        new MappingStepJson() {
+                            OutputPrismSchema = 
+                                "{" +
+                                    "\"type\":\"object\"," +
+                                    "\"properties\":" +
+                                    "{" +
+                                        "\"Length\":" +
+                                        "{" +
+                                            "\"type\":\"integer\"" +
+                                        "}" +
+                                    "}" +
+                                "}",
+                            Step = 1,
+                            StepActions = new List<ParameterMapJson> {
+                                new ParameterMapJson() {
+                                    Function = "length('0'.'Test')",
+                                    OutputParameter = "'Length'"
+                                }
+                            }
+                        }
+                    )
+                }
             }
         );
         //
-        var _result = _config.Execute(jsonPayload);
+        var _result = _config.Execute(
+            JsonDocument.Parse(
+                "{" +
+                    "\"Test\":\"this is a test string\"" +
+                "}"
+            )
+        );
         //
         ////
 

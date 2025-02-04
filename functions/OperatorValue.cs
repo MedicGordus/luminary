@@ -19,6 +19,10 @@ public abstract class OperatorValue
         DateTimeZone = 8,
         Array = 9,
         Duration = 10,
+
+        /// <summary>
+        /// This is a date and duration, separated by |
+        /// </summary>
         DateTimeZoneWithDuration = 11,
         IntegerUnits = 12,
         BigIntegerUnits = 13,
@@ -30,26 +34,26 @@ public abstract class OperatorValue
 
     public readonly struct OperatorValueTypeFormat
     {
-        public static readonly string String = "string";
-        public static readonly string Integer = "integer";
-        public static readonly string BigInteger = "biginteger";
-        public static readonly string Double = "double";
-        public static readonly string Decimal = "decimal";
-        public static readonly string Date = "date";
-        public static readonly string Time = "time";
-        public static readonly string DateTimeZone = "date-time";
-        public static readonly string Duration = "duration";
-        public static readonly string DateTimeZoneWithDuration = "date-time-and-duration";
-        public static readonly string IntegerUnits = "integer-and-units";
-        public static readonly string BigIntegerUnits = "biginteger-and-units";
-        public static readonly string DoubleUnits = "double-and-units";
-        public static readonly string DecimalUnits = "decimal-and-units";
+        public const string String = "string";
+        public const string Integer = "integer";
+        public const string BigInteger = "biginteger";
+        public const string Double = "double";
+        public const string Decimal = "decimal";
+        public const string Date = "date";
+        public const string Time = "time";
+        public const string DateTimeZone = "date-time";
+        public const string Duration = "duration";
+        public const string DateTimeZoneWithDuration = "date-time-and-duration";
+        public const string IntegerUnits = "integer-and-units";
+        public const string BigIntegerUnits = "biginteger-and-units";
+        public const string DoubleUnits = "double-and-units";
+        public const string DecimalUnits = "decimal-and-units";
 
         // these are not strings so they don't need a format:
         //
-        // public static readonly string Array = "array";
-        // public static readonly string Boolean = "boolean";
-        // public static readonly string Prism = "prism";
+        // public const string Array = "array";
+        // public const string Boolean = "boolean";
+        // public const string Prism = "prism";
     }
 
     public static readonly Dictionary<string, OperatorValueType> OperatorValueTypeLookup = new()
@@ -130,53 +134,53 @@ public abstract class OperatorValue
 
     public readonly struct MethodNames
     {
-        public static readonly string Filled = "filled";
-        public static readonly string BooleanNot = "not";
-        public static readonly string BooleanAnd = "and";
-        public static readonly string BooleanOr = "or";
-        public static readonly string ValueEqual = "equal";
-        public static readonly string GreatherThan = "greaterthan";
-        public static readonly string LessThan = "lessthan";
-        public static readonly string NotEqual = "notequal";
-        public static readonly string GreaterOrEqual = "greaterorequal";
-        public static readonly string LessOrEqual = "lessorequal";
-        public static readonly string IfNotFilled = "ifnotfilled";
-        public static readonly string Trim = "trim";
-        public static readonly string Substring = "substring";
-        public static readonly string Length = "length";
-        public static readonly string ToUpper = "toupper";
-        public static readonly string ToLower = "tolower";
-        public static readonly string Concatenate = "concatenate";
-        public static readonly string Join = "join";
-        public static readonly string Split = "split";
-        public static readonly string EqualsIgnoreCase = "equalsignorecase";
-        public static readonly string ConvertToString = "tostring";
-        public static readonly string ConvertToInteger = "tointeger";
-        public static readonly string ConvertToBigInteger = "tobiginteger";
-        public static readonly string ConvertToDouble = "todouble";
-        public static readonly string ConvertToDecimal = "todecimal";
-        public static readonly string ConvertToIntegerUnits = "tointegerunits";
-        public static readonly string ConvertToBigIntegerUnits = "tobigintegerunits";
-        public static readonly string ConvertToDoubleUnits = "todoubleunits";
-        public static readonly string ConvertToDecimalUnits = "todecimalunits";
-        public static readonly string MathCeiling = "ceiling";
-        public static readonly string MathFloor = "floor";
-        public static readonly string MathRound = "round";
-        public static readonly string MathAverage = "average";
-        public static readonly string MathPower = "power";
-        public static readonly string MathAdd = "add";
-        public static readonly string MathSubtract = "subtract";
-        public static readonly string MathMultiply = "multiply";
-        public static readonly string MathDivide = "divide";
-        public static readonly string BitwiseLeftShift = "leftshift";
-        public static readonly string BitwiseRightShift = "rightshift";
-        public static readonly string BitwiseXor = "xor";
-        public static readonly string BitwiseMod = "mod";
-        public static readonly string IndexOf = "indexof";
-        public static readonly string Replace = "replace";
-        public static readonly string StartsWith = "startswith";
-        public static readonly string EndsWith = "endswith";
-        public static readonly string Includes = "includes";
+        public const string Filled = "filled";
+        public const string BooleanNot = "not";
+        public const string BooleanAnd = "and";
+        public const string BooleanOr = "or";
+        public const string ValueEqual = "equal";
+        public const string GreatherThan = "greaterthan";
+        public const string LessThan = "lessthan";
+        public const string NotEqual = "notequal";
+        public const string GreaterOrEqual = "greaterorequal";
+        public const string LessOrEqual = "lessorequal";
+        public const string IfNotFilled = "ifnotfilled";
+        public const string Trim = "trim";
+        public const string Substring = "substring";
+        public const string Length = "length";
+        public const string ToUpper = "toupper";
+        public const string ToLower = "tolower";
+        public const string Concatenate = "concatenate";
+        public const string Join = "join";
+        public const string Split = "split";
+        public const string EqualsIgnoreCase = "equalsignorecase";
+        public const string ConvertToString = "tostring";
+        public const string ConvertToInteger = "tointeger";
+        public const string ConvertToBigInteger = "tobiginteger";
+        public const string ConvertToDouble = "todouble";
+        public const string ConvertToDecimal = "todecimal";
+        public const string ConvertToIntegerUnits = "tointegerunits";
+        public const string ConvertToBigIntegerUnits = "tobigintegerunits";
+        public const string ConvertToDoubleUnits = "todoubleunits";
+        public const string ConvertToDecimalUnits = "todecimalunits";
+        public const string MathCeiling = "ceiling";
+        public const string MathFloor = "floor";
+        public const string MathRound = "round";
+        public const string MathAverage = "average";
+        public const string MathPower = "power";
+        public const string MathAdd = "add";
+        public const string MathSubtract = "subtract";
+        public const string MathMultiply = "multiply";
+        public const string MathDivide = "divide";
+        public const string BitwiseLeftShift = "leftshift";
+        public const string BitwiseRightShift = "rightshift";
+        public const string BitwiseXor = "xor";
+        public const string BitwiseMod = "mod";
+        public const string IndexOf = "indexof";
+        public const string Replace = "replace";
+        public const string StartsWith = "startswith";
+        public const string EndsWith = "endswith";
+        public const string Includes = "includes";
     }
 
     private Dictionary<string, Func<OperatorValue[]?, OperatorValue?>> StringMethods;
@@ -358,7 +362,7 @@ public abstract class OperatorValue
             OperatorValueType.Date => new DateOperator(default),
             OperatorValueType.Time => new TimeOperator(default),
             OperatorValueType.DateTimeZone => new DateTimeZoneOperator(default),
-            OperatorValueType.Array => new ArrayOperator([]),
+            OperatorValueType.Array => new ArrayOperator(OperatorValueType.z_error, []),
             OperatorValueType.Duration => new DurationOperator(default),
             OperatorValueType.DateTimeZoneWithDuration => new DateTimeZoneWithDurationOperator(default, default),
             OperatorValueType.IntegerUnits => new IntegerUnitsOperator(default, ""),

@@ -5,6 +5,8 @@ public class PrismOperator : OperatorValue
 {
     protected Dictionary<string, OperatorValue> Value;
 
+    public Dictionary<string, OperatorValue> GetValue() => Value;
+
     public PrismOperator(Dictionary<string, OperatorValue> value) : base(OperatorValueType.Prism)
     {
         Value = value;
@@ -47,6 +49,7 @@ public class PrismOperator : OperatorValue
 
     public override OperatorValue? Concatenate(OperatorValue[]? parameters)
     {
+        throw new NotImplementedException();
     }
 
     public override OperatorValue? ConvertToBigInteger(OperatorValue[]? parameters)
@@ -256,10 +259,12 @@ public class PrismOperator : OperatorValue
 
     public override string ToStringValue()
     {
+        throw new NotImplementedException();
     }
 
     public override string ToJsonStringValue()
     {
+        throw new NotImplementedException();
     }
 
     public override void SetValue(OperatorValue value)

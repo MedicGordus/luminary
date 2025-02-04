@@ -254,8 +254,13 @@ public class IntegerOperator : OperatorValue
         throw new NotImplementedException();
     }
 
-    public override void SetValue(OperatorValue value)
+    public override void SetValue(OperatorValue source)
     {
-        throw new NotImplementedException();
+        if(source is not IntegerOperator)
+        {
+            throw new ArgumentException("Source OperatorValue wrong type, cannot set value.");
+        }
+
+        Value = ((IntegerOperator)source).Value;
     }
 }

@@ -76,7 +76,7 @@ public class MappingStepConfig
         return new Prism(OutputData);
     }
 
-    protected static OperatorValue ApplyMappingFunction(OperatorValue.OperatorValueType type, string functionToApply, Dictionary<ulong, Prism> context)
+    protected static OperatorValue ApplyMappingFunction(OperatorValue.OperatorValueType type, string functionToApply, Dictionary<ulong, Prism> _context)
     {
         //// create empty output
         //
@@ -137,53 +137,45 @@ public class MappingStepConfig
                 if(ConstantMethods.MethodCall.ContainsKey(methodToRun))
                 {
                     // constantvalue method
-                    //
-                    //  OPERATOR VALUES ARE NOT ALLOWED as parameters IN HERE - so we don't need to handle them
-                    //
-                    _operatorValue = ConstantMethods.MethodCall[methodToRun](_parameterBuffer.ToArray());
+
+                    if(methodToRun == ConstantMethods.MethodNames.Array)
+                    {
+                        // special case for array where operatorvalues and constants are allowed
+
+                        // convert the parameters into object values, skip first parameter since that is the array type
+                        var _arrayList = ConvertParametersFromBuffer(_parameterBuffer[1..], _operatorValueBuffer, _context);
+
+                        // build the array (unless there is an error with the array type at position 0)
+                        if(OperatorValue.OperatorValueTypeLookup.TryGetValue(_parameterBuffer[0] ?? "", out var _arrayType))
+                        {
+                            _operatorValue = new ArrayOperator(
+                                _arrayType,
+                                _arrayList
+                            );
+                        }
+                        else
+                        {
+                            throw new Exception(
+                                string.Format(
+                                    "Unable to build array, specified type '{0}' null or unknown.",
+                                    _parameterBuffer[0]
+                                )
+                            );
+                        }
+                    }
+                    else
+                    {
+                        //  OPERATOR VALUES ARE NOT ALLOWED as parameters IN HERE - so we don't need to handle them
+                        //
+                        _operatorValue = ConstantMethods.MethodCall[methodToRun](_parameterBuffer.ToArray());
+                    }
                 }
                 else
                 {
                     // method call to an OperatorValue (the first parameter)
 
-
                     // collect the parameters
-                    List<OperatorValue> _parameters = [];
-                    foreach(var _deltaParam in _parameterBuffer)
-                    {
-                        if(_deltaParam.StartsWith(OPERATOR_VALUE_PREFIX))
-                        {
-                            // from our dictionary
-                            _parameters.Add(_operatorValueBuffer[_deltaParam]);
-                        }
-                        else
-                        {
-                            // from context
-                            (var _index, var _remainingIdentifier)  = Helper.RetrieveNextJsonName(_deltaParam);
-                            if(_index == null)
-                            {
-                                throw new Exception(
-                                    string.Format(
-                                        "Could not parse the specified leading index from '{0}', sorry.", // appended "sorry" so it differs from the error below lol
-                                        _deltaParam
-                                    )
-                                );
-                            }
-                            ulong _indexUlong = ulong.Parse(_index);
-
-                            OperatorValue? _ovCheckTarget = Helper.GetTarget(_remainingIdentifier, context[_indexUlong].Payload) ?? throw new Exception(
-                                string.Format(
-                                    "Could not get the spexified target from '{0}'.",
-                                    _remainingIdentifier
-                                )
-                            );
-                            _parameters.Add(_ovCheckTarget);
-                        }
-                    }
-                    if(_parameters.Count == 0)
-                    {
-                        throw new Exception("Unable to execute the specified method as the parameter array was empty - the first parameter is the OperatorValue that the method is called on.");
-                    }
+                    List<OperatorValue> _parameters = ConvertParametersFromBuffer(_parameterBuffer, _operatorValueBuffer, _context);
 
                     // try to execute the specified method with the designated parameters
                     OperatorValue? _ovChecker = _parameters[0].ExecuteMethod(methodToRun, _parameters.Skip(1).ToArray()) ?? throw new Exception("Unable to execute the specified method.");
@@ -234,7 +226,7 @@ public class MappingStepConfig
             }
             ulong _indexUlong = ulong.Parse(_index);
 
-            _outputValue = Helper.GetTarget(_remainingIdentifier, context[_indexUlong].Payload);
+            _outputValue = Helper.GetTarget(_remainingIdentifier, _context[_indexUlong].Payload);
         }
         //
         if(_outputValue == null)
@@ -255,6 +247,57 @@ public class MappingStepConfig
     }
 
     /// <summary>
+    /// Loads buffered strings into Operator Values.
+    /// </summary>
+    /// <param name="_parameterBuffer"></param>
+    /// <param name="_operatorValueBuffer"></param>
+    /// <param name="_context"></param>
+    /// <returns></returns>
+    /// <exception cref="Exception"></exception>
+    protected static List<OperatorValue> ConvertParametersFromBuffer(List<string> _parameterBuffer, Dictionary<string, OperatorValue> _operatorValueBuffer, Dictionary<ulong, Prism> _context)
+    {
+        // collect the parameters
+        List<OperatorValue> _output = [];
+        foreach(var _deltaParam in _parameterBuffer)
+        {
+            if(_deltaParam.StartsWith(OPERATOR_VALUE_PREFIX))
+            {
+                // from our dictionary
+                _output.Add(_operatorValueBuffer[_deltaParam]);
+            }
+            else
+            {
+                // from context
+                (var _index, var _remainingIdentifier) = Helper.RetrieveNextJsonName(_deltaParam);
+                if(_index == null)
+                {
+                    throw new Exception(
+                        string.Format(
+                            "Could not parse the specified leading index from '{0}', sorry.", // appended "sorry" so it differs from the error below lol
+                            _deltaParam
+                        )
+                    );
+                }
+                ulong _indexUlong = ulong.Parse(_index);
+
+                OperatorValue? _ovCheckTarget = Helper.GetTarget(_remainingIdentifier, _context[_indexUlong].Payload) ?? throw new Exception(
+                    string.Format(
+                        "Could not get the spexified target from '{0}'.",
+                        _remainingIdentifier
+                    )
+                );
+                _output.Add(_ovCheckTarget);
+            }
+        }
+        if(_output.Count == 0)
+        {
+            throw new Exception("Unable to execute the specified method as the parameter array was empty - the first parameter is the OperatorValue that the method is called on.");
+        }
+
+        return _output;
+    }
+
+    /// <summary>
     /// Separates a string of function names and parameters by '(', ')' and ',', adds them to an array -- includes ')' in the appropriate locations within the array.
     /// </summary>
     /// <param name="input"></param>
@@ -268,7 +311,7 @@ public class MappingStepConfig
         
         return _matches.Cast<Match>()
                 .Select(m => m.Groups[0].Value)
-                .Where(s => s != "(" & s != ",")
+                .Where(s => s != "(" & s != "," & s != "")
                 .ToArray();
     }
 }

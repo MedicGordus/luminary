@@ -1,5 +1,7 @@
 
 using System.Security.Cryptography.X509Certificates;
+using System.Text;
+using System.Windows.Markup;
 
 namespace luminary.functions;
 
@@ -7,9 +9,12 @@ public class ArrayOperator : OperatorValue
 {
     public List<OperatorValue> Value;
 
-    public ArrayOperator(List<OperatorValue> value) : base(OperatorValueType.Array)
+    public OperatorValueType ArrayType;
+
+    public ArrayOperator(OperatorValueType arrayType, List<OperatorValue> value) : base(OperatorValueType.Array)
     {
         Value = value;
+        ArrayType = arrayType;
     }
 
     public override OperatorValue? BooleanAnd(OperatorValue[]? parameters)
@@ -57,7 +62,7 @@ public class ArrayOperator : OperatorValue
             }
         }
 
-        return new ArrayOperator(newArray);
+        return new ArrayOperator(ArrayType, newArray);
     }
 
     protected List<OperatorValue> AppendArrayList(ArrayOperator array)
@@ -152,7 +157,7 @@ public class ArrayOperator : OperatorValue
     {
         if(Value != null)
         {
-            return new ArrayOperator(Value);
+            return new ArrayOperator(ArrayType, Value);
         }
 
         if(parameters == null || parameters.Length == 0)
@@ -165,12 +170,19 @@ public class ArrayOperator : OperatorValue
 
     public override OperatorValue? Includes(OperatorValue[]? parameters)
     {
-        return todo();
+        if(Value == null || parameters == null || parameters.Length == 0)
+        {
+            throw new ArgumentException("value null, parameters null or parameter missing. Cannot execute includes.");
+        }
+
+        // pass thru of parameters to ValueEqual to all elements in array and returns
+        return new BooleanOperator(Value.Any(_item => ((BooleanOperator?)_item.ValueEqual(parameters))?.GetValue() ?? false));
     }
 
     public override OperatorValue? IndexOf(OperatorValue[]? parameters)
     {
-        return todo();
+        // pass thru of parameters to ValueEqual and returns the first match, or if none, null
+        return Value.FirstOrDefault(_item => ((BooleanOperator?)_item.ValueEqual(parameters))?.GetValue() ?? false);
     }
 
     public override OperatorValue? EqualsIgnoreCase(OperatorValue[]? parameters)
@@ -273,7 +285,29 @@ public class ArrayOperator : OperatorValue
 
     public override OperatorValue? Replace(OperatorValue[]? parameters)
     {
-        return todo();
+        if(Value == null || parameters == null || parameters.Length < 2)
+        {
+            throw new ArgumentException("value null, parameters null or parameter missing. Cannot execute replace.");
+        }
+
+        List<OperatorValue> _outputContents = [];
+        OperatorValue _toRemove = parameters[0];
+        OperatorValue _toAdd = parameters[1];
+
+        // check which match and replace those that do (be aware: THESE ARE BYREF, NOT COPIES)
+        foreach(OperatorValue _deltaValue in Value)
+        {
+            if(((BooleanOperator?)_deltaValue.ValueEqual([_toRemove]))?.GetValue() ?? false)
+            {
+                _outputContents.Add(_toAdd);
+            }
+            else
+            {
+                _outputContents.Add(_deltaValue);
+            }
+        }
+
+        return new ArrayOperator(ArrayType, _outputContents);
     }
 
     public override OperatorValue? Split(OperatorValue[]? parameters)
@@ -293,7 +327,21 @@ public class ArrayOperator : OperatorValue
 
     public override string ToJsonStringValue()
     {
-        return todo();
+        StringBuilder _output = new StringBuilder();
+        _output.Append('[');
+
+        if(Value.Count != 0)
+        {
+            foreach(var _deltaValue in Value)
+            {
+                _output.Append(_deltaValue.ToJsonStringValue());
+                _output.Append(',');
+            }
+            _output.Length -=1;
+        }
+
+        _output.Append(']');
+        return _output.ToString();
     }
 
     public override OperatorValue? ToLower(OperatorValue[]? parameters)
@@ -329,6 +377,7 @@ public class ArrayOperator : OperatorValue
 
     public override void SetValue(OperatorValue value)
     {
-        throw new NotImplementedException();
+        ArrayType = ((ArrayOperator)value).ArrayType;
+        Value = ((ArrayOperator)value).Value;
     }
 }

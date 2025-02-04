@@ -3,7 +3,12 @@ namespace luminary.functions;
 
 public class BooleanOperator : OperatorValue
 {
+    public static readonly OperatorValue TRUE = new BooleanOperator(true);
+    public static readonly OperatorValue FALSE = new BooleanOperator(false);
+
     protected bool Value;
+
+    public bool GetValue() => Value;
 
     public BooleanOperator(bool value) : base(OperatorValueType.Boolean)
     {

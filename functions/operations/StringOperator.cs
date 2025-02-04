@@ -416,7 +416,7 @@ public class StringOperator : OperatorValue
             strings.Add(new StringOperator(deltaString));
         }
 
-        return new ArrayOperator(strings);
+        return new ArrayOperator(OperatorValueType.String, strings);
     }
 
     public override OperatorValue? StartsWith(OperatorValue[]? parameters)

@@ -5,6 +5,16 @@ namespace luminary.mapping;
 
 public class SchemaJson
 {
+    public readonly struct JsonTypes
+    {
+        public const string String = "string";
+        public const string Number = "number";
+        public const string Integer = "integer";
+        public const string Object = "object";
+        public const string Array = "array";
+        public const string Boolean = "boolean";
+        public const string Null = "null";
+    }
     
     [JsonPropertyName("title")]
     public string? Title { get; set; }
