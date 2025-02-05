@@ -20,18 +20,18 @@ class Program
         //
         var _config = new MappingConfig(
             JsonDocument.Parse(
-                "{" +
-                    "\"type\":\"object\"," +
-                    "\"properties\":" +
                     "{" +
-                        "\"Test\":" +
+                        "\"type\":\"object\"," +
+                        "\"properties\":" +
                         "{" +
-                            "\"type\":\"string\"" +
+                            "\"Test\":" +
+                            "{" +
+                                "\"type\":\"string\"" +
+                            "}" +
                         "}" +
-                    "}" +
-                "}"
+                    "}"
                 ),
-            new Dictionary<ulong, MappingStepConfig> {
+                new Dictionary<ulong, MappingStepConfig> {
                 {
                     0,
                     new MappingStepConfig(
@@ -94,6 +94,11 @@ class Program
         ////
     }
 
+    /// <summary>
+    /// Test function to handle https calls
+    /// </summary>
+    /// <param name="context"></param>
+    /// <returns></returns>
     private static async Task HandlePathCallAsync(HttpContext context)
     {
         var _path = context.Request.Path.Value?.TrimStart('/') ?? "(empty)";

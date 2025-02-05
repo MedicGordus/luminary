@@ -3,11 +3,11 @@ namespace luminary.functions;
 
 public class TimeOperator : OperatorValue
 {
-    protected TimeOnly Value;
+    protected TimeOnly? NullableValue;
 
-    public TimeOperator(TimeOnly value) : base(OperatorValueType.Time)
+    public TimeOperator(TimeOnly? nullableValue) : base(OperatorValueType.Time)
     {
-        Value = value;
+        NullableValue = nullableValue;
     }
 
     public override OperatorValue? BooleanAnd(OperatorValue[]? parameters)
@@ -258,5 +258,37 @@ public class TimeOperator : OperatorValue
     public override void SetValue(OperatorValue value)
     {
         throw new NotImplementedException();
+    }
+    
+    public static OperatorValue BuildFromParameters(string[] parameters)
+    {
+        if(parameters == null || parameters.Length == 0)
+        {
+            throw new ArgumentException("Cannot create a TimeOperator, null or missing parameter.");
+        }
+        
+        return BuildFromString(parameters[0]);
+    }
+    
+    public static OperatorValue BuildFromString(string? _input)
+    {
+        if(_input == null)
+        {
+            return new TimeOperator(null);
+        }
+
+        if(TimeOnly.TryParse(_input, out TimeOnly _value))
+        {
+            return new TimeOperator(_value);
+        }
+        else
+        {
+            throw new ArgumentException(
+                string.Format(
+                    "Cannot parse input '{0}' to TimeOnly.",
+                    _input
+                )
+            );
+        }
     }
 }

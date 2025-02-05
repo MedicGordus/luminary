@@ -3,11 +3,11 @@ namespace luminary.functions;
 
 public class DecimalOperator : OperatorValue
 {
-    protected decimal Value;
+    protected decimal? NullableValue;
 
-    public DecimalOperator(decimal value) : base(OperatorValueType.Decimal)
+    public DecimalOperator(decimal? nullableValue) : base(OperatorValueType.Decimal)
     {
-        Value = value;
+        NullableValue = nullableValue;
     }
 
     public override OperatorValue? BooleanAnd(OperatorValue[]? parameters)
@@ -258,5 +258,37 @@ public class DecimalOperator : OperatorValue
     public override void SetValue(OperatorValue value)
     {
         throw new NotImplementedException();
+    }
+    
+    public static OperatorValue BuildFromParameters(string[] parameters)
+    {
+        if(parameters == null || parameters.Length == 0)
+        {
+            throw new ArgumentException("Cannot create a DecimalOperator, null or missing parameter.");
+        }
+
+        return BuildFromString(parameters[0]);
+    }
+    
+    public static OperatorValue BuildFromString(string? _input)
+    {
+        if(_input == null)
+        {
+            return new DecimalOperator(null);
+        }
+
+        if(decimal.TryParse(_input, out decimal _value))
+        {
+            return new DecimalOperator(_value);
+        }
+        else
+        {
+            throw new ArgumentException(
+                string.Format(
+                    "Cannot parse input '{0}' to decimal.",
+                    _input
+                )
+            );
+        }
     }
 }

@@ -1,5 +1,6 @@
 using System.Reflection.Metadata;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 
 namespace luminary.functions;
@@ -16,14 +17,14 @@ public abstract class OperatorValue
         Decimal = 5,
         Date = 6,
         Time = 7,
-        DateTimeZone = 8,
+        DateTimeOffset = 8,
         Array = 9,
         Duration = 10,
 
         /// <summary>
         /// This is a date and duration, separated by |
         /// </summary>
-        DateTimeZoneWithDuration = 11,
+        DateTimeOffsetWithDuration = 11,
         IntegerUnits = 12,
         BigIntegerUnits = 13,
         DoubleUnits = 14,
@@ -41,9 +42,9 @@ public abstract class OperatorValue
         public const string Decimal = "decimal";
         public const string Date = "date";
         public const string Time = "time";
-        public const string DateTimeZone = "date-time";
+        public const string DateTimeOffset = "date-time";
         public const string Duration = "duration";
-        public const string DateTimeZoneWithDuration = "date-time-and-duration";
+        public const string DateTimeOffsetWithDuration = "date-time-and-duration";
         public const string IntegerUnits = "integer-and-units";
         public const string BigIntegerUnits = "biginteger-and-units";
         public const string DoubleUnits = "double-and-units";
@@ -65,9 +66,9 @@ public abstract class OperatorValue
         { OperatorValueTypeFormat.Decimal, OperatorValueType.Decimal },
         { OperatorValueTypeFormat.Date, OperatorValueType.Date },
         { OperatorValueTypeFormat.Time, OperatorValueType.Time },
-        { OperatorValueTypeFormat.DateTimeZone, OperatorValueType.DateTimeZone },
+        { OperatorValueTypeFormat.DateTimeOffset, OperatorValueType.DateTimeOffset },
         { OperatorValueTypeFormat.Duration, OperatorValueType.Duration },
-        { OperatorValueTypeFormat.DateTimeZoneWithDuration, OperatorValueType.DateTimeZoneWithDuration },
+        { OperatorValueTypeFormat.DateTimeOffsetWithDuration, OperatorValueType.DateTimeOffsetWithDuration },
         { OperatorValueTypeFormat.IntegerUnits, OperatorValueType.IntegerUnits },
         { OperatorValueTypeFormat.BigIntegerUnits, OperatorValueType.BigIntegerUnits },
         { OperatorValueTypeFormat.DoubleUnits, OperatorValueType.DoubleUnits },
@@ -350,7 +351,6 @@ public abstract class OperatorValue
     public abstract string ToJsonStringValue();
     public abstract void SetValue(OperatorValue value);
 
-
     public static OperatorValue? CreateByType(OperatorValueType type)
     {
         return type switch {
@@ -361,10 +361,10 @@ public abstract class OperatorValue
             OperatorValueType.Decimal => new DecimalOperator(default),
             OperatorValueType.Date => new DateOperator(default),
             OperatorValueType.Time => new TimeOperator(default),
-            OperatorValueType.DateTimeZone => new DateTimeZoneOperator(default),
+            OperatorValueType.DateTimeOffset => new DateTimeOffsetOperator(default),
             OperatorValueType.Array => new ArrayOperator(OperatorValueType.z_error, []),
             OperatorValueType.Duration => new DurationOperator(default),
-            OperatorValueType.DateTimeZoneWithDuration => new DateTimeZoneWithDurationOperator(default, default),
+            OperatorValueType.DateTimeOffsetWithDuration => new DateTimeOffsetWithDurationOperator(default, default),
             OperatorValueType.IntegerUnits => new IntegerUnitsOperator(default, ""),
             OperatorValueType.BigIntegerUnits => new BigIntegerUnitsOperator(default, ""),
             OperatorValueType.DoubleUnits => new DoubleUnitsOperator(default, ""),

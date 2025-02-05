@@ -3,13 +3,13 @@ namespace luminary.functions;
 
 public class DoubleUnitsOperator : OperatorValue
 {
-    protected double Value;
-    protected string Units;
+    protected double? NullableValue;
+    protected string? NullableUnits;
 
-    public DoubleUnitsOperator(double value, string units) : base(OperatorValueType.DoubleUnits)
+    public DoubleUnitsOperator(double? nullableValue, string? nullableUnits) : base(OperatorValueType.DoubleUnits)
     {
-        Value = value;
-        Units = units;
+        NullableValue = nullableValue;
+        NullableUnits = nullableUnits;
     }
 
     public override OperatorValue? BooleanAnd(OperatorValue[]? parameters)
@@ -260,5 +260,39 @@ public class DoubleUnitsOperator : OperatorValue
     public override void SetValue(OperatorValue value)
     {
         throw new NotImplementedException();
+    }
+    
+    public static OperatorValue BuildFromParameters(string[] parameters)
+    {
+        if(parameters == null || parameters.Length < 2)
+        {
+            throw new ArgumentException("Cannot create a DoubleUnitsOperator, null or missing parameter.");
+        }
+
+        if(double.TryParse(parameters[0], out double _value))
+        {
+            return new DoubleUnitsOperator(_value, parameters[1]);
+        }
+        else
+        {
+            throw new ArgumentException(
+                string.Format(
+                    "Cannot parse inputs '{0}', '{1}' to DoubleUnitsOperator.",
+                    parameters[0],
+                    parameters[1]
+                )
+            );
+        }
+    }
+    
+    public static OperatorValue BuildFromString(string? _input)
+    {
+        if(_input == null)
+        {
+            return new DoubleUnitsOperator(null, null);
+        }
+
+        (double _doubleValue, string _doubleUnits) = UnitHelper.ParseStringToDoubleUnits(_input);
+        return new DoubleUnitsOperator(_doubleValue, _doubleUnits);
     }
 }

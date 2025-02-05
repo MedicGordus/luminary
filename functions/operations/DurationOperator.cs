@@ -3,11 +3,11 @@ namespace luminary.functions;
 
 public class DurationOperator : OperatorValue
 {
-    protected TimeSpan Value;
+    protected TimeSpan? NullableValue;
 
-    public DurationOperator(TimeSpan value) : base(OperatorValueType.Duration)
+    public DurationOperator(TimeSpan? nullablevalue) : base(OperatorValueType.Duration)
     {
-        Value = value;
+        NullableValue = nullablevalue;
     }
 
     public override OperatorValue? BooleanAnd(OperatorValue[]? parameters)
@@ -258,5 +258,37 @@ public class DurationOperator : OperatorValue
     public override void SetValue(OperatorValue value)
     {
         throw new NotImplementedException();
+    }
+    
+    public static OperatorValue BuildFromParameters(string[] parameters)
+    {
+        if(parameters == null || parameters.Length == 0)
+        {
+            throw new ArgumentException("Cannot create a DurationOperator, null or missing parameter.");
+        }
+
+        return BuildFromString(parameters[0]);
+    }
+    
+    public static OperatorValue BuildFromString(string? _input)
+    {
+        if(_input == null)
+        {
+            return new DurationOperator(null);
+        }
+        
+        if(TimeSpan.TryParse(_input, out TimeSpan _value))
+        {
+            return new DurationOperator(_value);
+        }
+        else
+        {
+            throw new ArgumentException(
+                string.Format(
+                    "Cannot parse input '{0}' to DurationOperator.",
+                    _input
+                )
+            );
+        }
     }
 }

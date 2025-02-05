@@ -5,13 +5,13 @@ namespace luminary.functions;
 
 public class BigIntegerUnitsOperator : OperatorValue
 {
-    protected BigInteger Value;
-    protected string Unit;
+    protected BigInteger? NullableValue;
+    protected string? NullableUnit;
 
-    public BigIntegerUnitsOperator(BigInteger value, string unit) : base(OperatorValueType.BigIntegerUnits)
+    public BigIntegerUnitsOperator(BigInteger? nullableValue, string? nullableUnit) : base(OperatorValueType.BigIntegerUnits)
     {
-        Value = value;
-        Unit = unit;
+        NullableValue = nullableValue;
+        NullableUnit = nullableUnit;
     }
 
     public override OperatorValue? BooleanAnd(OperatorValue[]? parameters)
@@ -262,5 +262,39 @@ public class BigIntegerUnitsOperator : OperatorValue
     public override void SetValue(OperatorValue value)
     {
         throw new NotImplementedException();
+    }
+    
+    public static OperatorValue BuildFromParameters(string[] parameters)
+    {
+        if(parameters == null || parameters.Length < 2)
+        {
+            throw new ArgumentException("Cannot create a BigIntegerUnitsOperator, null or missing parameter.");
+        }
+        
+        if(BigInteger.TryParse(parameters[0], out BigInteger _value))
+        {
+            return new BigIntegerUnitsOperator(_value, parameters[1]);
+        }
+        else
+        {
+            throw new ArgumentException(
+                string.Format(
+                    "Cannot parse inputs '{0}', '{1}' to BigIntegerUnitsOperator.",
+                    parameters[0],
+                    parameters[1]
+                )
+            );
+        }
+    }
+    
+    public static OperatorValue BuildFromString(string? _input)
+    {
+        if(_input == null)
+        {
+            return new BigIntegerUnitsOperator(null, null);
+        }
+
+        (BigInteger _bigIntegerValue, string _bigIntegerUnits) = UnitHelper.ParseStringToBigIntegerUnits(_input);
+        return new BigIntegerUnitsOperator(_bigIntegerValue, _bigIntegerUnits);
     }
 }

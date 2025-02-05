@@ -1,13 +1,17 @@
 
+using luminary.mapping;
+
 namespace luminary.functions;
 
-public class DateTimeZoneOperator : OperatorValue
+public class DateTimeOffsetWithDurationOperator : OperatorValue
 {
-    DateTimeOffset Value;
+    protected DateTimeOffset? NullableDateTimeZoneValue;
+    protected TimeSpan? NullableDurationValue;
 
-    public DateTimeZoneOperator(DateTimeOffset value) : base(OperatorValueType.DateTimeZone)
+    public DateTimeOffsetWithDurationOperator(DateTimeOffset? nullableDateTimeZoneValue, TimeSpan? nullableDurationValue) : base(OperatorValueType.DateTimeOffsetWithDuration)
     {
-        Value = value;
+        NullableDateTimeZoneValue = nullableDateTimeZoneValue;
+        NullableDurationValue = nullableDurationValue;
     }
 
     public override OperatorValue? BooleanAnd(OperatorValue[]? parameters)
@@ -258,5 +262,56 @@ public class DateTimeZoneOperator : OperatorValue
     public override void SetValue(OperatorValue value)
     {
         throw new NotImplementedException();
+    }
+    
+    public static OperatorValue BuildFromParameters(string[] parameters)
+    {
+        if(parameters == null || parameters.Length < 2)
+        {
+            throw new ArgumentException("Cannot create a DateTimeOffsetWithDurationOperator, null or missing parameter.");
+        }
+        
+        if(
+                DateTimeOffset.TryParseExact(parameters[0], DateTimeHelper.DATE_TIME_OFFSET_FORMAT, null, System.Globalization.DateTimeStyles.None, out DateTimeOffset _value)
+            &&
+                TimeSpan.TryParse(parameters[1], out TimeSpan _durationValue)
+        )
+        {
+            return new DateTimeOffsetWithDurationOperator(_value, _durationValue);
+        }
+        else
+        {
+            throw new ArgumentException(
+                string.Format(
+                    "Cannot parse inputs '{0}', '{1}' to DateTimeOffsetWithDurationOperator.",
+                    parameters[0],
+                    parameters[1]
+                )
+            );
+        }
+    }
+    
+    public static OperatorValue BuildFromString(string? _input)
+    {
+        if(_input == null)
+        {
+            return new DateTimeOffsetWithDurationOperator(null, null);
+        }
+
+        int _dtzSeparatorIndex = _input.IndexOf(Helper.DATE_TIME_ZONE_DURATION_SEPARATOR);
+        if(_dtzSeparatorIndex == -1)
+        {
+            throw new Exception(
+                string.Format(
+                    "DateTimeOffsetWithDuration unparsable, no separator '{0}' found within input, '{1}'.",
+                    Helper.DATE_TIME_ZONE_DURATION_SEPARATOR,
+                    _input
+                )
+            );
+        }
+        string _dtzValue = _input[.._dtzSeparatorIndex];
+        string _dtzDuration = _input[(_dtzSeparatorIndex + 1)..];
+
+        return BuildFromParameters([ _dtzValue, _dtzDuration ]);
     }
 }

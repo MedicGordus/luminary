@@ -5,21 +5,31 @@ namespace luminary.functions;
 
 public class BigIntegerOperator : OperatorValue
 {
-    protected BigInteger Value;
+    protected BigInteger? NullableValue;
 
-    public BigIntegerOperator(BigInteger value) : base(OperatorValueType.BigInteger)
+    public BigIntegerOperator(BigInteger? _nullableValue) : base(OperatorValueType.BigInteger)
     {
-        Value = value;
+        NullableValue = _nullableValue;
     }
 
     public override OperatorValue? BooleanAnd(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
+        throw new InvalidOperationException();
     }
 
     public override OperatorValue? BitwiseLeftShift(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
+        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        {
+            throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute bitwiseleftshift.");
+        }
+
+        if(parameters[0] is not IntegerOperator)
+        {
+            throw new ArgumentException("Cannot leftshift when the parameter is not an integer.");
+        }
+
+        return new BigIntegerOperator(NullableValue << ((IntegerOperator)parameters[0]).GetValue());
     }
 
     public override OperatorValue? BitwiseMod(OperatorValue[]? parameters)
@@ -29,7 +39,17 @@ public class BigIntegerOperator : OperatorValue
 
     public override OperatorValue? BitwiseRightShift(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
+        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        {
+            throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute bitwiserightshift.");
+        }
+
+        if(parameters[0] is not IntegerOperator)
+        {
+            throw new ArgumentException("Cannot rightshift when the parameter is not an integer.");
+        }
+
+        return new BigIntegerOperator(NullableValue >> ((IntegerOperator)parameters[0]).GetValue());
     }
 
     public override OperatorValue? BitwiseXor(OperatorValue[]? parameters)
@@ -260,5 +280,37 @@ public class BigIntegerOperator : OperatorValue
     public override void SetValue(OperatorValue value)
     {
         throw new NotImplementedException();
+    }
+    
+    public static OperatorValue BuildFromParameters(string[] parameters)
+    {
+        if(parameters == null || parameters.Length == 0)
+        {
+            throw new ArgumentException("Cannot create a BigIntegerOperator, null or missing parameter.");
+        }
+
+        return BuildFromString(parameters[0]);
+    }
+    
+    public static OperatorValue BuildFromString(string? _input)
+    {
+        if(_input == null)
+        {
+            return new BigIntegerOperator(null);
+        }
+
+        if(BigInteger.TryParse(_input, out BigInteger _value))
+        {
+            return new BigIntegerOperator(_value);
+        }
+        else
+        {
+            throw new ArgumentException(
+                string.Format(
+                    "Cannot parse input '{0}' to BigInteger.",
+                    _input
+                )
+            );
+        }
     }
 }

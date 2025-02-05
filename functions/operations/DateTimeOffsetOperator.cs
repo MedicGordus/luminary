@@ -1,17 +1,14 @@
 
-using System.Runtime.CompilerServices;
-
 namespace luminary.functions;
 
-public class DateTimeZoneWithDurationOperator : OperatorValue
+public class DateTimeOffsetOperator : OperatorValue
 {
-    protected DateTimeOffset DateTimeZoneValue;
-    protected TimeSpan DurationValue;
 
-    public DateTimeZoneWithDurationOperator(DateTimeOffset dateTimeZoneValue, TimeSpan durationValue) : base(OperatorValueType.DateTimeZoneWithDuration)
+    protected DateTimeOffset? NullableValue;
+
+    public DateTimeOffsetOperator(DateTimeOffset? _nullableValue) : base(OperatorValueType.DateTimeOffset)
     {
-        DateTimeZoneValue = dateTimeZoneValue;
-        DurationValue = durationValue;
+        NullableValue = _nullableValue;
     }
 
     public override OperatorValue? BooleanAnd(OperatorValue[]? parameters)
@@ -262,5 +259,37 @@ public class DateTimeZoneWithDurationOperator : OperatorValue
     public override void SetValue(OperatorValue value)
     {
         throw new NotImplementedException();
+    }
+    
+    public static OperatorValue BuildFromParameters(string[] parameters)
+    {
+        if(parameters == null || parameters.Length == 0)
+        {
+            throw new ArgumentException("Cannot create a DateTimeOffsetOperator, null or missing parameter.");
+        }
+
+        return BuildFromString(parameters[0]);
+    }
+    
+    public static OperatorValue BuildFromString(string? _input)
+    {
+        if(_input == null)
+        {
+            return new DateTimeOffsetOperator(null);
+        }
+
+        if(DateTimeOffset.TryParseExact(_input, DateTimeHelper.DATE_TIME_OFFSET_FORMAT, null, System.Globalization.DateTimeStyles.None, out DateTimeOffset _value))
+        {
+            return new DateTimeOffsetOperator(_value);
+        }
+        else
+        {
+            throw new ArgumentException(
+                string.Format(
+                    "Cannot parse input '{0}' to DateTimeOffsetOperator.",
+                    _input
+                )
+            );
+        }
     }
 }

@@ -3,10 +3,10 @@ namespace luminary.functions;
 
 public class DoubleOperator : OperatorValue
 {
-    protected double Value;
-    public DoubleOperator(double value) : base(OperatorValueType.Double)
+    protected double? NullableValue;
+    public DoubleOperator(double? nullableValue) : base(OperatorValueType.Double)
     {
-        Value = value;
+        NullableValue = nullableValue;
     }
 
     public override OperatorValue? BooleanAnd(OperatorValue[]? parameters)
@@ -257,5 +257,37 @@ public class DoubleOperator : OperatorValue
     public override void SetValue(OperatorValue value)
     {
         throw new NotImplementedException();
+    }
+    
+    public static OperatorValue BuildFromParameters(string[] parameters)
+    {
+        if(parameters == null || parameters.Length == 0)
+        {
+            throw new ArgumentException("Cannot create a DoubleOperator, null or missing parameter.");
+        }
+        
+        return BuildFromString(parameters[0]);
+    }
+    
+    public static OperatorValue BuildFromString(string? _input)
+    {
+        if(_input == null)
+        {
+            return new DoubleOperator(null);
+        }
+
+        if(double.TryParse(_input, out double _value))
+        {
+            return new DoubleOperator(_value);
+        }
+        else
+        {
+            throw new ArgumentException(
+                string.Format(
+                    "Cannot parse input '{0}' to double.",
+                    _input
+                )
+            );
+        }
     }
 }

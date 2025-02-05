@@ -192,66 +192,106 @@ public static class Helper
 
     public static void MapPropertyPerSchema(OperatorValue _data, JsonElement _element)
     {
-        // reuse constant methods to parse json data
+        // parse json data
         switch(_data.Type)
         {
             //// string-based parameters
             //
             case OperatorValue.OperatorValueType.String:
-                _data.SetValue(ConstantMethods.StringConstant([_element.GetString() ?? ""]));
+                _data.SetValue(
+                    StringOperator.BuildFromString(
+                        _element.GetString()
+                    )
+                );
                 break;
+            //
             case OperatorValue.OperatorValueType.BigInteger:
-                _data.SetValue(ConstantMethods.BigIntegerConstant([_element.GetString() ?? ""]));
+                _data.SetValue(
+                    BigIntegerOperator.BuildFromString(
+                        _element.GetString()
+                    )
+                );
                 break;
+            //
             case OperatorValue.OperatorValueType.Double:
-                _data.SetValue(ConstantMethods.DoubleConstant([_element.GetString() ?? ""]));
+                _data.SetValue(
+                    DoubleOperator.BuildFromString(
+                        _element.GetString()
+                    )
+                );
                 break;
+            //
             case OperatorValue.OperatorValueType.Decimal:
-                _data.SetValue(ConstantMethods.DecimalConstant([_element.GetString() ?? ""]));
+                _data.SetValue(
+                    DecimalOperator.BuildFromString(
+                        _element.GetString()
+                    )
+                );
                 break;
-            case OperatorValue.OperatorValueType.DateTimeZoneWithDuration:
-                string _dtz = _element.GetString() ?? "";
-                int _dtzSeparatorIndex = _dtz.IndexOf(DATE_TIME_ZONE_DURATION_SEPARATOR);
-                if(_dtzSeparatorIndex == -1)
-                {
-                    throw new Exception(
-                        string.Format(
-                            "DateTimeZoneWithDuration unparsable, no separator '{0}' found within input, '{1}'.",
-                            DATE_TIME_ZONE_DURATION_SEPARATOR,
-                            _dtz
-                        )
-                    );
-                }
-                string? _dtzValue = _dtz[.._dtzSeparatorIndex];
-                string? _dtzDuration = _dtz[(_dtzSeparatorIndex + 1)..];
-                _data.SetValue(ConstantMethods.DateTimeZoneWithDurationConstant([ _dtzDuration, _dtzValue ]));
+            //
+            case OperatorValue.OperatorValueType.DateTimeOffsetWithDuration:
+                _data.SetValue(
+                    DateTimeOffsetWithDurationOperator.BuildFromString(
+                        _element.GetString()
+                    )
+                );
                 break;
+            //
             case OperatorValue.OperatorValueType.Date:
-                _data.SetValue(ConstantMethods.DateConstant([_element.GetString() ?? ""]));
+                _data.SetValue(
+                    DateOperator.BuildFromString(
+                        _element.GetString()
+                    )
+                );
                 break;
+            //
             case OperatorValue.OperatorValueType.Time:
-                _data.SetValue(ConstantMethods.TimeConstant([_element.GetString() ?? ""]));
+                _data.SetValue(
+                    TimeOperator.BuildFromString(
+                        _element.GetString()
+                    )
+                );
                 break;
+            //
             case OperatorValue.OperatorValueType.Duration:
-                _data.SetValue(ConstantMethods.DurationConstant([_element.GetString() ?? ""]));
+                _data.SetValue(
+                    DurationOperator.BuildFromString(
+                        _element.GetString()
+                    )
+                );
                 break;
             //
             // unit based parameters
             case OperatorValue.OperatorValueType.IntegerUnits:
-                (int _intValue, string _intUnits) = UnitHelper.ParseStringToIntegerUnits(_element.GetString() ?? "");
-                _data.SetValue(new IntegerUnitsOperator(_intValue, _intUnits));
+                _data.SetValue(
+                    IntegerUnitsOperator.BuildFromString(
+                        _element.GetString()
+                    )
+                );
                 break;
+            //
             case OperatorValue.OperatorValueType.BigIntegerUnits:
-                (BigInteger _bigIntegerValue, string _bigIntegerUnits) = UnitHelper.ParseStringToBigIntegerUnits(_element.GetString() ?? "");
-                _data.SetValue(new BigIntegerUnitsOperator(_bigIntegerValue, _bigIntegerUnits));
+                _data.SetValue(
+                    BigIntegerUnitsOperator.BuildFromString(
+                        _element.GetString()
+                    )
+                );
                 break;
+            //
             case OperatorValue.OperatorValueType.DoubleUnits:
-                (double _doubleValue, string _doubleUnits) = UnitHelper.ParseStringToDoubleUnits(_element.GetString() ?? "");
-                _data.SetValue(new DoubleUnitsOperator(_doubleValue, _doubleUnits));
+                _data.SetValue(
+                    DoubleUnitsOperator.BuildFromString(
+                        _element.GetString()
+                    )
+                );
                 break;
+            //
             case OperatorValue.OperatorValueType.DecimalUnits:
-                (decimal _decimalValue, string _decimalUnits) = UnitHelper.ParseStringToDecimalUnits(_element.GetString() ?? "");
-                _data.SetValue(new DecimalUnitsOperator(_decimalValue, _decimalUnits));
+                _data.SetValue(
+                    DecimalUnitsOperator.BuildFromString(
+                        _element.GetString()
+                    )
+                );
                 break;
             //
             ////
@@ -259,13 +299,19 @@ public static class Helper
             //// native typed parameters
             //
             case OperatorValue.OperatorValueType.Integer:
-                _data.SetValue(ConstantMethods.IntegerConstant([_element.GetInt32().ToString()]));
+                ((IntegerOperator)_data).SetNativeValue(_element.GetInt32());
                 break;
-            case OperatorValue.OperatorValueType.DateTimeZone:
-                _data.SetValue(ConstantMethods.DateTimeZoneConstant([_element.GetDateTime().ToString()]));
+            //
+            case OperatorValue.OperatorValueType.DateTimeOffset:
+                _data.SetValue(
+                    DateTimeOffsetOperator.BuildFromString(
+                        _element.GetDateTime().ToString(DateTimeHelper.DATE_TIME_OFFSET_FORMAT)
+                    )
+                );
                 break;
+            //
             case OperatorValue.OperatorValueType.Boolean:
-                _data.SetValue(ConstantMethods.BooleanConstant([_element.GetBoolean().ToString()]));
+                ((BooleanOperator)_data).SetNativeValue(_element.GetBoolean());
                 break;
             //
             ////
@@ -293,9 +339,11 @@ public static class Helper
                 _data.SetValue(new ArrayOperator(_arrayType, _arrayData));
 
                 break;
+            //
             case OperatorValue.OperatorValueType.Prism:
                 MapDataPerSchema(((PrismOperator)_data).GetValue(), _element);
                 break;
+            //
             default:
                 throw new Exception(
                     string.Format(

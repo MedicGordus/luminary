@@ -3,13 +3,13 @@ namespace luminary.functions;
 
 public class DecimalUnitsOperator : OperatorValue
 {
-    protected decimal Value;
-    protected string Units;
+    protected decimal? NullableValue;
+    protected string? NullableUnits;
 
-    public DecimalUnitsOperator(decimal value, string units) : base(OperatorValueType.DecimalUnits)
+    public DecimalUnitsOperator(decimal? nullableValue, string? nullableUnits) : base(OperatorValueType.DecimalUnits)
     {
-        Value = value;
-        Units = units;
+        NullableValue = nullableValue;
+        NullableUnits = nullableUnits;
     }
 
     public override OperatorValue? BooleanAnd(OperatorValue[]? parameters)
@@ -260,5 +260,26 @@ public class DecimalUnitsOperator : OperatorValue
     public override void SetValue(OperatorValue value)
     {
         throw new NotImplementedException();
+    }
+    
+    public static OperatorValue BuildFromParameters(string[] parameters)
+    {
+        if(parameters == null || parameters.Length == 0)
+        {
+            throw new ArgumentException("Cannot create a DecimalUnitsOperator, null or missing parameter.");
+        }
+
+        return BuildFromString(parameters[0]);
+    }
+    
+    public static OperatorValue BuildFromString(string? _input)
+    {
+        if(_input == null)
+        {
+            return new DecimalUnitsOperator(null, null);
+        }
+
+        (decimal _decimalValue, string _decimalUnits) = UnitHelper.ParseStringToDecimalUnits(_input);
+        return new DecimalUnitsOperator(_decimalValue, _decimalUnits);
     }
 }

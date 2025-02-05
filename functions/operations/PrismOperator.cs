@@ -276,4 +276,14 @@ public class PrismOperator : OperatorValue
     {
         return Value.TryGetValue(name, out var _value) ? _value : null;
     }
+    
+    public static OperatorValue BuildFromParameters(string[] parameters)
+    {
+        throw new NotImplementedException();
+    }
+    
+    public static OperatorValue BuildFromString(string? _input)
+    {
+        throw new NotImplementedException();
+    }
 }

@@ -3,10 +3,12 @@ namespace luminary.functions;
 
 public class IntegerOperator : OperatorValue
 {
-    protected int Value;
-    public IntegerOperator(int value) : base(OperatorValueType.Integer)
+    protected int? NullableValue;
+
+    public int? GetValue() => NullableValue;
+    public IntegerOperator(int? _nullableValue) : base(OperatorValueType.Integer)
     {
-        Value = value;
+        NullableValue = _nullableValue;
     }
 
     public override OperatorValue? BooleanAnd(OperatorValue[]? parameters)
@@ -261,6 +263,43 @@ public class IntegerOperator : OperatorValue
             throw new ArgumentException("Source OperatorValue wrong type, cannot set value.");
         }
 
-        Value = ((IntegerOperator)source).Value;
+        NullableValue = ((IntegerOperator)source).NullableValue;
+    }
+    
+    public static OperatorValue BuildFromParameters(string[] parameters)
+    {
+        if(parameters == null || parameters.Length == 0)
+        {
+            throw new ArgumentException("Cannot create an IntegerOperator, null or missing parameter.");
+        }
+
+        return BuildFromString(parameters[0]);
+    }
+    
+    public static OperatorValue BuildFromString(string? _input)
+    {
+        if(_input == null)
+        {
+            return new IntegerOperator(null);
+        }
+
+        if(int.TryParse(_input, out int _value))
+        {
+            return new IntegerOperator(_value);
+        }
+        else
+        {
+            throw new ArgumentException(
+                string.Format(
+                    "Cannot parse input '{0}' to int.",
+                    _input
+                )
+            );
+        }
+    }
+
+    public void SetNativeValue(int? _input)
+    {
+        NullableValue =_input;
     }
 }

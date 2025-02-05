@@ -3,13 +3,13 @@ namespace luminary.functions;
 
 public class IntegerUnitsOperator : OperatorValue
 {
-    protected int Value;
-    protected string Units;
+    protected int? NullableValue;
+    protected string? NullableUnits;
 
-    public IntegerUnitsOperator(int value, string units) : base(OperatorValueType.IntegerUnits)
+    public IntegerUnitsOperator(int? nullableValue, string? nullableUnits) : base(OperatorValueType.IntegerUnits)
     {
-        Value = value;
-        Units = units;
+        NullableValue = nullableValue;
+        NullableUnits = nullableUnits;
     }
 
     public override OperatorValue? BooleanAnd(OperatorValue[]? parameters)
@@ -260,5 +260,39 @@ public class IntegerUnitsOperator : OperatorValue
     public override void SetValue(OperatorValue value)
     {
         throw new NotImplementedException();
+    }
+    
+    public static OperatorValue BuildFromParameters(string[] parameters)
+    {
+        if(parameters == null || parameters.Length < 2)
+        {
+            throw new ArgumentException("Cannot create a IntegerUnitsOperator, null or missing parameter.");
+        }
+        
+        if(int.TryParse(parameters[0], out int _value))
+        {
+            return new IntegerUnitsOperator(_value, parameters[1]);
+        }
+        else
+        {
+            throw new ArgumentException(
+                string.Format(
+                    "Cannot parse inputs '{0}', '{1}' to IntegerUnitsOperator.",
+                    parameters[0],
+                    parameters[1]
+                )
+            );
+        }
+    }
+    
+    public static OperatorValue BuildFromString(string? _input)
+    {
+        if(_input == null)
+        {
+            return new IntegerUnitsOperator(null, null);
+        }
+
+        (int _intValue, string _intUnits) = UnitHelper.ParseStringToIntegerUnits(_input);
+        return new IntegerUnitsOperator(_intValue, _intUnits);        
     }
 }

@@ -1,4 +1,5 @@
 
+using System.ComponentModel;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Windows.Markup;
@@ -380,4 +381,51 @@ public class ArrayOperator : OperatorValue
         ArrayType = ((ArrayOperator)value).ArrayType;
         Value = ((ArrayOperator)value).Value;
     }
+
+    
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="parameters"></param>
+    /// <returns>EMPTY ARRAY - caller is expected to fill it</returns>
+    public static OperatorValue BuildFromParameters(string[] parameters)
+    {
+        // this is a special case where the ArrayOperator is created blank and the caller fills it
+
+        if(parameters == null || parameters.Length == 0)
+        {
+            throw new ArgumentException("Cannot create a ArrayOperator, null or missing parameter.");
+        }
+
+        return BuildFromString(parameters[0]);
+    }
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="_input"></param>
+    /// <returns>EMPTY ARRAY - caller is expected to fill it</returns>
+    public static OperatorValue BuildFromString(string? _input)
+    {
+        if(_input == null)
+        {
+            throw new ArgumentException("Cannot create an array without a designated OperatorValueType.");
+        }
+
+        if(OperatorValue.OperatorValueTypeLookup.TryGetValue(_input, out var _arrayType))
+        {
+            return new ArrayOperator(_arrayType, []);
+        }
+        else
+        {
+            throw new Exception(
+                string.Format(
+                    "Unable to build blank array, specified type '{0}' null or unknown.",
+                    _input
+                )
+            );
+        }
+    }
+
 }
