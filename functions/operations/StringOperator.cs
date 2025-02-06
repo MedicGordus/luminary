@@ -8,6 +8,8 @@ public class StringOperator : OperatorValue
 {
     protected string? NullableValue;
 
+    public string? GetValue() => NullableValue;
+
     public StringOperator(string? _nullableValue) : base(OperatorValueType.String)
     {
         NullableValue = _nullableValue;
