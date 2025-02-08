@@ -349,7 +349,7 @@ public abstract class OperatorValue
 
     public abstract string ToStringValue();
     public abstract string ToJsonStringValue();
-    public abstract void SetValue(OperatorValue value);
+    public abstract void SetValue(OperatorValue _source);
 
     public static OperatorValue? CreateByType(OperatorValueType type)
     {

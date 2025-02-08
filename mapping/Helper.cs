@@ -305,7 +305,7 @@ public static class Helper
             case OperatorValue.OperatorValueType.DateTimeOffset:
                 _data.SetValue(
                     DateTimeOffsetOperator.BuildFromString(
-                        _element.GetDateTime().ToString(DateTimeHelper.DATE_TIME_OFFSET_FORMAT)
+                        _element.GetDateTime().ToString(DateTimeHelper.DATE_TIME_OFFSET_TO_STRING_FORMAT)
                     )
                 );
                 break;

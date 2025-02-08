@@ -1,263 +1,260 @@
 
+using System.Numerics;
+
 namespace luminary.functions;
 
 public class DurationOperator : OperatorValue
 {
-    protected TimeSpan? NullableValue;
+    protected Duration? NullableValue;
 
-    public DurationOperator(TimeSpan? nullablevalue) : base(OperatorValueType.Duration)
+    public Duration? GetValue() => NullableValue;
+
+    public DurationOperator(Duration? nullablevalue) : base(OperatorValueType.Duration)
     {
         NullableValue = nullablevalue;
     }
 
     public override OperatorValue? BooleanAnd(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
+        throw new InvalidOperationException();
     }
 
     public override OperatorValue? BitwiseLeftShift(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
+        throw new InvalidOperationException();
     }
 
     public override OperatorValue? BitwiseMod(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
+        throw new InvalidOperationException();
     }
 
     public override OperatorValue? BitwiseRightShift(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
+        throw new InvalidOperationException();
     }
 
     public override OperatorValue? BitwiseXor(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
+        throw new InvalidOperationException();
     }
 
     public override OperatorValue? Concatenate(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
+        throw new InvalidOperationException();
     }
 
     public override OperatorValue? ConvertToBigInteger(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
+        return new BigIntegerOperator(new BigInteger(CollectDoubleFromConversion(parameters)));
     }
 
     public override OperatorValue? ConvertToBigIntegerUnits(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
+        return new BigIntegerUnitsOperator(new BigInteger(CollectDoubleFromConversion(parameters)), ((StringOperator)parameters[0]).GetValue());
     }
 
     public override OperatorValue? ConvertToDecimal(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
+        return new DecimalOperator((decimal)CollectDoubleFromConversion(parameters));
     }
 
     public override OperatorValue? ConvertToDecimalUnits(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
+        return new DecimalUnitsOperator((decimal)CollectDoubleFromConversion(parameters), ((StringOperator)parameters[0]).GetValue());
     }
 
     public override OperatorValue? ConvertToDouble(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
+        return new DoubleOperator(CollectDoubleFromConversion(parameters));
     }
 
     public override OperatorValue? ConvertToDoubleUnits(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
+        return new DoubleUnitsOperator(CollectDoubleFromConversion(parameters), ((StringOperator)parameters[0]).GetValue());
     }
 
     public override OperatorValue? ConvertToInteger(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
+        double _conversion = CollectDoubleFromConversion(parameters);
+
+        int _output = (int)Math.Round(_conversion, 0);
+        
+        return new IntegerOperator(_output);
     }
 
     public override OperatorValue? ConvertToIntegerUnits(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
+        double _conversion = CollectDoubleFromConversion(parameters);
+
+        int _output = (int)Math.Round(_conversion, 0);
+        
+        return new IntegerUnitsOperator(_output, ((StringOperator)parameters[0]).GetValue());
     }
 
     public override OperatorValue? ConvertToString(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
     }
 
     public override OperatorValue? EndsWith(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
+        throw new InvalidOperationException();
     }
 
     public override OperatorValue? ValueEqual(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
     }
 
     public override OperatorValue? Filled(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
     }
 
     public override OperatorValue? GreaterOrEqual(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
     }
 
     public override OperatorValue? GreatherThan(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
     }
 
     public override OperatorValue? IfNotFilled(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
     }
 
     public override OperatorValue? Includes(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
+        throw new InvalidOperationException();
     }
 
     public override OperatorValue? IndexOf(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
+        throw new InvalidOperationException();
     }
 
     public override OperatorValue? EqualsIgnoreCase(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
+        throw new InvalidOperationException();
     }
 
     public override OperatorValue? Join(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
+        throw new InvalidOperationException();
     }
 
     public override OperatorValue? Length(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
+        throw new InvalidOperationException();
     }
 
     public override OperatorValue? LessOrEqual(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
     }
 
     public override OperatorValue? LessThan(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
     }
 
     public override OperatorValue? MathAdd(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
     }
 
     public override OperatorValue? MathAverage(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
     }
 
     public override OperatorValue? MathCeiling(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
+        throw new InvalidOperationException();
     }
 
     public override OperatorValue? MathDivide(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
+        throw new InvalidOperationException();
     }
 
     public override OperatorValue? MathFloor(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
+        throw new InvalidOperationException();
     }
 
     public override OperatorValue? MathMultiply(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
+        throw new InvalidOperationException();
     }
 
     public override OperatorValue? MathPower(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
+        throw new InvalidOperationException();
     }
 
     public override OperatorValue? MathRound(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
+        throw new InvalidOperationException();
     }
 
     public override OperatorValue? MathSubtract(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
     }
 
     public override OperatorValue? NotEqual(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
     }
 
     public override OperatorValue? BooleanOr(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
+        throw new InvalidOperationException();
     }
 
     public override OperatorValue? Replace(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
+        throw new InvalidOperationException();
     }
 
     public override OperatorValue? Split(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
+        throw new InvalidOperationException();
     }
 
     public override OperatorValue? StartsWith(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
+        throw new InvalidOperationException();
     }
 
     public override OperatorValue? Substring(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
-    }
-
-    public override string ToJsonStringValue()
-    {
-        throw new NotImplementedException();
+        throw new InvalidOperationException();
     }
 
     public override OperatorValue? ToLower(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
+        throw new InvalidOperationException();
     }
 
     public override OperatorValue? ToUpper(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
+        throw new InvalidOperationException();
     }
 
     public override OperatorValue? Trim(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
+        throw new InvalidOperationException();
     }
 
     public override OperatorValue? BooleanNot(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
+        throw new InvalidOperationException();
+    }
+
+    public override string ToJsonStringValue()
+    {
     }
 
     public override string ToStringValue()
     {
-        throw new NotImplementedException();
     }
 
     public override void SetValue(OperatorValue value)
     {
-        throw new NotImplementedException();
     }
     
     public static OperatorValue BuildFromParameters(string[] parameters)
@@ -277,7 +274,7 @@ public class DurationOperator : OperatorValue
             return new DurationOperator(null);
         }
         
-        if(TimeSpan.TryParse(_input, out TimeSpan _value))
+        if(Duration.TryParse(_input, out Duration? _value))
         {
             return new DurationOperator(_value);
         }
@@ -291,4 +288,60 @@ public class DurationOperator : OperatorValue
             );
         }
     }
+
+    protected double GetDurationUnits(string? units)
+    {
+        if(NullableValue == null)
+        {
+            throw new Exception("Cannot getdurationunits when the Value is null.");
+        }
+
+        var _lowercaseUnits = units?.ToLower();
+
+        return _lowercaseUnits switch {
+            "ns" or "nanosecond" or "nanoseconds"
+                => NullableValue.Value.TotalNanoseconds,
+
+            "ms" or "millisecond" or "milliseconds"
+                => NullableValue.Value.TotalMilliseconds,
+
+            "s" or "second" or "seconds"
+                => NullableValue.Value.TotalSeconds,
+
+            "min" or "minute" or "minutes"
+                => NullableValue.Value.TotalMinutes,
+
+            "h" or "hr" or "hour" or "hours"
+                => NullableValue.Value.TotalHours,
+
+            "d" or "day" or "days"
+                => NullableValue.Value.TotalDays,
+
+            "wk" or "week" or "weeks"
+                => NullableValue.Value.TotalDays / 7,
+
+            _ => throw new ArgumentException(
+                string.Format(
+                    "Unknown duration unit type '{0}', accepted unit types: ns, ms, s, min, h, d, wk (or the full word, plural or singular for each).",
+                    units
+                )
+            )
+        };
+    }
+
+    protected double CollectDoubleFromConversion(OperatorValue[]? _parameters)
+    {
+        if(NullableValue == null || _parameters == null || _parameters.Length == 0)
+        {
+            throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute conversion.");
+        }
+
+        if(_parameters[0] is not StringOperator)
+        {
+            throw new ArgumentException("Cannot execute conversion when the unit parameter is not a string.");
+        }
+
+        return GetDurationUnits(((StringOperator)_parameters[0]).GetValue());
+    }
+
 }

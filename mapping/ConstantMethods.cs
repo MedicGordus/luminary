@@ -8,6 +8,7 @@ public static class ConstantMethods
 {
     public struct MethodNames
     {
+#region "build constant operator"
         public const string String = "string";
         public const string Integer = "integer";
         public const string BigInteger = "biginteger";
@@ -24,6 +25,10 @@ public static class ConstantMethods
         public const string DoubleUnits = "doubleunits";
         public const string DecimalUnits = "decimalunits";
         public const string Boolean = "boolean";
+#endregion
+
+#region "custom methods"
+#endregion
     }
 
     public static Dictionary<string, Func<string[], OperatorValue>> MethodCall = new()

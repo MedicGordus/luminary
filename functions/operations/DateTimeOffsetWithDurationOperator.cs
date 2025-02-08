@@ -3,268 +3,174 @@ using luminary.mapping;
 
 namespace luminary.functions;
 
-public class DateTimeOffsetWithDurationOperator : OperatorValue
+public class DateTimeOffsetWithDurationOperator : DateTimeOffsetOperator
 {
-    protected DateTimeOffset? NullableDateTimeZoneValue;
-    protected TimeSpan? NullableDurationValue;
+    protected Duration? NullableDuration;
 
-    public DateTimeOffsetWithDurationOperator(DateTimeOffset? nullableDateTimeZoneValue, TimeSpan? nullableDurationValue) : base(OperatorValueType.DateTimeOffsetWithDuration)
-    {
-        NullableDateTimeZoneValue = nullableDateTimeZoneValue;
-        NullableDurationValue = nullableDurationValue;
-    }
+    public Duration? GetDuration() => NullableDuration;
 
-    public override OperatorValue? BooleanAnd(OperatorValue[]? parameters)
+    public DateTimeOffsetWithDurationOperator(DateTimeOffset? nullableDateTimeOffsetValue, Duration? nullableDuration) : base(nullableDateTimeOffsetValue, OperatorValueType.DateTimeOffsetWithDuration)
     {
-        throw new NotImplementedException();
-    }
-
-    public override OperatorValue? BitwiseLeftShift(OperatorValue[]? parameters)
-    {
-        throw new NotImplementedException();
-    }
-
-    public override OperatorValue? BitwiseMod(OperatorValue[]? parameters)
-    {
-        throw new NotImplementedException();
-    }
-
-    public override OperatorValue? BitwiseRightShift(OperatorValue[]? parameters)
-    {
-        throw new NotImplementedException();
-    }
-
-    public override OperatorValue? BitwiseXor(OperatorValue[]? parameters)
-    {
-        throw new NotImplementedException();
-    }
-
-    public override OperatorValue? Concatenate(OperatorValue[]? parameters)
-    {
-        throw new NotImplementedException();
+        NullableDuration = nullableDuration;
     }
 
     public override OperatorValue? ConvertToBigInteger(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
+        throw new InvalidOperationException();
     }
-
-    public override OperatorValue? ConvertToBigIntegerUnits(OperatorValue[]? parameters)
-    {
-        throw new NotImplementedException();
-    }
-
     public override OperatorValue? ConvertToDecimal(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
-    }
-
-    public override OperatorValue? ConvertToDecimalUnits(OperatorValue[]? parameters)
-    {
-        throw new NotImplementedException();
+        throw new InvalidOperationException();
     }
 
     public override OperatorValue? ConvertToDouble(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
-    }
-
-    public override OperatorValue? ConvertToDoubleUnits(OperatorValue[]? parameters)
-    {
-        throw new NotImplementedException();
-    }
-
-    public override OperatorValue? ConvertToInteger(OperatorValue[]? parameters)
-    {
-        throw new NotImplementedException();
-    }
-
-    public override OperatorValue? ConvertToIntegerUnits(OperatorValue[]? parameters)
-    {
-        throw new NotImplementedException();
+        throw new InvalidOperationException();
     }
 
     public override OperatorValue? ConvertToString(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
-    }
+        if(NullableValue == null || NullableDuration == null)
+        {
+            return new StringOperator(null);
+        }
 
-    public override OperatorValue? EndsWith(OperatorValue[]? parameters)
-    {
-        throw new NotImplementedException();
+        return new StringOperator(
+            string.Format(
+                "{0}{1}{2}",
+                NullableValue.Value.ToString(DateTimeHelper.DATE_TIME_OFFSET_TO_STRING_FORMAT),
+                Helper.DATE_TIME_ZONE_DURATION_SEPARATOR,
+                NullableDuration
+            )
+        );
     }
 
     public override OperatorValue? ValueEqual(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
+        if(InheritableValueEqual(parameters) == false)
+        {
+            return new BooleanOperator(false);
+        }
+
+        if(parameters[0] is not DateTimeOffsetWithDurationOperator)
+        {
+            throw new ArgumentException("Cannot valueequal when the parameter is not a datetimeoffsetwithduration.");
+        }
+
+        Duration? _paramValue = ((DateTimeOffsetWithDurationOperator)parameters[0]).GetDuration();
+
+        if(NullableDuration == null || _paramValue == null)
+        {
+            throw new ArgumentException("Cannot valueequal when the duration or parameter is null.");
+        }
+
+        return new BooleanOperator(NullableDuration == _paramValue);
     }
 
     public override OperatorValue? Filled(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
+        return new BooleanOperator(!(NullableValue == null || NullableDuration == null));
     }
 
     public override OperatorValue? GreaterOrEqual(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
+        throw new InvalidOperationException();
     }
 
     public override OperatorValue? GreatherThan(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
+        throw new InvalidOperationException();
     }
 
     public override OperatorValue? IfNotFilled(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
-    }
+        if(NullableValue == null || NullableDuration == null)
+        {
+            if(parameters == null || parameters.Length == 0 || parameters[0] == null)
+            {
+                throw new ArgumentException("Parameters null or parameter missing. Cannot execute ifnotfilled.");
+            }
 
-    public override OperatorValue? Includes(OperatorValue[]? parameters)
-    {
-        throw new NotImplementedException();
-    }
+            if(parameters[0] is not DateTimeOffsetWithDurationOperator)
+            {
+                throw new ArgumentException("Cannot ifnotfilled when the parameter is not a datetimeoffsetwithduration.");
+            }
 
-    public override OperatorValue? IndexOf(OperatorValue[]? parameters)
-    {
-        throw new NotImplementedException();
-    }
+            var _dto = (DateTimeOffsetWithDurationOperator)parameters[0];
+            return new DateTimeOffsetWithDurationOperator(_dto.GetValue(), _dto.GetDuration());
+        }
 
-    public override OperatorValue? EqualsIgnoreCase(OperatorValue[]? parameters)
-    {
-        throw new NotImplementedException();
-    }
-
-    public override OperatorValue? Join(OperatorValue[]? parameters)
-    {
-        throw new NotImplementedException();
-    }
-
-    public override OperatorValue? Length(OperatorValue[]? parameters)
-    {
-        throw new NotImplementedException();
+        return new DateTimeOffsetWithDurationOperator(NullableValue.Value, NullableDuration);
     }
 
     public override OperatorValue? LessOrEqual(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
+        throw new InvalidOperationException();
     }
 
     public override OperatorValue? LessThan(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
-    }
-
-    public override OperatorValue? MathAdd(OperatorValue[]? parameters)
-    {
-        throw new NotImplementedException();
-    }
-
-    public override OperatorValue? MathAverage(OperatorValue[]? parameters)
-    {
-        throw new NotImplementedException();
-    }
-
-    public override OperatorValue? MathCeiling(OperatorValue[]? parameters)
-    {
-        throw new NotImplementedException();
-    }
-
-    public override OperatorValue? MathDivide(OperatorValue[]? parameters)
-    {
-        throw new NotImplementedException();
-    }
-
-    public override OperatorValue? MathFloor(OperatorValue[]? parameters)
-    {
-        throw new NotImplementedException();
-    }
-
-    public override OperatorValue? MathMultiply(OperatorValue[]? parameters)
-    {
-        throw new NotImplementedException();
-    }
-
-    public override OperatorValue? MathPower(OperatorValue[]? parameters)
-    {
-        throw new NotImplementedException();
-    }
-
-    public override OperatorValue? MathRound(OperatorValue[]? parameters)
-    {
-        throw new NotImplementedException();
-    }
-
-    public override OperatorValue? MathSubtract(OperatorValue[]? parameters)
-    {
-        throw new NotImplementedException();
+        throw new InvalidOperationException();
     }
 
     public override OperatorValue? NotEqual(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
-    }
+        if(InheritableNotEqual(parameters))
+        {
+            return new BooleanOperator(true);
+        }
 
-    public override OperatorValue? BooleanOr(OperatorValue[]? parameters)
-    {
-        throw new NotImplementedException();
-    }
+        if(parameters[0] is not DateTimeOffsetWithDurationOperator)
+        {
+            throw new ArgumentException("Cannot notequal when the parameter is not a datetimeoffsetwithduration.");
+        }
 
-    public override OperatorValue? Replace(OperatorValue[]? parameters)
-    {
-        throw new NotImplementedException();
-    }
+        Duration? _paramValue = ((DateTimeOffsetWithDurationOperator)parameters[0]).GetDuration();
 
-    public override OperatorValue? Split(OperatorValue[]? parameters)
-    {
-        throw new NotImplementedException();
-    }
+        if(_paramValue == null)
+        {
+            throw new ArgumentException("Cannot notequal when the parameter is null.");
+        }
 
-    public override OperatorValue? StartsWith(OperatorValue[]? parameters)
-    {
-        throw new NotImplementedException();
-    }
-
-    public override OperatorValue? Substring(OperatorValue[]? parameters)
-    {
-        throw new NotImplementedException();
+        return new BooleanOperator(NullableDuration != _paramValue);
     }
 
     public override string ToJsonStringValue()
     {
-        throw new NotImplementedException();
-    }
+        if(NullableValue == null || NullableDuration == null)
+        {
+            return "null";
+        }
 
-    public override OperatorValue? ToLower(OperatorValue[]? parameters)
-    {
-        throw new NotImplementedException();
-    }
-
-    public override OperatorValue? ToUpper(OperatorValue[]? parameters)
-    {
-        throw new NotImplementedException();
-    }
-
-    public override OperatorValue? Trim(OperatorValue[]? parameters)
-    {
-        throw new NotImplementedException();
-    }
-
-    public override OperatorValue? BooleanNot(OperatorValue[]? parameters)
-    {
-        throw new NotImplementedException();
+        return string.Format(
+            "\"{0}\"",
+            ToStringValue()
+        );
     }
 
     public override string ToStringValue()
     {
-        throw new NotImplementedException();
+        return string.Format(
+            "\"{0}{1}{2}\"",
+            NullableValue?.ToString(DateTimeHelper.DATE_TIME_OFFSET_TO_STRING_FORMAT) ?? "null",
+            Helper.DATE_TIME_ZONE_DURATION_SEPARATOR,
+            NullableDuration?.ToString() ?? "null"
+        );
     }
 
     public override void SetValue(OperatorValue value)
     {
-        throw new NotImplementedException();
+        if(value is not DateTimeOffsetWithDurationOperator)
+        {
+            throw new ArgumentException("Cannot setvalue when the parameter is not a datetimeoffsetwithduration.");
+        }
+
+        var _dto = (DateTimeOffsetWithDurationOperator)value;
+        NullableValue = _dto.GetValue();
+        NullableDuration = _dto.GetDuration();
     }
     
-    public static OperatorValue BuildFromParameters(string[] parameters)
+    public new static OperatorValue BuildFromParameters(string[] parameters)
     {
         if(parameters == null || parameters.Length < 2)
         {
@@ -272,9 +178,9 @@ public class DateTimeOffsetWithDurationOperator : OperatorValue
         }
         
         if(
-                DateTimeOffset.TryParseExact(parameters[0], DateTimeHelper.DATE_TIME_OFFSET_FORMAT, null, System.Globalization.DateTimeStyles.None, out DateTimeOffset _value)
+                DateTimeHelper.TrySpecialParseExactDateTimeOffset(parameters[0], out DateTimeOffset _value)
             &&
-                TimeSpan.TryParse(parameters[1], out TimeSpan _durationValue)
+                Duration.TryParse(parameters[1], out Duration? _durationValue)
         )
         {
             return new DateTimeOffsetWithDurationOperator(_value, _durationValue);
@@ -291,7 +197,7 @@ public class DateTimeOffsetWithDurationOperator : OperatorValue
         }
     }
     
-    public static OperatorValue BuildFromString(string? _input)
+    public new static OperatorValue BuildFromString(string? _input)
     {
         if(_input == null)
         {

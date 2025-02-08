@@ -132,7 +132,7 @@ public class DateOperator : OperatorValue
 
         if(parameters[0] is not DateOperator)
         {
-            throw new ArgumentException("Cannot valueequal when the parameter is not a date.");
+            throw new ArgumentException("Cannot valueequal when the parameter is not a dateonly.");
         }
 
         DateOnly? _paramValue = ((DateOperator)parameters[0]).GetValue();
@@ -159,7 +159,7 @@ public class DateOperator : OperatorValue
 
         if(parameters[0] is not DateOperator)
         {
-            throw new ArgumentException("Cannot greaterorequal when the parameter is not a date.");
+            throw new ArgumentException("Cannot greaterorequal when the parameter is not a dateonly.");
         }
 
         DateOnly? _paramValue = ((DateOperator)parameters[0]).GetValue();
@@ -181,7 +181,7 @@ public class DateOperator : OperatorValue
 
         if(parameters[0] is not DateOperator)
         {
-            throw new ArgumentException("Cannot greaterthan when the parameter is not a date.");
+            throw new ArgumentException("Cannot greaterthan when the parameter is not a dateonly.");
         }
 
         DateOnly? _paramValue = ((DateOperator)parameters[0]).GetValue();
@@ -205,7 +205,7 @@ public class DateOperator : OperatorValue
 
             if(parameters[0] is not DateOperator)
             {
-                throw new ArgumentException("Cannot ifnotfilled when the parameter is not a date.");
+                throw new ArgumentException("Cannot ifnotfilled when the parameter is not a dateonly.");
             }
 
             return new DateOperator(((DateOperator)parameters[0]).GetValue());
@@ -248,7 +248,7 @@ public class DateOperator : OperatorValue
 
         if(parameters[0] is not DateOperator)
         {
-            throw new ArgumentException("Cannot lessorequal when the parameter is not a date.");
+            throw new ArgumentException("Cannot lessorequal when the parameter is not a dateonly.");
         }
 
         DateOnly? _paramValue = ((DateOperator)parameters[0]).GetValue();
@@ -270,7 +270,7 @@ public class DateOperator : OperatorValue
 
         if(parameters[0] is not DateOperator)
         {
-            throw new ArgumentException("Cannot lessthan when the parameter is not a date.");
+            throw new ArgumentException("Cannot lessthan when the parameter is not a dateonly.");
         }
 
         DateOnly? _paramValue = ((DateOperator)parameters[0]).GetValue();
@@ -337,7 +337,7 @@ public class DateOperator : OperatorValue
 
         if(parameters[0] is not DateOperator)
         {
-            throw new ArgumentException("Cannot notequal when the parameter is not a date.");
+            throw new ArgumentException("Cannot notequal when the parameter is not a dateonly.");
         }
 
         DateOnly? _paramValue = ((DateOperator)parameters[0]).GetValue();
@@ -377,6 +377,11 @@ public class DateOperator : OperatorValue
 
     public override string ToJsonStringValue()
     {
+        if(NullableValue == null)
+        {
+            return "null";
+        }
+
         return string.Format(
             "\"{0}\"",
             ToStringValue()

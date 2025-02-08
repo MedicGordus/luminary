@@ -380,7 +380,7 @@ public class BigIntegerOperator : OperatorValue
 
         BigInteger _toAverage = ((BigIntegerOperator)parameters[0]).GetValue() ?? throw new ArgumentException("Average value was not null but the GetValue unexpectedly returned null.");
 
-        return (NullableValue.Value + _toAverage) << 1;
+        return (NullableValue.Value + _toAverage) >> 1;
     }
 
     public override OperatorValue? MathAverage(OperatorValue[]? parameters)

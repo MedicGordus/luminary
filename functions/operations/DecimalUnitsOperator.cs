@@ -1,268 +1,503 @@
 
 namespace luminary.functions;
 
-public class DecimalUnitsOperator : OperatorValue
+public class DecimalUnitsOperator : DecimalOperator
 {
-    protected decimal? NullableValue;
     protected string? NullableUnits;
 
-    public DecimalUnitsOperator(decimal? nullableValue, string? nullableUnits) : base(OperatorValueType.DecimalUnits)
+    public string? GetUnits() => NullableUnits;
+
+    public DecimalUnitsOperator(decimal? nullableValue, string? nullableUnits) : base(nullableValue, OperatorValueType.DecimalUnits)
     {
-        NullableValue = nullableValue;
         NullableUnits = nullableUnits;
     }
 
-    public override OperatorValue? BooleanAnd(OperatorValue[]? parameters)
-    {
-        throw new NotImplementedException();
-    }
 
-    public override OperatorValue? BitwiseLeftShift(OperatorValue[]? parameters)
-    {
-        throw new NotImplementedException();
-    }
 
-    public override OperatorValue? BitwiseMod(OperatorValue[]? parameters)
-    {
-        throw new NotImplementedException();
-    }
-
-    public override OperatorValue? BitwiseRightShift(OperatorValue[]? parameters)
-    {
-        throw new NotImplementedException();
-    }
-
-    public override OperatorValue? BitwiseXor(OperatorValue[]? parameters)
-    {
-        throw new NotImplementedException();
-    }
-
-    public override OperatorValue? Concatenate(OperatorValue[]? parameters)
-    {
-        throw new NotImplementedException();
-    }
-
-    public override OperatorValue? ConvertToBigInteger(OperatorValue[]? parameters)
-    {
-        throw new NotImplementedException();
-    }
-
-    public override OperatorValue? ConvertToBigIntegerUnits(OperatorValue[]? parameters)
-    {
-        throw new NotImplementedException();
-    }
-
-    public override OperatorValue? ConvertToDecimal(OperatorValue[]? parameters)
-    {
-        throw new NotImplementedException();
-    }
-
-    public override OperatorValue? ConvertToDecimalUnits(OperatorValue[]? parameters)
-    {
-        throw new NotImplementedException();
-    }
-
-    public override OperatorValue? ConvertToDouble(OperatorValue[]? parameters)
-    {
-        throw new NotImplementedException();
-    }
-
-    public override OperatorValue? ConvertToDoubleUnits(OperatorValue[]? parameters)
-    {
-        throw new NotImplementedException();
-    }
-
-    public override OperatorValue? ConvertToInteger(OperatorValue[]? parameters)
-    {
-        throw new NotImplementedException();
-    }
-
-    public override OperatorValue? ConvertToIntegerUnits(OperatorValue[]? parameters)
-    {
-        throw new NotImplementedException();
-    }
-
-    public override OperatorValue? ConvertToString(OperatorValue[]? parameters)
-    {
-        throw new NotImplementedException();
-    }
-
-    public override OperatorValue? EndsWith(OperatorValue[]? parameters)
-    {
-        throw new NotImplementedException();
-    }
+#region "overloaded functions with unit checks"
 
     public override OperatorValue? ValueEqual(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
-    }
+        // this does the nullable checks, etc. for us, on top of retrieving the value
+        bool _parameterValue = base.InheritableValueEqual(parameters);
 
-    public override OperatorValue? Filled(OperatorValue[]? parameters)
-    {
-        throw new NotImplementedException();
+        if(parameters[0] is not DecimalUnitsOperator)
+        {
+            throw new ArgumentException("Cannot valueequal when the parameter is not a decimalunits.");
+        }
+
+        var _paramUnit = ((DecimalUnitsOperator)parameters[0]).NullableUnits;
+
+        if(_paramUnit != NullableUnits)
+        {
+            throw new ArgumentException(
+                string.Format(
+                    "Units mismatch, left '{0}', right '{1}'.",
+                    NullableUnits,
+                    _paramUnit
+                )
+            );
+        }
+        
+        return new BooleanOperator(
+            _parameterValue
+        );
     }
 
     public override OperatorValue? GreaterOrEqual(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
+        // this does the nullable checks, etc. for us, on top of retrieving the value
+        bool _parameterValue = base.InheritableGreaterOrEqual(parameters);
+
+        if(parameters[0] is not DecimalUnitsOperator)
+        {
+            throw new ArgumentException("Cannot greaterorequal when the parameter is not a decimalunits.");
+        }
+
+        var _paramUnit = ((DecimalUnitsOperator)parameters[0]).NullableUnits;
+
+        if(_paramUnit != NullableUnits)
+        {
+            throw new ArgumentException(
+                string.Format(
+                    "Units mismatch, left '{0}', right '{1}'.",
+                    NullableUnits,
+                    _paramUnit
+                )
+            );
+        }
+        
+        return new BooleanOperator(
+            _parameterValue
+        );
     }
 
     public override OperatorValue? GreatherThan(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
-    }
+        // this does the nullable checks, etc. for us, on top of retrieving the value
+        bool _parameterValue = base.InheritableGreatherThan(parameters);
 
-    public override OperatorValue? IfNotFilled(OperatorValue[]? parameters)
-    {
-        throw new NotImplementedException();
-    }
+        if(parameters[0] is not DecimalUnitsOperator)
+        {
+            throw new ArgumentException("Cannot greaterthan when the parameter is not a decimalunits.");
+        }
 
-    public override OperatorValue? Includes(OperatorValue[]? parameters)
-    {
-        throw new NotImplementedException();
-    }
+        var _paramUnit = ((DecimalUnitsOperator)parameters[0]).NullableUnits;
 
-    public override OperatorValue? IndexOf(OperatorValue[]? parameters)
-    {
-        throw new NotImplementedException();
-    }
-
-    public override OperatorValue? EqualsIgnoreCase(OperatorValue[]? parameters)
-    {
-        throw new NotImplementedException();
-    }
-
-    public override OperatorValue? Join(OperatorValue[]? parameters)
-    {
-        throw new NotImplementedException();
-    }
-
-    public override OperatorValue? Length(OperatorValue[]? parameters)
-    {
-        throw new NotImplementedException();
+        if(_paramUnit != NullableUnits)
+        {
+            throw new ArgumentException(
+                string.Format(
+                    "Units mismatch, left '{0}', right '{1}'.",
+                    NullableUnits,
+                    _paramUnit
+                )
+            );
+        }
+        
+        return new BooleanOperator(
+            _parameterValue
+        );
     }
 
     public override OperatorValue? LessOrEqual(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
+        // this does the nullable checks, etc. for us, on top of retrieving the value
+        bool _parameterValue = base.InheritableLessOrEqual(parameters);
+
+        if(parameters[0] is not DecimalUnitsOperator)
+        {
+            throw new ArgumentException("Cannot lessorequal when the parameter is not a decimalunits.");
+        }
+
+        var _paramUnit = ((DecimalUnitsOperator)parameters[0]).NullableUnits;
+
+        if(_paramUnit != NullableUnits)
+        {
+            throw new ArgumentException(
+                string.Format(
+                    "Units mismatch, left '{0}', right '{1}'.",
+                    NullableUnits,
+                    _paramUnit
+                )
+            );
+        }
+        
+        return new BooleanOperator(
+            _parameterValue
+        );
     }
 
     public override OperatorValue? LessThan(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
+        // this does the nullable checks, etc. for us, on top of retrieving the value
+        bool _parameterValue = base.InheritableLessThan(parameters);
+
+        if(parameters[0] is not DecimalUnitsOperator)
+        {
+            throw new ArgumentException("Cannot lessthan when the parameter is not a decimalunits.");
+        }
+
+        var _paramUnit = ((DecimalUnitsOperator)parameters[0]).NullableUnits;
+
+        if(_paramUnit != NullableUnits)
+        {
+            throw new ArgumentException(
+                string.Format(
+                    "Units mismatch, left '{0}', right '{1}'.",
+                    NullableUnits,
+                    _paramUnit
+                )
+            );
+        }
+        
+        return new BooleanOperator(
+            _parameterValue
+        );
     }
 
     public override OperatorValue? MathAdd(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
+        // this does the nullable checks, etc. for us, on top of retrieving the value
+        decimal _parameterValue = base.InheritableMathAdd(parameters);
+
+        if(parameters[0] is not DecimalUnitsOperator)
+        {
+            throw new ArgumentException("Cannot mathadd when the parameter is not a decimalunits.");
+        }
+
+        var _paramUnit = ((DecimalUnitsOperator)parameters[0]).NullableUnits;
+
+        if(_paramUnit != NullableUnits)
+        {
+            throw new ArgumentException(
+                string.Format(
+                    "Units mismatch, left '{0}', right '{1}'.",
+                    NullableUnits,
+                    _paramUnit
+                )
+            );
+        }
+        
+        return new DecimalUnitsOperator(
+            _parameterValue,
+            NullableUnits
+        );
     }
 
     public override OperatorValue? MathAverage(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
-    }
+        // this does the nullable checks, etc. for us, on top of retrieving the value
+        decimal _parameterValue = base.InheritableMathAverage(parameters);
 
-    public override OperatorValue? MathCeiling(OperatorValue[]? parameters)
-    {
-        throw new NotImplementedException();
+        if(parameters[0] is not DecimalUnitsOperator)
+        {
+            throw new ArgumentException("Cannot mathaverage when the parameter is not a decimalunits.");
+        }
+
+        var _paramUnit = ((DecimalUnitsOperator)parameters[0]).NullableUnits;
+
+        if(_paramUnit != NullableUnits)
+        {
+            throw new ArgumentException(
+                string.Format(
+                    "Units mismatch, left '{0}', right '{1}'.",
+                    NullableUnits,
+                    _paramUnit
+                )
+            );
+        }
+        
+        return new DecimalUnitsOperator(
+            _parameterValue,
+            NullableUnits
+        );
     }
 
     public override OperatorValue? MathDivide(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
-    }
+        // this does the nullable checks, etc. for us, on top of retrieving the value
+        decimal _parameterValue = base.InheritableMathDivide(parameters);
 
-    public override OperatorValue? MathFloor(OperatorValue[]? parameters)
-    {
-        throw new NotImplementedException();
+        if(parameters[0] is not DecimalUnitsOperator)
+        {
+            throw new ArgumentException("Cannot mathdivide when the parameter is not a decimalunits.");
+        }
+
+        var _paramUnit = ((DecimalUnitsOperator)parameters[0]).NullableUnits;
+
+        if(_paramUnit != NullableUnits)
+        {
+            throw new ArgumentException(
+                string.Format(
+                    "Units mismatch, left '{0}', right '{1}'.",
+                    NullableUnits,
+                    _paramUnit
+                )
+            );
+        }
+        
+        return new DecimalUnitsOperator(
+            _parameterValue,
+            NullableUnits
+        );
     }
 
     public override OperatorValue? MathMultiply(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
+        // this does the nullable checks, etc. for us, on top of retrieving the value
+        decimal _parameterValue = base.InheritableMathMultiply(parameters);
+
+        if(parameters[0] is not DecimalUnitsOperator)
+        {
+            throw new ArgumentException("Cannot mathmultiply when the parameter is not a decimalunits.");
+        }
+
+        var _paramUnit = ((DecimalUnitsOperator)parameters[0]).NullableUnits;
+
+        if(_paramUnit != NullableUnits)
+        {
+            throw new ArgumentException(
+                string.Format(
+                    "Units mismatch, left '{0}', right '{1}'.",
+                    NullableUnits,
+                    _paramUnit
+                )
+            );
+        }
+        
+        return new DecimalUnitsOperator(
+            _parameterValue,
+            NullableUnits
+        );
     }
 
     public override OperatorValue? MathPower(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
-    }
+        // this does the nullable checks, etc. for us, on top of retrieving the value
+        decimal _parameterValue = base.InheritableMathPower(parameters);
 
-    public override OperatorValue? MathRound(OperatorValue[]? parameters)
-    {
-        throw new NotImplementedException();
+        if(parameters[0] is not DecimalUnitsOperator)
+        {
+            throw new ArgumentException("Cannot mathpower when the parameter is not a decimalunits.");
+        }
+
+        var _paramUnit = ((DecimalUnitsOperator)parameters[0]).NullableUnits;
+
+        if(_paramUnit != NullableUnits)
+        {
+            throw new ArgumentException(
+                string.Format(
+                    "Units mismatch, left '{0}', right '{1}'.",
+                    NullableUnits,
+                    _paramUnit
+                )
+            );
+        }
+        
+        return new DecimalUnitsOperator(
+            _parameterValue,
+            NullableUnits
+        );
     }
 
     public override OperatorValue? MathSubtract(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
+        // this does the nullable checks, etc. for us, on top of retrieving the value
+        decimal _parameterValue = base.InheritableMathSubtract(parameters);
+
+        if(parameters[0] is not DecimalUnitsOperator)
+        {
+            throw new ArgumentException("Cannot mathsubtract when the parameter is not a decimalunits.");
+        }
+
+        var _paramUnit = ((DecimalUnitsOperator)parameters[0]).NullableUnits;
+
+        if(_paramUnit != NullableUnits)
+        {
+            throw new ArgumentException(
+                string.Format(
+                    "Units mismatch, left '{0}', right '{1}'.",
+                    NullableUnits,
+                    _paramUnit
+                )
+            );
+        }
+        
+        return new DecimalUnitsOperator(
+            _parameterValue,
+            NullableUnits
+        );
+    }
+
+    public override OperatorValue? MathCeiling(OperatorValue[]? parameters)
+    {
+        // this does the nullable checks, etc. for us, on top of retrieving the value
+        decimal _parameterValue = base.InheritableMathCeiling(parameters);
+
+        if(parameters[0] is not DecimalUnitsOperator)
+        {
+            throw new ArgumentException("Cannot mathceiling when the parameter is not a decimalunits.");
+        }
+
+        var _paramUnit = ((DecimalUnitsOperator)parameters[0]).NullableUnits;
+
+        if(_paramUnit != NullableUnits)
+        {
+            throw new ArgumentException(
+                string.Format(
+                    "Units mismatch, left '{0}', right '{1}'.",
+                    NullableUnits,
+                    _paramUnit
+                )
+            );
+        }
+        
+        return new DecimalUnitsOperator(
+            _parameterValue,
+            NullableUnits
+        );
+    }
+
+    public override OperatorValue? MathFloor(OperatorValue[]? parameters)
+    {
+        // this does the nullable checks, etc. for us, on top of retrieving the value
+        decimal _parameterValue = base.InheritableMathFloor(parameters);
+
+        if(parameters[0] is not DecimalUnitsOperator)
+        {
+            throw new ArgumentException("Cannot mathfloor when the parameter is not a decimalunits.");
+        }
+
+        var _paramUnit = ((DecimalUnitsOperator)parameters[0]).NullableUnits;
+
+        if(_paramUnit != NullableUnits)
+        {
+            throw new ArgumentException(
+                string.Format(
+                    "Units mismatch, left '{0}', right '{1}'.",
+                    NullableUnits,
+                    _paramUnit
+                )
+            );
+        }
+        
+        return new DecimalUnitsOperator(
+            _parameterValue,
+            NullableUnits
+        );
+    }
+
+    public override OperatorValue? MathRound(OperatorValue[]? parameters)
+    {
+        // this does the nullable checks, etc. for us, on top of retrieving the value
+        decimal _parameterValue = base.InheritableMathRound(parameters);
+
+        if(parameters[0] is not DecimalUnitsOperator)
+        {
+            throw new ArgumentException("Cannot mathround when the parameter is not a decimalunits.");
+        }
+
+        var _paramUnit = ((DecimalUnitsOperator)parameters[0]).NullableUnits;
+
+        if(_paramUnit != NullableUnits)
+        {
+            throw new ArgumentException(
+                string.Format(
+                    "Units mismatch, left '{0}', right '{1}'.",
+                    NullableUnits,
+                    _paramUnit
+                )
+            );
+        }
+        
+        return new DecimalUnitsOperator(
+            _parameterValue,
+            NullableUnits
+        );
     }
 
     public override OperatorValue? NotEqual(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
+        // this does the nullable checks, etc. for us, on top of retrieving the value
+        bool _parameterValue = base.InheritableNotEqual(parameters);
+
+        if(parameters[0] is not DecimalUnitsOperator)
+        {
+            throw new ArgumentException("Cannot notequal when the parameter is not a decimalunits.");
+        }
+
+        var _paramUnit = ((DecimalUnitsOperator)parameters[0]).NullableUnits;
+        
+        return new BooleanOperator(_parameterValue | (_paramUnit != NullableUnits));
     }
 
-    public override OperatorValue? BooleanOr(OperatorValue[]? parameters)
+#endregion
+    
+    public override OperatorValue? Filled(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
+        return new BooleanOperator(NullableValue != null & NullableUnits != null);
     }
 
-    public override OperatorValue? Replace(OperatorValue[]? parameters)
+    public override OperatorValue? ConvertToBigIntegerUnits(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
+        todo("do we make a base call to biginteger functions or build it out here?");
     }
 
-    public override OperatorValue? Split(OperatorValue[]? parameters)
+    public override OperatorValue? ConvertToDecimalUnits(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
+        return new DecimalUnitsOperator(NullableValue, NullableUnits);
     }
 
-    public override OperatorValue? StartsWith(OperatorValue[]? parameters)
+    public override OperatorValue? ConvertToDoubleUnits(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
+        todo("do we make a base call to double functions or build it out here?");
     }
 
-    public override OperatorValue? Substring(OperatorValue[]? parameters)
+    public override OperatorValue? ConvertToIntegerUnits(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
+        todo("do we make a base call to integer functions or build it out here?");
     }
 
+    public override OperatorValue? ConvertToString(OperatorValue[]? parameters)
+    {
+        return StringOperator.BuildFromString(
+            string.Format(
+                "{0} {1}",
+                NullableValue,
+                NullableUnits
+            )
+        );
+    }
+
+    public override OperatorValue? IfNotFilled(OperatorValue[]? parameters)
+    {
+        if(NullableValue != null && NullableUnits != null)
+        {
+            return new DecimalUnitsOperator(NullableValue, NullableUnits);
+        }
+
+        if(parameters == null || parameters.Length == 0)
+        {
+            throw new ArgumentException("parameters null or parameter missing. Cannot execute ifnotfilled.");
+        }
+
+        return parameters[0];
+    }
+    
     public override string ToJsonStringValue()
     {
-        throw new NotImplementedException();
-    }
-
-    public override OperatorValue? ToLower(OperatorValue[]? parameters)
-    {
-        throw new NotImplementedException();
-    }
-
-    public override OperatorValue? ToUpper(OperatorValue[]? parameters)
-    {
-        throw new NotImplementedException();
-    }
-
-    public override OperatorValue? Trim(OperatorValue[]? parameters)
-    {
-        throw new NotImplementedException();
-    }
-
-    public override OperatorValue? BooleanNot(OperatorValue[]? parameters)
-    {
-        throw new NotImplementedException();
     }
 
     public override string ToStringValue()
     {
-        throw new NotImplementedException();
     }
 
     public override void SetValue(OperatorValue value)
     {
-        throw new NotImplementedException();
     }
     
-    public static OperatorValue BuildFromParameters(string[] parameters)
+    public new static OperatorValue BuildFromParameters(string[] parameters)
     {
         if(parameters == null || parameters.Length == 0)
         {
@@ -272,7 +507,7 @@ public class DecimalUnitsOperator : OperatorValue
         return BuildFromString(parameters[0]);
     }
     
-    public static OperatorValue BuildFromString(string? _input)
+    public new static OperatorValue BuildFromString(string? _input)
     {
         if(_input == null)
         {
