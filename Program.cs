@@ -16,6 +16,8 @@ class Program
 {
     static void Main(string[] args)
     {
+        todo("now that we have a custom Duration, we need to allow math add/subtract on all date and datetimes (not time since there are leap seconds)");
+
         //// test mapper usage
         //
         var _config = new MappingConfig(

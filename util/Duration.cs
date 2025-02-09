@@ -1,5 +1,6 @@
 
 
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace luminary;
@@ -157,6 +158,20 @@ public class Duration
 #endregion
 
 #region "operators"
+    protected static bool AllValuesEqual(Duration _left, Duration _right)
+    {
+        bool _yearsMatch = _left.Years == _right.Years;
+        bool _monthsMatch = _left.Months == _right.Months;
+        bool _weeksMatch = _left.Weeks == _right.Weeks;
+        bool _daysMatch = _left.Days == _right.Days;
+        bool _hoursMatch = _left.Hours == _right.Hours;
+        bool _minutesMatch = _left.Minutes == _right.Minutes;
+        bool _secondsMatch = _left.Seconds == _right.Seconds;
+        bool _nanosecondsMatch = _left.Nanoseconds == _right.Nanoseconds;
+
+        return _yearsMatch & _monthsMatch & _weeksMatch & _daysMatch & _hoursMatch & _minutesMatch & _secondsMatch & _nanosecondsMatch;
+    }
+
     public static bool operator ==(Duration? _left, Duration? _right)
     {
         if(_left == null)
@@ -173,9 +188,21 @@ public class Duration
             return false;
         }
 
+        // performs a check if both right and left only have one parameter set
+        if(DurationsSingleValueComparable(_left, _right, out ComparableResult _difference))
+        {
+            return _difference == ComparableResult.LeftEqualToRight;
+        }
+
         if(!DurationsComparable(_left, _right))
         {
             throw new ArgumentException("Cannot compare the two durations with their designated field values since leap years and leap seconds exist.");
+        }
+
+        // if by random chance, all fields are equal, we can return that they are equal
+        if(AllValuesEqual(_left, _right))
+        {
+            return true;
         }
 
         // at this point, the left and right have:
@@ -204,6 +231,12 @@ public class Duration
             return true;
         }
 
+        // performs a check if both right and left only have one parameter set
+        if(DurationsSingleValueComparable(_left, _right, out ComparableResult _difference))
+        {
+            return _difference != ComparableResult.LeftEqualToRight;
+        }
+
         if(!DurationsComparable(_left, _right))
         {
             throw new ArgumentException("Cannot compare the two durations with their designated field values since leap years and leap seconds exist.");
@@ -219,8 +252,143 @@ public class Duration
         return _leftNanoseconds != _rightNanoseconds;
     }
 
-    public static bool operator >(Duration _left, Duration _right)
+    protected enum ComparableResult : int
     {
+        z_error = 0,
+        LeftLessThanRight = 1,
+        LeftEqualToRight = 2,
+        LeftGreaterThanRight = 3,
+    }
+
+    /// <summary>
+    /// This is a specialized function that checks if _left and _right both
+    ///     onlyhave one parameter, then returns the difference via a
+    ///     ComparableResult.
+    /// </summary>
+    /// <param name="_left">The left parameter to check.</param>
+    /// <param name="_right">The right parameter to check.</param>
+    /// <param name="_difference">See ComparableResult enumerator.</param>
+    /// <returns>True of there is only one value to compare on _left and _right, otherwise false.</returns>
+    protected static bool DurationsSingleValueComparable(Duration _left, Duration _right, out ComparableResult _difference)
+    {
+        // first ensure that the left nulls are the same as the right nulls
+        if(
+            !(
+                YearsComparible(_left, _right)
+            &
+                MonthsComparible(_left, _right)
+            &
+                WeeksComparible(_left, _right)
+            &
+                DaysComparible(_left, _right)
+            &
+                HoursComparible(_left, _right)
+            &
+                MinutesComparible(_left, _right)
+            &
+                SecondsComparible(_left, _right)
+            &
+                NanosecondsComparible(_left, _right)
+            )
+        )
+        {
+            // one of the parameters was null on left or right and not on the other
+            _difference = ComparableResult.z_error;
+            return false;
+        }
+
+        //// at this point we know left and right null matches, so count and check the ones on the left
+        //
+        bool _yearsNull = _left.Years == null;
+        bool _monthsNull = _left.Months == null;
+        bool _weeksNull = _left.Weeks == null;
+        bool _daysNull = _left.Days == null;
+        bool _hoursNull = _left.Hours == null;
+        bool _minutesNull = _left.Minutes == null;
+        bool _secondsNull = _left.Seconds == null;
+        bool _nanosecondsNull = _left.Nanoseconds == null;
+        //
+        int _nullCount = 
+                (_yearsNull ? 1 : 0)
+            +
+                (_monthsNull ? 1 : 0)
+            +
+                (_weeksNull ? 1 : 0)
+            +
+                (_daysNull ? 1 : 0)
+            +
+                (_hoursNull ? 1 : 0)
+            +
+                (_minutesNull ? 1 : 0)
+            +
+                (_secondsNull ? 1 : 0)
+            +
+                (_nanosecondsNull ? 1 : 0)
+        ;
+        //
+        if(_nullCount != 7)
+        {
+            // more than one parameter is not null, so we cannot compare a single one of them
+            _difference = ComparableResult.z_error;
+            return false;
+        }
+        //
+        ////
+
+        // now we return the comparible result based on which one is not null
+        if(_yearsNull == false)
+        {
+            _difference = _left.Years < _right.Years ? ComparableResult.LeftLessThanRight : (_left.Years == _right.Years ? ComparableResult.LeftEqualToRight : ComparableResult.LeftGreaterThanRight);
+        }
+        else if(_monthsNull == false)
+        {
+            _difference = _left.Months < _right.Months ? ComparableResult.LeftLessThanRight : (_left.Years == _right.Years ? ComparableResult.LeftEqualToRight : ComparableResult.LeftGreaterThanRight);
+        }
+        else if(_weeksNull == false)
+        {
+            _difference = _left.Weeks < _right.Weeks ? ComparableResult.LeftLessThanRight : (_left.Weeks == _right.Weeks ? ComparableResult.LeftEqualToRight : ComparableResult.LeftGreaterThanRight);
+        }
+        else if(_daysNull == false)
+        {
+            _difference = _left.Days < _right.Days ? ComparableResult.LeftLessThanRight : (_left.Days == _right.Days ? ComparableResult.LeftEqualToRight : ComparableResult.LeftGreaterThanRight);
+        }
+        else if(_hoursNull == false)
+        {
+            _difference = _left.Hours < _right.Hours ? ComparableResult.LeftLessThanRight : (_left.Hours == _right.Hours ? ComparableResult.LeftEqualToRight : ComparableResult.LeftGreaterThanRight);
+        }
+        else if(_minutesNull == false)
+        {
+            _difference = _left.Minutes < _right.Minutes ? ComparableResult.LeftLessThanRight : (_left.Minutes == _right.Minutes ? ComparableResult.LeftEqualToRight : ComparableResult.LeftGreaterThanRight);
+        }
+        else if(_secondsNull == false)
+        {
+            _difference = _left.Seconds < _right.Seconds ? ComparableResult.LeftLessThanRight : (_left.Seconds == _right.Seconds ? ComparableResult.LeftEqualToRight : ComparableResult.LeftGreaterThanRight);
+        }
+        else if(_nanosecondsNull == false)
+        {
+            _difference = _left.Nanoseconds < _right.Nanoseconds ? ComparableResult.LeftLessThanRight : (_left.Nanoseconds == _right.Nanoseconds ? ComparableResult.LeftEqualToRight : ComparableResult.LeftGreaterThanRight);
+        }
+        else
+        {
+            throw new Exception("It is logically impossible to get to this error.");
+        }
+
+        return true;
+    }
+
+    public static bool operator >(Duration? _left, Duration? _right)
+    {
+        if(_left == null || _right == null)
+        {
+            throw new ArgumentException("Cannot compare the two durations when one or both are null.");
+        }
+
+        // performs a check if both right and left only have one parameter set
+        if(DurationsSingleValueComparable(_left, _right, out ComparableResult _difference))
+        {
+            return _difference == ComparableResult.LeftGreaterThanRight;
+        }
+
         if(!DurationsComparable(_left, _right))
         {
             throw new ArgumentException("Cannot compare the two durations with their designated field values since leap years and leap seconds exist.");
@@ -236,8 +404,19 @@ public class Duration
         return _leftNanoseconds > _rightNanoseconds;
     }
     
-    public static bool operator >=(Duration _left, Duration _right)
+    public static bool operator >=(Duration? _left, Duration? _right)
     {
+        if(_left == null || _right == null)
+        {
+            throw new ArgumentException("Cannot compare the two durations when one or both are null.");
+        }
+
+        // performs a check if both right and left only have one parameter set
+        if(DurationsSingleValueComparable(_left, _right, out ComparableResult _difference))
+        {
+            return (_difference == ComparableResult.LeftGreaterThanRight) || (_difference == ComparableResult.LeftEqualToRight);
+        }
+
         if(!DurationsComparable(_left, _right))
         {
             throw new ArgumentException("Cannot compare the two durations with their designated field values since leap years and leap seconds exist.");
@@ -253,8 +432,19 @@ public class Duration
         return _leftNanoseconds >= _rightNanoseconds;
     }
 
-    public static bool operator <(Duration _left, Duration _right)
+    public static bool operator <(Duration? _left, Duration? _right)
     {
+        if(_left == null || _right == null)
+        {
+            throw new ArgumentException("Cannot compare the two durations when one or both are null.");
+        }
+
+        // performs a check if both right and left only have one parameter set
+        if(DurationsSingleValueComparable(_left, _right, out ComparableResult _difference))
+        {
+            return _difference == ComparableResult.LeftLessThanRight;
+        }
+
         if(!DurationsComparable(_left, _right))
         {
             throw new ArgumentException("Cannot compare the two durations with their designated field values since leap years and leap seconds exist.");
@@ -270,8 +460,19 @@ public class Duration
         return _leftNanoseconds < _rightNanoseconds;
     }
 
-    public static bool operator <=(Duration _left, Duration _right)
+    public static bool operator <=(Duration? _left, Duration? _right)
     {
+        if(_left == null || _right == null)
+        {
+            throw new ArgumentException("Cannot compare the two durations when one or both are null.");
+        }
+
+        // performs a check if both right and left only have one parameter set
+        if(DurationsSingleValueComparable(_left, _right, out ComparableResult _difference))
+        {
+            return (_difference == ComparableResult.LeftLessThanRight) || (_difference == ComparableResult.LeftEqualToRight);
+        }
+        
         if(!DurationsComparable(_left, _right))
         {
             throw new ArgumentException("Cannot compare the two durations with their designated field values since leap years and leap seconds exist.");
@@ -463,6 +664,71 @@ public class Duration
         }
      }
 
+    public override string ToString()
+    {
+        var sb = new StringBuilder();
+
+        sb.Append('P');
+        if(Years.HasValue && Years.Value != 0d)
+        {
+            sb.Append(Years.Value);
+            sb.Append('Y');
+        }
+        if(Months.HasValue && Months.Value != 0d)
+        {
+            sb.Append(Months.Value);
+            sb.Append('M');
+        }
+        if(Weeks.HasValue && Weeks.Value != 0d)
+        {
+            sb.Append(Weeks.Value);
+            sb.Append('W');
+        }
+        if(Days.HasValue && Days.Value != 0d)
+        {
+            sb.Append(Days.Value);
+            sb.Append('D');
+        }
+
+        if(Hours.HasValue | Minutes.HasValue | Seconds.HasValue | Nanoseconds.HasValue)
+        {
+            sb.Append('T');
+            if(Hours.HasValue && Hours.Value != 0d)
+            {
+                sb.Append(Hours.Value);
+                sb.Append('H');
+            }
+            if(Minutes.HasValue && Minutes.Value != 0d)
+            {
+                sb.Append(Minutes.Value);
+                sb.Append('M');
+            }
+            
+            // if we have whole or partial seconds we need to add the "S" part
+            if((Seconds.HasValue && Seconds.Value != 0) | (Nanoseconds.HasValue && Nanoseconds.Value != 0))
+            {
+                if(Seconds.HasValue)
+                {
+                    sb.Append(Seconds.Value);                    
+                }
+                else
+                {
+                    // seconds is null: to get here nanoseconds has to not be null, so we add '0'
+                    sb.Append('0');
+                }
+
+                if(Nanoseconds.HasValue && Nanoseconds.Value != 0)
+                {
+                    sb.Append('.');
+                    var nanoSecondsString = Nanoseconds.Value.ToString().PadLeft(9, '0');
+                    sb.Append(nanoSecondsString);
+                }
+                sb.Append('S');
+            }
+        }
+
+        return sb.ToString();
+    }
 
 #region "these are literally here purely to suppress compiler errors lol"
 

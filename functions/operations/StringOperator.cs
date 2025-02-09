@@ -529,14 +529,14 @@ public class StringOperator : OperatorValue
         return NullableValue;
     }
 
-    public override void SetValue(OperatorValue source)
+    public override void SetValue(OperatorValue _source)
     {
-        if(source is not StringOperator)
+        if(_source is not StringOperator)
         {
             throw new ArgumentException("Source OperatorValue wrong type, cannot set value.");
         }
 
-        NullableValue = ((StringOperator)source).NullableValue;
+        NullableValue = ((StringOperator)_source).NullableValue;
     }
 
     public static OperatorValue BuildFromParameters(string[] parameters)
