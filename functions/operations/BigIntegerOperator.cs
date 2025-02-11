@@ -203,7 +203,7 @@ public class BigIntegerOperator : OperatorValue
             throw new ArgumentException("Cannot valueequal when the parameter is not a biginteger.");
         }
 
-        return NullableValue.Equals(((BigIntegerOperator)parameters[0]).NullableValue);
+        return NullableValue.Value == ((BigIntegerOperator)parameters[0]).NullableValue;
     }
 
     public override OperatorValue? ValueEqual(OperatorValue[]? parameters)
@@ -503,7 +503,7 @@ public class BigIntegerOperator : OperatorValue
             throw new ArgumentException("Cannot notequal when the parameter is not a biginteger.");
         }
 
-        return !NullableValue.Equals(((BigIntegerOperator)parameters[0]).NullableValue);
+        return NullableValue.Value != ((BigIntegerOperator)parameters[0]).NullableValue;
     }
 
     public override OperatorValue? NotEqual(OperatorValue[]? parameters)

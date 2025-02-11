@@ -143,7 +143,7 @@ public class DateTimeOffsetOperator : OperatorValue
             throw new ArgumentException("Cannot valueequal when the parameter is null.");
         }
 
-        return NullableValue.Value.Equals(_paramValue.Value);
+        return NullableValue.Value == _paramValue.Value;
     }
 
     public override OperatorValue? ValueEqual(OperatorValue[]? parameters)
@@ -291,7 +291,7 @@ public class DateTimeOffsetOperator : OperatorValue
 
     public override OperatorValue? MathAdd(OperatorValue[]? parameters)
     {
-        throw new InvalidOperationException();
+        return MathAddOrSubtract(parameters, true);
     }
 
     public override OperatorValue? MathAverage(OperatorValue[]? parameters)
@@ -331,7 +331,7 @@ public class DateTimeOffsetOperator : OperatorValue
 
     public override OperatorValue? MathSubtract(OperatorValue[]? parameters)
     {
-        throw new InvalidOperationException();
+        return MathAddOrSubtract(parameters, false);
     }
 
     protected bool InheritableNotEqual(OperatorValue[]? parameters)
@@ -469,5 +469,43 @@ public class DateTimeOffsetOperator : OperatorValue
                 )
             );
         }
+    }    
+    protected OperatorValue?  MathAddOrSubtract(OperatorValue[]? parameters, bool _adding)
+    {
+        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        {
+            throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute mathaddorsubtract.");
+        }
+
+        if(parameters[0] is not DurationOperator)
+        {
+            throw new ArgumentException("Cannot mathaddorsubtract when the parameter is not a duration.");
+        }
+
+        Duration? _paramValue = ((DurationOperator)parameters[0]).GetValue();
+
+        if(_paramValue == null)
+        {
+            throw new ArgumentException("Cannot mathaddorsubtract when the parameter is null.");
+        }
+
+
+        DateTimeOffset _dto;
+        if(_adding)
+        {
+            _dto = _paramValue.AddToDateTimeOffset(
+                NullableValue.Value
+            );
+        }
+        else
+        {
+            _dto = _paramValue.SubtractFromDateTimeOffset(
+                NullableValue.Value
+            );
+        }
+
+        return new DateTimeOffsetOperator(
+            _dto
+        );
     }
 }

@@ -106,7 +106,7 @@ public class DecimalOperator : OperatorValue
             throw new ArgumentException("Cannot valueequal when the parameter is not a decimal.");
         }
 
-        return NullableValue.Equals(((DecimalOperator)parameters[0]).NullableValue);
+        return NullableValue.Value == ((DecimalOperator)parameters[0]).NullableValue;
     }
 
     public override OperatorValue? ValueEqual(OperatorValue[]? parameters)
@@ -448,7 +448,7 @@ public class DecimalOperator : OperatorValue
             throw new ArgumentException("Cannot notequal when the parameter is not a decimal.");
         }
 
-        return !NullableValue.Equals(((DecimalOperator)parameters[0]).NullableValue);
+        return NullableValue.Value == ((DecimalOperator)parameters[0]).NullableValue;
     }
 
     public override OperatorValue? NotEqual(OperatorValue[]? parameters)

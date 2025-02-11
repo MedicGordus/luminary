@@ -1,4 +1,6 @@
 
+using System.Numerics;
+
 namespace luminary.functions;
 
 public class DecimalUnitsOperator : DecimalOperator
@@ -441,7 +443,17 @@ public class DecimalUnitsOperator : DecimalOperator
 
     public override OperatorValue? ConvertToBigIntegerUnits(OperatorValue[]? parameters)
     {
-        todo("do we make a base call to biginteger functions or build it out here?");
+        if(NullableValue == null)
+        {
+            throw new ArgumentException("Value null. Cannot execute the numeric conversion.");
+        }
+
+        if(BigInteger.TryParse(NullableValue.Value.ToString(), out var _value))
+        {
+            return new BigIntegerUnitsOperator(_value, NullableUnits);
+        }
+
+        throw new Exception("Number conversion via parse failed.");
     }
 
     public override OperatorValue? ConvertToDecimalUnits(OperatorValue[]? parameters)
@@ -451,12 +463,32 @@ public class DecimalUnitsOperator : DecimalOperator
 
     public override OperatorValue? ConvertToDoubleUnits(OperatorValue[]? parameters)
     {
-        todo("do we make a base call to double functions or build it out here?");
+        if(NullableValue == null)
+        {
+            throw new ArgumentException("Value null. Cannot execute the numeric conversion.");
+        }
+
+        if(double.TryParse(NullableValue.Value.ToString(), out var _value))
+        {
+            return new DoubleUnitsOperator(_value, NullableUnits);
+        }
+
+        throw new Exception("Number conversion via parse failed.");
     }
 
     public override OperatorValue? ConvertToIntegerUnits(OperatorValue[]? parameters)
     {
-        todo("do we make a base call to integer functions or build it out here?");
+        if(NullableValue == null)
+        {
+            throw new ArgumentException("Value null. Cannot execute the numeric conversion.");
+        }
+
+        if(int.TryParse(NullableValue.Value.ToString(), out var _value))
+        {
+            return new IntegerUnitsOperator(_value, NullableUnits);
+        }
+
+        throw new Exception("Number conversion via parse failed.");
     }
 
     public override OperatorValue? ConvertToString(OperatorValue[]? parameters)
@@ -516,12 +548,32 @@ public class DecimalUnitsOperator : DecimalOperator
         NullableValue = ((DecimalUnitsOperator)_source).NullableValue;
         NullableUnits = ((DecimalUnitsOperator)_source).NullableUnits;
     }
-    
+
     public override string ToJsonStringValue()
     {
+        if(NullableValue == null || NullableUnits == null)
+        {
+            return "null";
+        }
+
+        return string.Format(
+            "\"{0} {1}\"",
+            NullableValue.Value.ToString(),
+            NullableUnits.ToString()
+        );
     }
 
     public override string ToStringValue()
     {
+        if(NullableValue == null || NullableUnits == null)
+        {
+            throw new ArgumentException("Value null and/or units null. Cannot execute tostringvalue.");
+        }
+
+        return string.Format(
+            "{0} {1}",
+            NullableValue.Value.ToString(),
+            NullableUnits.ToString()
+        );
     }
 }

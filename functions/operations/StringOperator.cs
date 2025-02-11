@@ -239,7 +239,7 @@ public class StringOperator : OperatorValue
             return new BooleanOperator(parameters[0].ToStringValue() == null);
         }
 
-        return new BooleanOperator(NullableValue.Equals(parameters[0].ToStringValue()));
+        return new BooleanOperator(NullableValue == parameters[0].ToStringValue());
     }
 
     public override OperatorValue? Filled(OperatorValue[]? parameters)
@@ -305,7 +305,7 @@ public class StringOperator : OperatorValue
             return new BooleanOperator(parameters[0].ToStringValue() == null);
         }
 
-        return new BooleanOperator(NullableValue.ToLower().Equals(parameters[0].ToStringValue().ToLower()));
+        return new BooleanOperator(NullableValue.ToLower() == parameters[0].ToStringValue().ToLower());
     }
 
     public override OperatorValue? Join(OperatorValue[]? parameters)
@@ -392,7 +392,7 @@ public class StringOperator : OperatorValue
             return new BooleanOperator(parameters[0].ToStringValue() != null);
         }
 
-        return new BooleanOperator(!NullableValue.Equals(parameters[0].ToStringValue()));
+        return new BooleanOperator(NullableValue != parameters[0].ToStringValue());
     }
 
     public override OperatorValue? BooleanOr(OperatorValue[]? parameters)

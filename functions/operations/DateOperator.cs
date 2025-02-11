@@ -142,7 +142,7 @@ public class DateOperator : OperatorValue
             throw new ArgumentException("Cannot valueequal when the parameter is null.");
         }
 
-        return new BooleanOperator(NullableValue.Value.Equals(_paramValue.Value));
+        return new BooleanOperator(NullableValue.Value == _paramValue.Value);
     }
 
     public override OperatorValue? Filled(OperatorValue[]? parameters)
@@ -285,7 +285,7 @@ public class DateOperator : OperatorValue
 
     public override OperatorValue? MathAdd(OperatorValue[]? parameters)
     {
-        throw new InvalidOperationException();
+        return MathAddOrSubtract(parameters, true);
     }
 
     public override OperatorValue? MathAverage(OperatorValue[]? parameters)
@@ -325,7 +325,7 @@ public class DateOperator : OperatorValue
 
     public override OperatorValue? MathSubtract(OperatorValue[]? parameters)
     {
-        throw new InvalidOperationException();
+        return MathAddOrSubtract(parameters, false);
     }
 
     public override OperatorValue? NotEqual(OperatorValue[]? parameters)
@@ -458,5 +458,107 @@ public class DateOperator : OperatorValue
                 )
             );
         }
+    }
+        
+    protected OperatorValue?  MathAddOrSubtract(OperatorValue[]? parameters, bool _adding)
+    {
+        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        {
+            throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute mathadd.");
+        }
+
+        if(parameters[0] is not DurationOperator)
+        {
+            throw new ArgumentException("Cannot mathadd when the parameter is not a duration.");
+        }
+
+        Duration? _paramValue = ((DurationOperator)parameters[0]).GetValue();
+
+        if(_paramValue == null)
+        {
+            throw new ArgumentException("Cannot mathadd when the parameter is null.");
+        }
+
+        Duration.DurationParts _parts = _paramValue.GetParts();
+        if(_parts.HasFlag(Duration.DurationParts.ContainstTimePortion))
+        {
+            // this is a dateonly, but we are adding a duration with time.
+            //  because time parts differ in size that are minute or longer
+            //  due to leap seconds, leap years, etc, we need a fixed date
+            //  to accurately calculate the addition.
+            
+            if(parameters.Length < 2 || parameters[1] == null)
+            {
+                throw new ArgumentException("Parameter null or parameter missing. Cannot execute mathaddorsubtract.");
+            }
+
+            if(parameters[1] is not DurationOperator)
+            {
+                throw new ArgumentException("Cannot mathaddorsubtract when the second parameter is not a duration.");
+            }
+
+            // collect the timezone offset
+            Duration? _param2Value = ((DurationOperator)parameters[1]).GetValue();
+            if(_param2Value == null)
+            {
+                throw new ArgumentException("Cannot mathaddorsubtract when the duration parameter is null.");
+            }
+
+            DateTimeOffset _dto;
+            if(_adding)
+            {
+                _dto = _paramValue.AddToDateTimeOffset(
+                    new DateTimeOffset(
+                        NullableValue.Value.Year,
+                        NullableValue.Value.Month,
+                        NullableValue.Value.Day,
+                        0,
+                        0,
+                        0,
+                        _param2Value.ConvertToTimeSpan()
+                    )
+                );
+            }
+            else
+            {
+                _dto = _paramValue.SubtractFromDateTimeOffset(
+                    new DateTimeOffset(
+                        NullableValue.Value.Year,
+                        NullableValue.Value.Month,
+                        NullableValue.Value.Day,
+                        0,
+                        0,
+                        0,
+                        _param2Value.ConvertToTimeSpan()
+                    )
+                );
+            }
+
+            return new DateTimeOffsetOperator(
+                _dto
+            );
+        }
+        else if(_parts.HasFlag(Duration.DurationParts.ContainsDatePortion))
+        {   
+            DateOnly _do;
+            if(_adding)
+            {
+                _do = _paramValue.AddToDateOnly(
+                    NullableValue.Value
+                );
+            }
+            else
+            {
+                _do = _paramValue.SubtractFromDateOnly(
+                    NullableValue.Value
+                );
+            }
+            return new DateOperator(
+                _do
+            );
+        }
+
+        // at this point, the duration is null which shouldn't be possible
+        throw new Exception("Unable to mathadd as the parts appeared to be null which logically isn't possible.");
     }
 }

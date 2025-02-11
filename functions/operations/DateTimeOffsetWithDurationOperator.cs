@@ -220,4 +220,14 @@ public class DateTimeOffsetWithDurationOperator : DateTimeOffsetOperator
 
         return BuildFromParameters([ _dtzValue, _dtzDuration ]);
     }
+
+    public override OperatorValue? MathAdd(OperatorValue[]? parameters)
+    {
+        throw new InvalidOperationException();
+    }
+
+    public override OperatorValue? MathSubtract(OperatorValue[]? parameters)
+    {
+        throw new InvalidOperationException();
+    }
 }

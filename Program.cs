@@ -16,8 +16,6 @@ class Program
 {
     static void Main(string[] args)
     {
-        Console.WriteLine("now that we have a custom Duration, we need to allow math add/subtract on all date and datetimes (not time since there are leap seconds)");
-
         //// test mapper usage
         //
         var _config = new MappingConfig(
@@ -77,8 +75,58 @@ class Program
                             Step = 1,
                             StepActions = new List<ParameterMapJson> {
                                 new ParameterMapJson() {
-                                    Function = "converttostring('1'.'Length')",
+                                    Function = "tostring('1'.'Length')",
                                     OutputParameter = "'LengthString'"
+                                }
+                            }
+                        }
+                    )
+                },
+                {
+                    2,
+                    new MappingStepConfig(
+                        new MappingStepJson() {
+                            OutputPrismSchema = 
+                                "{" +
+                                    "\"type\":\"object\"," +
+                                    "\"properties\":" +
+                                    "{" +
+                                        "\"Length\":" +
+                                        "{" +
+                                            "\"type\":\"integer\"" +
+                                        "}" +
+                                    "}" +
+                                "}",
+                            Step = 1,
+                            StepActions = new List<ParameterMapJson> {
+                                new ParameterMapJson() {
+                                    Function = "length('2'.'LengthString')",
+                                    OutputParameter = "'Length'"
+                                }
+                            }
+                        }
+                    )
+                },
+                {
+                    3,
+                    new MappingStepConfig(
+                        new MappingStepJson() {
+                            OutputPrismSchema = 
+                                "{" +
+                                    "\"type\":\"object\"," +
+                                    "\"properties\":" +
+                                    "{" +
+                                        "\"LengthSum\":" +
+                                        "{" +
+                                            "\"type\":\"integer\"" +
+                                        "}" +
+                                    "}" +
+                                "}",
+                            Step = 1,
+                            StepActions = new List<ParameterMapJson> {
+                                new ParameterMapJson() {
+                                    Function = "add('1'.'Length','3'.'Length')",
+                                    OutputParameter = "'LengthSum'"
                                 }
                             }
                         }
@@ -90,7 +138,9 @@ class Program
         var _result = _config.Execute(
             JsonDocument.Parse(
                 "{" +
-                    "\"Test\":\"this is a test string\"" +
+                    "\"Test\":\"this is a test string that is 78 characters which should result in 78 + 2 = 80\"" +
+                    //          0        1         2         3         4         5         6         7         8
+                    //          0        0         0         0         0         0         0         0         0
                 "}"
             )
         );

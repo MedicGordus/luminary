@@ -14,6 +14,21 @@ public class Duration
 {
 
     /// <summary>
+    /// Used to indicate what pieces this duration contains.
+    /// 
+    /// Examples:
+    ///     Days = Date portion
+    ///     Seconds = Time portion
+    /// </summary>
+    [Flags]
+    public enum DurationParts : int
+    {
+        Null = 0,
+        ContainsDatePortion = 1,
+        ContainstTimePortion = 2
+    }
+
+    /// <summary>
     /// Regex helper for parsing durations.
     /// </summary>
     public const string ISO_8601_DURATION_REGEX = @"^P((?<years>\d+(\.\d+)?)Y)?((?<months>\d+(\.\d+)?)M)?((?<weeks>\d+(\.\d+)?)W)?((?<days>\d+(\.\d+)?)D)?(T((?<hours>\d+(\.\d+)?)H)?((?<minutes>\d+(\.\d+)?)M)?((?<seconds>\d+(\.\d+)?)S)?)?$";
@@ -753,4 +768,205 @@ public class Duration
     }
 #endregion
 
+    /// <summary>
+    /// This returns if Date and/or Time have active fields in this Duration object.
+    /// </summary>
+    /// <returns>
+    /// One ore more flags of DurationParts, indicating if Date and/or Time parts are in this Duration object.
+    /// </returns>
+    public DurationParts GetParts()
+    {
+        bool _containsDateParts = true;
+        if((Years == null) && (Months == null) && (Weeks == null) && (Days == null))
+        {
+            _containsDateParts = false;
+        }
+
+        bool _containsTimeParts = true;
+        if((Hours == null) && (Minutes == null) && (Seconds == null) && (Nanoseconds == null))
+        {
+            _containsTimeParts = false;
+        }
+
+        return
+                (_containsDateParts ? DurationParts.ContainsDatePortion : DurationParts.Null)
+            |
+                (_containsTimeParts ? DurationParts.ContainsDatePortion : DurationParts.Null)
+            ;
+    }
+
+    public DateTimeOffset AddToDateTimeOffset(DateTimeOffset _dto)
+    {
+        return ApplyAdditionOrSubtractionFromDateTimeOffset(_dto, 1);
+    }
+
+    public DateTimeOffset SubtractFromDateTimeOffset(DateTimeOffset _dto)
+    {
+        return ApplyAdditionOrSubtractionFromDateTimeOffset(_dto, -1);
+    }
+
+    protected DateTimeOffset ApplyAdditionOrSubtractionFromDateTimeOffset(DateTimeOffset _dto, int _multiplier)
+    {
+        var _output =  new DateTimeOffset(
+            _dto.Year,
+            _dto.Month,
+            _dto.Day,
+            _dto.Hour,
+            _dto.Minute,
+            _dto.Second,
+            _dto.Offset
+        );
+
+        if(Years != null)
+        {
+            _output.AddYears(_multiplier * (int)Years);
+        }
+        if(Months != null)
+        {
+            _output.AddMonths(_multiplier * (int)Months);
+        }
+        if(Weeks != null)
+        {
+            _output.AddDays(_multiplier * (int)(Weeks * 7d));
+        }
+        if(Days != null)
+        {
+            _output.AddDays(_multiplier * (int)Days);
+        }
+        if(Hours != null)
+        {
+            _output.AddHours(_multiplier * (int)Hours);
+        }
+        if(Minutes != null)
+        {
+            _output.AddMinutes(_multiplier * (int)Minutes);
+        }
+        if(Seconds != null)
+        {
+            _output.AddSeconds(_multiplier * (int)Seconds);
+        }
+        if(Nanoseconds != null)
+        {
+            _output.AddTicks(_multiplier * ((long)(Nanoseconds / NANOSECONDS_PER_SECOND)));
+        }
+
+        return _output;
+    }
+
+    public TimeOnly AddToTimeOnly(TimeOnly _to)
+    {
+        return ApplyAdditionOrSubtractionFromTimeOnly(_to, 1);
+    }
+
+    public TimeOnly SubtractFromTimeOnly(TimeOnly _to)
+    {
+        return ApplyAdditionOrSubtractionFromTimeOnly(_to, -1);
+    }
+
+    protected TimeOnly ApplyAdditionOrSubtractionFromTimeOnly(TimeOnly _to, int _multiplier)
+    {
+        /* inefficient string code
+        if(Nanoseconds != null)
+        {
+            if(Nanoseconds > 999999999 || Nanoseconds < 0)
+            {
+                throw new InvalidOperationException("Nanoseconds was so high that it was greater than one second, or it was negative. Unable to execute the requested command.");
+            }
+        }
+
+        string? _nanosecondsString = Nanoseconds?.ToString();
+
+        string? _microsecondsCropped = _nanosecondsString == null ? null : _nanosecondsString.PadLeft(9, '0')[0..6];
+
+        int _milliseconds = _microsecondsCropped == null ? 0 : int.Parse(_microsecondsCropped[0..3]);
+        int _microseconds = _microsecondsCropped == null ? 0 : int.Parse(_microsecondsCropped[3..6]);
+        */
+
+        // replacement by Grok:
+        int _milliseconds = 0;
+        int _microseconds = 0;
+        if (Nanoseconds != null)
+        {
+            if (Nanoseconds > 999999999 || Nanoseconds < 0)
+            {
+                throw new InvalidOperationException("Nanoseconds was so high that it was greater than one second, or it was negative. Unable to execute the requested command.");
+            }
+
+            long nanosecondsValue = Nanoseconds.Value; // Use long to avoid overflow during calculations
+            long microseconds = nanosecondsValue / 1000; // Convert to microseconds (1,000 nanoseconds = 1 microsecond)
+            _milliseconds = (int)(microseconds / 1000); // Convert to milliseconds (1,000 microseconds = 1 millisecond)
+            _microseconds = (int)(microseconds % 1000); // Remaining microseconds
+        }
+
+        return new TimeOnly(
+            _to.Hour + (Hours == null ? 0 : (_multiplier * (int)Hours)),
+            _to.Minute + (Minutes == null ? 0 : (_multiplier * (int)Minutes)),
+            _to.Second + (Seconds == null ? 0 : (_multiplier * (int)Seconds)),
+            _to.Millisecond + (_multiplier * _milliseconds),
+            _to.Microsecond + (_multiplier * _microseconds)
+        );
+        
+    }
+
+    public DateOnly AddToDateOnly(DateOnly _do)
+    {
+        return ApplyAdditionOrSubtractionFromDateOnly(_do, 1);
+    }
+
+    public DateOnly SubtractFromDateOnly(DateOnly _do)
+    {
+        return ApplyAdditionOrSubtractionFromDateOnly(_do, -1);
+    }
+
+    protected DateOnly ApplyAdditionOrSubtractionFromDateOnly(DateOnly _do, int _multiplier)
+    {
+        return new DateOnly(
+            _do.Year,
+            _do.Month,
+            _do.Day
+        )
+            .AddYears(Years == null ? 0 : (_multiplier * (int)Years))
+            .AddMonths(Months == null ? 0 : (_multiplier * (int)Months))
+            .AddDays(Weeks == null ? 0 :  (7 * _multiplier * (int)Weeks))
+            .AddDays(Days == null ? 0 :  (_multiplier * (int)Days))
+        ;
+    }
+
+    /// <summary>
+    /// Converts a time-based duration to a timespan.
+    /// 
+    /// Very useful for converting to DateTimeOffset Offset portion.
+    /// </summary>
+    /// <returns>Timespan representation of the duration.</returns>
+    public TimeSpan ConvertToTimeSpan()
+    {
+        if(GetParts().HasFlag(DurationParts.ContainsDatePortion))
+        {
+            throw new InvalidOperationException("Cannot convert duration to timespan when it contains date portions.");
+        }
+
+        int _milliseconds = 0;
+        int _microseconds = 0;
+        if (Nanoseconds != null)
+        {
+            if (Nanoseconds > 999999999 || Nanoseconds < 0)
+            {
+                throw new InvalidOperationException("Nanoseconds was so high that it was greater than one second, or it was negative. Unable to execute the requested command.");
+            }
+
+            long nanosecondsValue = Nanoseconds.Value; // Use long to avoid overflow during calculations
+            long microseconds = nanosecondsValue / 1000; // Convert to microseconds (1,000 nanoseconds = 1 microsecond)
+            _milliseconds = (int)(microseconds / 1000); // Convert to milliseconds (1,000 microseconds = 1 millisecond)
+            _microseconds = (int)(microseconds % 1000); // Remaining microseconds
+        }
+
+        return new TimeSpan(
+            0,
+            (int)(Hours ?? 0d),
+            (int)(Minutes ?? 0d),
+            (int)(Seconds ?? 0d),
+            _milliseconds,
+            _microseconds
+        );
+    }
 }
