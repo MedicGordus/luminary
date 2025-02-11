@@ -293,14 +293,9 @@ public class DecimalOperator : OperatorValue
 
     protected decimal InheritableMathCeiling(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if(NullableValue == null)
         {
-            throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute mathceiling.");
-        }
-
-        if(parameters[0] is not DecimalOperator)
-        {
-            throw new ArgumentException("Cannot mathceiling when the parameter is not a decimal.");
+            throw new ArgumentException("Value null. Cannot execute mathceiling.");
         }
 
         return Math.Ceiling(NullableValue.Value);
@@ -335,14 +330,9 @@ public class DecimalOperator : OperatorValue
 
     protected decimal InheritableMathFloor(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if(NullableValue == null)
         {
-            throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute mathfloor.");
-        }
-
-        if(parameters[0] is not DecimalOperator)
-        {
-            throw new ArgumentException("Cannot mathfloor when the parameter is not a decimal.");
+            throw new ArgumentException("Value null. Cannot execute mathfloor.");
         }
 
         return Math.Floor(NullableValue.Value);

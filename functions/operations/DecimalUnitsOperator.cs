@@ -485,18 +485,6 @@ public class DecimalUnitsOperator : DecimalOperator
         return parameters[0];
     }
     
-    public override string ToJsonStringValue()
-    {
-    }
-
-    public override string ToStringValue()
-    {
-    }
-
-    public override void SetValue(OperatorValue value)
-    {
-    }
-    
     public new static OperatorValue BuildFromParameters(string[] parameters)
     {
         if(parameters == null || parameters.Length == 0)
@@ -516,5 +504,24 @@ public class DecimalUnitsOperator : DecimalOperator
 
         (decimal _decimalValue, string _decimalUnits) = UnitHelper.ParseStringToDecimalUnits(_input);
         return new DecimalUnitsOperator(_decimalValue, _decimalUnits);
+    }
+
+    public override void SetValue(OperatorValue _source)
+    {
+        if(_source is not DecimalUnitsOperator)
+        {
+            throw new ArgumentException("Source OperatorValue wrong type, cannot set value.");
+        }
+
+        NullableValue = ((DecimalUnitsOperator)_source).NullableValue;
+        NullableUnits = ((DecimalUnitsOperator)_source).NullableUnits;
+    }
+    
+    public override string ToJsonStringValue()
+    {
+    }
+
+    public override string ToStringValue()
+    {
     }
 }

@@ -616,4 +616,12 @@ public class BigIntegerUnitsOperator : BigIntegerOperator
         NullableValue = ((BigIntegerUnitsOperator)_source).NullableValue;
         NullableUnits = ((BigIntegerUnitsOperator)_source).NullableUnits;
     }
+
+    public override string ToJsonStringValue()
+    {
+    }
+
+    public override string ToStringValue()
+    {
+    }
 }

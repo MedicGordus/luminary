@@ -16,7 +16,7 @@ class Program
 {
     static void Main(string[] args)
     {
-        todo("now that we have a custom Duration, we need to allow math add/subtract on all date and datetimes (not time since there are leap seconds)");
+        Console.WriteLine("now that we have a custom Duration, we need to allow math add/subtract on all date and datetimes (not time since there are leap seconds)");
 
         //// test mapper usage
         //
@@ -54,6 +54,31 @@ class Program
                                 new ParameterMapJson() {
                                     Function = "length('0'.'Test')",
                                     OutputParameter = "'Length'"
+                                }
+                            }
+                        }
+                    )
+                },
+                {
+                    1,
+                    new MappingStepConfig(
+                        new MappingStepJson() {
+                            OutputPrismSchema = 
+                                "{" +
+                                    "\"type\":\"object\"," +
+                                    "\"properties\":" +
+                                    "{" +
+                                        "\"LengthString\":" +
+                                        "{" +
+                                            "\"type\":\"string\"" +
+                                        "}" +
+                                    "}" +
+                                "}",
+                            Step = 1,
+                            StepActions = new List<ParameterMapJson> {
+                                new ParameterMapJson() {
+                                    Function = "converttostring('1'.'Length')",
+                                    OutputParameter = "'LengthString'"
                                 }
                             }
                         }

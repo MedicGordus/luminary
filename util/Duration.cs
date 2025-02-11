@@ -614,7 +614,7 @@ public class Duration
         long? _seconds = null;
         long? _nanoSeconds = null;
 
-        if(_secondsString != null)
+        if(_secondsString != null && _secondsString != "")
         {
             // check if there are fractional seconds
             var _decimalPosition = _secondsString.IndexOf('.');
