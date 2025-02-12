@@ -3,7 +3,7 @@ using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 
-namespace luminary.functions;
+namespace luminary.mapping.functions;
 
 public abstract class OperatorValue
 {

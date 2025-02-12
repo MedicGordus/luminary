@@ -1,5 +1,5 @@
 using System.Text.Json;
-using luminary.functions;
+using luminary.mapping.functions;
 
 namespace luminary.mapping;
 

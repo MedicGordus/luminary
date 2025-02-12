@@ -1,7 +1,7 @@
 
 using luminary.mapping;
 
-namespace luminary.functions;
+namespace luminary.mapping.functions;
 
 public class DateTimeOffsetWithDurationOperator : DateTimeOffsetOperator
 {

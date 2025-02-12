@@ -1,7 +1,7 @@
 
 using System.Net.Http.Headers;
 
-namespace luminary.functions;
+namespace luminary.mapping.functions;
 
 public class DecimalOperator : OperatorValue
 {

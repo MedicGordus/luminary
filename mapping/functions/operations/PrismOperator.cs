@@ -1,7 +1,7 @@
 
 using System.Text;
 
-namespace luminary.functions;
+namespace luminary.mapping.functions;
 
 public class PrismOperator : OperatorValue
 {

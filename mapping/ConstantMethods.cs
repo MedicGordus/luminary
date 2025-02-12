@@ -1,6 +1,6 @@
 
 using System.Numerics;
-using luminary.functions;
+using luminary.mapping.functions;
 
 namespace luminary.mapping;
 

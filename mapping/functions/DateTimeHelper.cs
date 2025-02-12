@@ -2,7 +2,7 @@ using System;
 using System.Text.RegularExpressions;
 
 
-namespace luminary.functions;
+namespace luminary.mapping.functions;
 
 public static class DateTimeHelper
 {

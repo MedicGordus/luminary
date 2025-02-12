@@ -1,4 +1,4 @@
-﻿using luminary.functions;
+﻿using luminary.mapping.functions;
 using luminary.mapping;
 
 using System;

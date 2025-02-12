@@ -1,4 +1,4 @@
-using luminary.functions;
+using luminary.mapping.functions;
 using System.Numerics;
 using System.Text;
 using System.Text.Json;

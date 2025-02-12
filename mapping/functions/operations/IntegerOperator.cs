@@ -1,5 +1,5 @@
 
-namespace luminary.functions;
+namespace luminary.mapping.functions;
 
 public class IntegerOperator : OperatorValue
 {

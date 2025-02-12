@@ -1,15 +1,17 @@
 
-namespace luminary.functions;
+using System.Numerics;
 
-public class TimeOperator : OperatorValue
+namespace luminary.mapping.functions;
+
+public class DurationOperator : OperatorValue
 {
-    protected TimeOnly? NullableValue;
+    protected Duration? NullableValue;
 
-    public TimeOnly? GetValue() => NullableValue;
+    public Duration? GetValue() => NullableValue;
 
-    public TimeOperator(TimeOnly? nullableValue) : base(OperatorValueType.Time)
+    public DurationOperator(Duration? nullablevalue) : base(OperatorValueType.Duration)
     {
-        NullableValue = nullableValue;
+        NullableValue = nullablevalue;
     }
 
     public override OperatorValue? BooleanAnd(OperatorValue[]? parameters)
@@ -44,42 +46,50 @@ public class TimeOperator : OperatorValue
 
     public override OperatorValue? ConvertToBigInteger(OperatorValue[]? parameters)
     {
-        throw new InvalidOperationException();
+        return new BigIntegerOperator(new BigInteger(CollectDoubleFromConversion(parameters)));
     }
 
     public override OperatorValue? ConvertToBigIntegerUnits(OperatorValue[]? parameters)
     {
-        throw new InvalidOperationException();
+        return new BigIntegerUnitsOperator(new BigInteger(CollectDoubleFromConversion(parameters)), ((StringOperator)parameters[0]).GetValue());
     }
 
     public override OperatorValue? ConvertToDecimal(OperatorValue[]? parameters)
     {
-        throw new InvalidOperationException();
+        return new DecimalOperator((decimal)CollectDoubleFromConversion(parameters));
     }
 
     public override OperatorValue? ConvertToDecimalUnits(OperatorValue[]? parameters)
     {
-        throw new InvalidOperationException();
+        return new DecimalUnitsOperator((decimal)CollectDoubleFromConversion(parameters), ((StringOperator)parameters[0]).GetValue());
     }
 
     public override OperatorValue? ConvertToDouble(OperatorValue[]? parameters)
     {
-        throw new InvalidOperationException();
+        return new DoubleOperator(CollectDoubleFromConversion(parameters));
     }
 
     public override OperatorValue? ConvertToDoubleUnits(OperatorValue[]? parameters)
     {
-        throw new InvalidOperationException();
+        return new DoubleUnitsOperator(CollectDoubleFromConversion(parameters), ((StringOperator)parameters[0]).GetValue());
     }
 
     public override OperatorValue? ConvertToInteger(OperatorValue[]? parameters)
     {
-        throw new InvalidOperationException();
+        double _conversion = CollectDoubleFromConversion(parameters);
+
+        int _output = (int)Math.Round(_conversion, 0);
+        
+        return new IntegerOperator(_output);
     }
 
     public override OperatorValue? ConvertToIntegerUnits(OperatorValue[]? parameters)
     {
-        throw new InvalidOperationException();
+        double _conversion = CollectDoubleFromConversion(parameters);
+
+        int _output = (int)Math.Round(_conversion, 0);
+        
+        return new IntegerUnitsOperator(_output, ((StringOperator)parameters[0]).GetValue());
     }
 
     public override OperatorValue? ConvertToString(OperatorValue[]? parameters)
@@ -99,19 +109,12 @@ public class TimeOperator : OperatorValue
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute valueequal.");
         }
 
-        if(parameters[0] is not TimeOperator)
+        if(parameters[0] is not DurationOperator)
         {
-            throw new ArgumentException("Cannot valueequal when the parameter is not a timeonly.");
+            throw new ArgumentException("Cannot valueequal when the parameter is not a duration.");
         }
 
-        TimeOnly? _paramValue = ((TimeOperator)parameters[0]).GetValue();
-
-        if(_paramValue == null)
-        {
-            throw new ArgumentException("Cannot valueequal when the parameter is null.");
-        }
-
-        return new BooleanOperator(NullableValue.Value == _paramValue.Value);
+        return new BooleanOperator(NullableValue == ((DurationOperator)parameters[0]).NullableValue);
     }
 
     public override OperatorValue? Filled(OperatorValue[]? parameters)
@@ -126,14 +129,12 @@ public class TimeOperator : OperatorValue
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute greaterorequal.");
         }
 
-        if(parameters[0] is not TimeOperator)
+        if(parameters[0] is not DurationOperator)
         {
-            throw new ArgumentException("Cannot greaterorequal when the parameter is not a timeonly.");
+            throw new ArgumentException("Cannot greaterorequal when the parameter is not a duration.");
         }
 
-        TimeOnly _check = ((TimeOperator)parameters[0]).NullableValue ?? throw new ArgumentException("Parameter null. Cannot execute greaterorequal.");
-
-        return new BooleanOperator(NullableValue >= _check);
+        return new BooleanOperator(NullableValue >= ((DurationOperator)parameters[0]).NullableValue);
     }
 
     public override OperatorValue? GreatherThan(OperatorValue[]? parameters)
@@ -143,21 +144,19 @@ public class TimeOperator : OperatorValue
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute greaterthan.");
         }
 
-        if(parameters[0] is not TimeOperator)
+        if(parameters[0] is not DurationOperator)
         {
-            throw new ArgumentException("Cannot greaterthan when the parameter is not a timeonly.");
+            throw new ArgumentException("Cannot greaterthan when the parameter is not a duration.");
         }
 
-        TimeOnly _check = ((TimeOperator)parameters[0]).NullableValue ?? throw new ArgumentException("Parameter null. Cannot execute greaterthan.");
-
-        return new BooleanOperator(NullableValue > _check);
+        return new BooleanOperator(NullableValue > ((DurationOperator)parameters[0]).NullableValue);
     }
 
     public override OperatorValue? IfNotFilled(OperatorValue[]? parameters)
     {
         if(NullableValue != null)
         {
-            return new TimeOperator(NullableValue);
+            return new DurationOperator(NullableValue);
         }
 
         if(parameters == null || parameters.Length == 0)
@@ -200,14 +199,12 @@ public class TimeOperator : OperatorValue
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute lessorequal.");
         }
 
-        if(parameters[0] is not TimeOperator)
+        if(parameters[0] is not DurationOperator)
         {
-            throw new ArgumentException("Cannot lessorequal when the parameter is not a timeonly.");
+            throw new ArgumentException("Cannot lessorequal when the parameter is not a duration.");
         }
 
-        TimeOnly _check = ((TimeOperator)parameters[0]).NullableValue ?? throw new ArgumentException("Parameter null. Cannot execute lessorequal.");
-
-        return new BooleanOperator(NullableValue <= _check);
+        return new BooleanOperator(NullableValue <= ((DurationOperator)parameters[0]).NullableValue);
     }
 
     public override OperatorValue? LessThan(OperatorValue[]? parameters)
@@ -217,24 +214,57 @@ public class TimeOperator : OperatorValue
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute lessthan.");
         }
 
-        if(parameters[0] is not TimeOperator)
+        if(parameters[0] is not DurationOperator)
         {
-            throw new ArgumentException("Cannot lessorequal when the parameter is not a timeonly.");
+            throw new ArgumentException("Cannot lessthan when the parameter is not a duration.");
         }
 
-        TimeOnly _check = ((TimeOperator)parameters[0]).NullableValue ?? throw new ArgumentException("Parameter null. Cannot execute lessthan.");
-
-        return new BooleanOperator(NullableValue < _check);
+        return new BooleanOperator(NullableValue < ((DurationOperator)parameters[0]).NullableValue);
     }
 
     public override OperatorValue? MathAdd(OperatorValue[]? parameters)
     {
-        return MathAddOrSubtract(parameters, true);
+        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        {
+            throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute mathadd.");
+        }
+
+        if(parameters[0] is not DurationOperator)
+        {
+            throw new ArgumentException("Cannot mathadd when the parameter is not a duration.");
+        }
+
+        Duration _param = ((DurationOperator)parameters[0]).GetValue() ?? throw new ArgumentException("Add value was not null but the GetValue unexpectedly returned null.");;
+
+        return new DurationOperator(NullableValue + _param);
     }
 
     public override OperatorValue? MathAverage(OperatorValue[]? parameters)
     {
-        throw new InvalidOperationException();
+        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        {
+            throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute mathaverage.");
+        }
+
+        if(parameters[0] is not DurationOperator)
+        {
+            throw new ArgumentException("Cannot mathaverage when the parameter is not a duration.");
+        }
+
+        Duration _param = ((DurationOperator)parameters[0]).GetValue() ?? throw new ArgumentException("Average value was not null but the GetValue unexpectedly returned null.");;
+
+        return new DurationOperator(
+            new Duration(
+                ((NullableValue?.Years ?? 0) + (_param?.Years ?? 0)) / 2d,
+                ((NullableValue?.Months ?? 0) + (_param?.Months ?? 0)) / 2d,
+                ((NullableValue?.Weeks ?? 0) + (_param?.Weeks ?? 0)) / 2d,
+                ((NullableValue?.Days ?? 0) + (_param?.Days ?? 0)) / 2d,
+                ((NullableValue?.Hours ?? 0) + (_param?.Hours ?? 0)) / 2d,
+                ((NullableValue?.Minutes ?? 0) + (_param?.Minutes ?? 0)) / 2d,
+                ((NullableValue?.Seconds ?? 0) + (_param?.Seconds ?? 0)) >> 1,
+                ((NullableValue?.Nanoseconds ?? 0) + (_param?.Nanoseconds ?? 0)) >> 1
+            )
+        );
     }
 
     public override OperatorValue? MathCeiling(OperatorValue[]? parameters)
@@ -269,7 +299,19 @@ public class TimeOperator : OperatorValue
 
     public override OperatorValue? MathSubtract(OperatorValue[]? parameters)
     {
-        return MathAddOrSubtract(parameters, false);
+        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        {
+            throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute mathsubtract.");
+        }
+
+        if(parameters[0] is not DurationOperator)
+        {
+            throw new ArgumentException("Cannot mathsubtract when the parameter is not a duration.");
+        }
+
+        Duration _param = ((DurationOperator)parameters[0]).GetValue() ?? throw new ArgumentException("Add value was not null but the GetValue unexpectedly returned null.");;
+
+        return new DurationOperator(NullableValue - _param);
     }
 
     public override OperatorValue? NotEqual(OperatorValue[]? parameters)
@@ -279,12 +321,12 @@ public class TimeOperator : OperatorValue
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute notequal.");
         }
 
-        if(parameters[0] is not TimeOperator)
+        if(parameters[0] is not DurationOperator)
         {
-            throw new ArgumentException("Cannot notequal when the parameter is not a timeonly.");
+            throw new ArgumentException("Cannot notequal when the parameter is not a duration.");
         }
 
-        return new BooleanOperator(NullableValue.Value != ((TimeOperator)parameters[0]).NullableValue);
+        return new BooleanOperator(NullableValue != ((DurationOperator)parameters[0]).NullableValue);
     }
 
     public override OperatorValue? BooleanOr(OperatorValue[]? parameters)
@@ -341,7 +383,7 @@ public class TimeOperator : OperatorValue
 
         return string.Format(
             "\"{0}\"",
-            NullableValue.Value.ToString()
+            NullableValue.ToString()
         );
     }
 
@@ -352,20 +394,26 @@ public class TimeOperator : OperatorValue
             throw new ArgumentException("Value null. Cannot execute tostringvalue.");
         }
 
-        return NullableValue.Value.ToString();
+        return NullableValue.ToString();
     }
 
-    public override void SetValue(OperatorValue value)
+    public override void SetValue(OperatorValue _source)
     {
+        if(_source is not DurationOperator)
+        {
+            throw new ArgumentException("Source OperatorValue wrong type, cannot set value.");
+        }
+
+        NullableValue = ((DurationOperator)_source).NullableValue;
     }
     
     public static OperatorValue BuildFromParameters(string[] parameters)
     {
         if(parameters == null || parameters.Length == 0)
         {
-            throw new ArgumentException("Cannot create a TimeOperator, null or missing parameter.");
+            throw new ArgumentException("Cannot create a DurationOperator, null or missing parameter.");
         }
-        
+
         return BuildFromString(parameters[0]);
     }
     
@@ -373,131 +421,80 @@ public class TimeOperator : OperatorValue
     {
         if(_input == null)
         {
-            return new TimeOperator(null);
+            return new DurationOperator(null);
         }
-
-        if(TimeOnly.TryParse(_input, out TimeOnly _value))
+        
+        if(Duration.TryParse(_input, out Duration? _value))
         {
-            return new TimeOperator(_value);
+            return new DurationOperator(_value);
         }
         else
         {
             throw new ArgumentException(
                 string.Format(
-                    "Cannot parse input '{0}' to TimeOnly.",
+                    "Cannot parse input '{0}' to DurationOperator.",
                     _input
                 )
             );
         }
     }
-    
-    protected OperatorValue?  MathAddOrSubtract(OperatorValue[]? parameters, bool _adding)
+
+    protected double GetDurationUnits(string? units)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if(NullableValue == null)
         {
-            throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute mathadd.");
+            return 0d;
         }
 
-        if(parameters[0] is not DurationOperator)
-        {
-            throw new ArgumentException("Cannot mathadd when the parameter is not a duration.");
-        }
+        var _lowercaseUnits = units?.ToLower();
 
-        Duration? _paramValue = ((DurationOperator)parameters[0]).GetValue();
+        return _lowercaseUnits switch {
+            "ns" or "nanosecond" or "nanoseconds"
+                => NullableValue.Nanoseconds,
 
-        if(_paramValue == null)
-        {
-            throw new ArgumentException("Cannot mathadd when the parameter is null.");
-        }
+            "s" or "second" or "seconds"
+                => NullableValue.Seconds,
 
-        Duration.DurationParts _parts = _paramValue.GetParts();
-        if(_parts.HasFlag(Duration.DurationParts.ContainsDatePortion))
-        {
-            // this is a timeonly, but we are adding a duration with date.
-            //  because time parts differ in size that are minute or longer
-            //  due to leap seconds, leap years, etc, we need a fixed date
-            //  to accurately calculate the addition.
-            
-            if(parameters.Length < 2 || parameters[1] == null)
-            {
-                throw new ArgumentException("Parameter null or parameter missing. Cannot execute mathaddorsubtract.");
-            }
+            "min" or "minute" or "minutes"
+                => NullableValue.Minutes,
 
-            if(parameters[1] is not DateTimeOffsetOperator)
-            {
-                throw new ArgumentException("Cannot mathaddorsubtract when the second parameter is not a datetimeoffset.");
-            }
+            "h" or "hr" or "hour" or "hours"
+                => NullableValue.Hours,
 
-            // collect the date portion
-            //  (which includes the neccessary timezone offset - any other time information is discarded)
-            DateTimeOffset? _param2Value = ((DateTimeOffsetOperator)parameters[1]).GetValue();
-            if(_param2Value == null)
-            {
-                throw new ArgumentException("Cannot mathaddorsubtract when the datetimeoffset parameter is null.");
-            }
+            "d" or "day" or "days"
+                => NullableValue.Days,
 
-            DateTimeOffset _dto;
-            if(_adding)
-            {
-                _dto = _paramValue.AddToDateTimeOffset(
-                    new DateTimeOffset(
-                        _param2Value.Value.Year,
-                        _param2Value.Value.Month,
-                        _param2Value.Value.Day,
-                        NullableValue.Value.Hour,
-                        NullableValue.Value.Minute,
-                        NullableValue.Value.Second,
-                        _param2Value.Value.Offset
-                    )
-                );
-            }
-            else
-            {
-                _dto = _paramValue.SubtractFromDateTimeOffset(
-                    new DateTimeOffset(
-                        _param2Value.Value.Year,
-                        _param2Value.Value.Month,
-                        _param2Value.Value.Day,
-                        NullableValue.Value.Hour,
-                        NullableValue.Value.Minute,
-                        NullableValue.Value.Second,
-                        _param2Value.Value.Offset
-                    )
-                );
-            }
+            "wk" or "week" or "weeks"
+                => NullableValue.Weeks,
 
-            return new DateTimeOffsetOperator(
-                _dto
-            );
-        }
-        else if(_parts.HasFlag(Duration.DurationParts.ContainstTimePortion))
-        {
-            //
-            // while it is not 100% safe, our rule will be to assume normal time durations here:
-            //
-            //  detail: technically because of leap seconds, minutes and higher intervals could
-            //  differ in size.
-            //
-            
-            TimeOnly _to;
-            if(_adding)
-            {
-                _to = _paramValue.AddToTimeOnly(
-                    NullableValue.Value
-                );
-            }
-            else
-            {
-                _to = _paramValue.SubtractFromTimeOnly(
-                    NullableValue.Value
-                );
-            }
-            return new TimeOperator(
-                _to
-            );
-        }
+            "mon" or "month" or "months"
+                => NullableValue.Months,
 
-        // at this point, the duration is null which shouldn't be possible
-        throw new Exception("Unable to mathadd as the parts appeared to be null which logically isn't possible.");
+            "yr" or "year" or "years"
+                => NullableValue.Years,
+
+            _ => throw new ArgumentException(
+                string.Format(
+                    "Unknown duration unit type '{0}', accepted unit types: ns, s, min, h, d, wk, mon, yr (or the full word, plural or singular for each).",
+                    units
+                )
+            )
+        } ?? 0d;
     }
+
+    protected double CollectDoubleFromConversion(OperatorValue[]? _parameters)
+    {
+        if(NullableValue == null || _parameters == null || _parameters.Length == 0)
+        {
+            throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute conversion.");
+        }
+
+        if(_parameters[0] is not StringOperator)
+        {
+            throw new ArgumentException("Cannot execute conversion when the unit parameter is not a string.");
+        }
+
+        return GetDurationUnits(((StringOperator)_parameters[0]).GetValue());
+    }
+
 }

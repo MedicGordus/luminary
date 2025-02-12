@@ -2,7 +2,7 @@ using System.Numerics;
 using System.Text;
 using System.Text.Json;
 
-namespace luminary.functions;
+namespace luminary.mapping.functions;
 
 public class StringOperator : OperatorValue
 {

@@ -2,7 +2,7 @@ using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 
-namespace luminary.functions;
+namespace luminary.mapping.functions;
 
 public static class UnitHelper
 {

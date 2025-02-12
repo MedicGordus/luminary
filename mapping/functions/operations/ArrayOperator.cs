@@ -4,7 +4,7 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Windows.Markup;
 
-namespace luminary.functions;
+namespace luminary.mapping.functions;
 
 public class ArrayOperator : OperatorValue
 {

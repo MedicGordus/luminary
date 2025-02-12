@@ -1,7 +1,7 @@
 
 using System.Numerics;
 
-namespace luminary.functions;
+namespace luminary.mapping.functions;
 
 public class BooleanOperator : OperatorValue
 {
