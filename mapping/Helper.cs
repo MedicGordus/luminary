@@ -1,5 +1,6 @@
 using luminary.functions;
 using System.Numerics;
+using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 
@@ -356,4 +357,101 @@ public static class Helper
         }
     }
 
+    public static string ConvertPrismOperatorToJsonString(Dictionary<string, OperatorValue>? _keyValuePairs)
+    {
+        if(_keyValuePairs == null)
+        {
+            return "null";
+        }
+
+        StringBuilder _output = new StringBuilder();
+
+        _output.Append('{');
+
+        if(_keyValuePairs.Count != 0)
+        {
+            foreach(KeyValuePair<string, OperatorValue> _deltaKeyValuePair in _keyValuePairs)
+            {
+                _output.Append(
+                    string.Format(
+                        "\"{0}\":",
+                        _deltaKeyValuePair.Key
+                    )
+                );
+
+                switch(_deltaKeyValuePair.Value.Type)
+                {
+                    case OperatorValue.OperatorValueType.Prism:
+                        _output.Append(
+                            ConvertPrismOperatorToJsonString(((PrismOperator)_deltaKeyValuePair.Value).GetValue())
+                        );
+                        break;
+
+                    default:
+                        _output.Append(
+                            _deltaKeyValuePair.Value.ToJsonStringValue()
+                        );
+                        break;
+                }
+                _output.Append(',');
+            }
+
+            // remove the last comma
+            _output.Length -= 1;
+        }
+
+        _output.Append('}');
+
+        return _output.ToString();
+    }
+
+/* this code is now in the array operator code
+    public static string ConvertArrayOperatorToJsonString(OperatorValue.OperatorValueType _arrayType, List<OperatorValue>? _entries)
+    {
+        if(_entries == null)
+        {
+            return "null";
+        }
+
+        StringBuilder _output = new StringBuilder();
+
+        _output.Append('[');
+
+        if(_entries.Count != 0)
+        {
+            // this is somewhat wasteful since arrays are supposed to hold only one type but I think it is best
+            foreach(OperatorValue _deltaEntry in _entries)
+            {
+                switch(_deltaEntry.Type)
+                {
+                    case OperatorValue.OperatorValueType.Array:
+                        _output.Append(
+                            ConvertArrayOperatorToJsonString(((ArrayOperator)_deltaEntry).ArrayType, ((ArrayOperator)_deltaEntry).GetValue())
+                        );
+                        break;
+
+                    case OperatorValue.OperatorValueType.Prism:
+                        _output.Append(
+                            ConvertPrismOperatorToJsonString(((PrismOperator)_deltaEntry).GetValue())
+                        );
+                        break;
+
+                    default:
+                        _output.Append(
+                            _deltaEntry.ToJsonStringValue()
+                        );
+                        break;
+                }
+                _output.Append(',');
+            }
+
+            // remove the last comma
+            _output.Length -= 1;
+        }
+
+        _output.Append(']');
+
+        return _output.ToString();
+    }
+*/
 }

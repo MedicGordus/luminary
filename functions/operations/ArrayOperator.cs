@@ -8,14 +8,16 @@ namespace luminary.functions;
 
 public class ArrayOperator : OperatorValue
 {
-    public List<OperatorValue> Value;
+    public List<OperatorValue>? NullableValue;
+
+    public List<OperatorValue>? GetValue() => NullableValue;
 
     public OperatorValueType ArrayType;
 
-    public ArrayOperator(OperatorValueType arrayType, List<OperatorValue> value) : base(OperatorValueType.Array)
+    public ArrayOperator(OperatorValueType _arrayType, List<OperatorValue> _nullableValue) : base(OperatorValueType.Array)
     {
-        Value = value;
-        ArrayType = arrayType;
+        NullableValue = _nullableValue;
+        ArrayType = _arrayType;
     }
 
     public override OperatorValue? BooleanAnd(OperatorValue[]? parameters)
@@ -45,7 +47,7 @@ public class ArrayOperator : OperatorValue
 
     public override OperatorValue? Concatenate(OperatorValue[]? parameters)
     {
-        if(Value == null || parameters == null)
+        if(NullableValue == null || parameters == null)
         {
             throw new ArgumentException("Value null or parameters null. Cannot execute concatenate.");
         }
@@ -69,16 +71,25 @@ public class ArrayOperator : OperatorValue
     protected List<OperatorValue> AppendArrayList(ArrayOperator array)
     {
         List<OperatorValue> subList = new List<OperatorValue>();
-        foreach(OperatorValue deltaValue in array.Value)
+
+        if(array != null && array.NullableValue != null)
         {
-            if(deltaValue is ArrayOperator)
+            foreach(OperatorValue deltaValue in array.NullableValue)
             {
-                subList.AddRange(AppendArrayList((ArrayOperator)deltaValue));
+                if(deltaValue is ArrayOperator)
+                {
+                    subList.AddRange(AppendArrayList((ArrayOperator)deltaValue));
+                }
+                else
+                {
+                    subList.Add(deltaValue);
+                }
             }
-            else
-            {
-                subList.Add(deltaValue);
-            }
+        }
+
+        if(NullableValue != null)
+        {
+            subList.AddRange(NullableValue);
         }
 
         return subList;
@@ -141,7 +152,7 @@ public class ArrayOperator : OperatorValue
 
     public override OperatorValue? Filled(OperatorValue[]? parameters)
     {
-        return new BooleanOperator(Value != null && Value.Count != 0);
+        return new BooleanOperator(NullableValue != null && NullableValue.Count != 0);
     }
 
     public override OperatorValue? GreaterOrEqual(OperatorValue[]? parameters)
@@ -156,9 +167,9 @@ public class ArrayOperator : OperatorValue
 
     public override OperatorValue? IfNotFilled(OperatorValue[]? parameters)
     {
-        if(Value != null)
+        if(NullableValue != null)
         {
-            return new ArrayOperator(ArrayType, Value);
+            return new ArrayOperator(ArrayType, NullableValue);
         }
 
         if(parameters == null || parameters.Length == 0)
@@ -171,19 +182,19 @@ public class ArrayOperator : OperatorValue
 
     public override OperatorValue? Includes(OperatorValue[]? parameters)
     {
-        if(Value == null || parameters == null || parameters.Length == 0)
+        if(NullableValue == null || parameters == null || parameters.Length == 0)
         {
             throw new ArgumentException("value null, parameters null or parameter missing. Cannot execute includes.");
         }
 
         // pass thru of parameters to ValueEqual to all elements in array and returns
-        return new BooleanOperator(Value.Any(_item => ((BooleanOperator?)_item.ValueEqual(parameters))?.GetValue() ?? false));
+        return new BooleanOperator(NullableValue.Any(_item => ((BooleanOperator?)_item.ValueEqual(parameters))?.GetValue() ?? false));
     }
 
     public override OperatorValue? IndexOf(OperatorValue[]? parameters)
     {
         // pass thru of parameters to ValueEqual and returns the first match, or if none, null
-        return Value.FirstOrDefault(_item => ((BooleanOperator?)_item.ValueEqual(parameters))?.GetValue() ?? false);
+        return NullableValue.FirstOrDefault(_item => ((BooleanOperator?)_item.ValueEqual(parameters))?.GetValue() ?? false);
     }
 
     public override OperatorValue? EqualsIgnoreCase(OperatorValue[]? parameters)
@@ -193,13 +204,13 @@ public class ArrayOperator : OperatorValue
 
     public override OperatorValue? Join(OperatorValue[]? parameters)
     {
-        if(Value == null || parameters == null || parameters.Length == 0)
+        if(NullableValue == null || parameters == null || parameters.Length == 0)
         {
             throw new ArgumentException("value null, parameters null or parameter missing. Cannot execute join.");
         }
 
         List<string> stringList = new();
-        foreach(OperatorValue deltaValue in Value)
+        foreach(OperatorValue deltaValue in NullableValue)
         {
             stringList.Add(deltaValue.ToStringValue());
         }
@@ -211,12 +222,12 @@ public class ArrayOperator : OperatorValue
 
     public override OperatorValue? Length(OperatorValue[]? parameters)
     {
-        if(Value == null)
+        if(NullableValue == null)
         {
             throw new ArgumentException("value null. Cannot execute length.");
         }
 
-        return new IntegerOperator(Value.Count);
+        return new IntegerOperator(NullableValue.Count);
     }
 
     public override OperatorValue? LessOrEqual(OperatorValue[]? parameters)
@@ -286,7 +297,7 @@ public class ArrayOperator : OperatorValue
 
     public override OperatorValue? Replace(OperatorValue[]? parameters)
     {
-        if(Value == null || parameters == null || parameters.Length < 2)
+        if(NullableValue == null || parameters == null || parameters.Length < 2)
         {
             throw new ArgumentException("value null, parameters null or parameter missing. Cannot execute replace.");
         }
@@ -296,7 +307,7 @@ public class ArrayOperator : OperatorValue
         OperatorValue _toAdd = parameters[1];
 
         // check which match and replace those that do (be aware: THESE ARE BYREF, NOT COPIES)
-        foreach(OperatorValue _deltaValue in Value)
+        foreach(OperatorValue _deltaValue in NullableValue)
         {
             if(((BooleanOperator?)_deltaValue.ValueEqual([_toRemove]))?.GetValue() ?? false)
             {
@@ -328,16 +339,23 @@ public class ArrayOperator : OperatorValue
 
     public override string ToJsonStringValue()
     {
+        if(NullableValue == null)
+        {
+            return "null";
+        }
+
         StringBuilder _output = new StringBuilder();
         _output.Append('[');
 
-        if(Value.Count != 0)
+        if(NullableValue.Count != 0)
         {
-            foreach(var _deltaValue in Value)
+            foreach(var _deltaValue in NullableValue)
             {
                 _output.Append(_deltaValue.ToJsonStringValue());
                 _output.Append(',');
             }
+
+            // remove trailing comma
             _output.Length -=1;
         }
 
@@ -367,8 +385,13 @@ public class ArrayOperator : OperatorValue
 
     public override string ToStringValue()
     {
+        if(NullableValue == null)
+        {
+            throw new ArgumentException("Value null. Cannot execute tostringvalue.");
+        }
+
         List<string> stringList = new();
-        foreach(OperatorValue deltaValue in Value)
+        foreach(OperatorValue deltaValue in NullableValue)
         {
             stringList.Add(deltaValue.ToStringValue());
         }
@@ -378,8 +401,13 @@ public class ArrayOperator : OperatorValue
 
     public override void SetValue(OperatorValue value)
     {
+        if(value is not ArrayOperator)
+        {
+            throw new ArgumentException("Cannot setvalue when the parameter is not an array.");
+        }
+
         ArrayType = ((ArrayOperator)value).ArrayType;
-        Value = ((ArrayOperator)value).Value;
+        NullableValue = ((ArrayOperator)value).NullableValue;
     }
 
     

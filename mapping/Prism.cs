@@ -1,3 +1,5 @@
+using System.Text.Json;
+
 using luminary.functions;
 
 namespace luminary.mapping;
@@ -6,8 +8,16 @@ public class Prism
 {
     public PrismOperator Payload;
 
-    public Prism (PrismOperator payload)
+    public SchemaJson? PrismSchema;
+
+    public Prism (PrismOperator _payload, SchemaJson? _prismSchema)
     {
-        Payload = payload;
+        Payload = _payload;
+        PrismSchema = _prismSchema;
+    }
+
+    public string? BuildJsonStringPayload()
+    {
+        return Helper.ConvertPrismOperatorToJsonString(Payload.GetValue());
     }
 }

@@ -1,15 +1,17 @@
 
+using System.Text;
+
 namespace luminary.functions;
 
 public class PrismOperator : OperatorValue
 {
-    protected Dictionary<string, OperatorValue> Value;
+    protected Dictionary<string, OperatorValue>? NullableValue;
 
-    public Dictionary<string, OperatorValue> GetValue() => Value;
+    public Dictionary<string, OperatorValue>? GetValue() => NullableValue;
 
-    public PrismOperator(Dictionary<string, OperatorValue> value) : base(OperatorValueType.Prism)
+    public PrismOperator(Dictionary<string, OperatorValue>? value) : base(OperatorValueType.Prism)
     {
-        Value = value;
+        NullableValue = value;
     }
 
     public override OperatorValue? BitwiseLeftShift(OperatorValue[]? parameters)
@@ -49,7 +51,37 @@ public class PrismOperator : OperatorValue
 
     public override OperatorValue? Concatenate(OperatorValue[]? parameters)
     {
-        throw new NotImplementedException();
+        if(parameters == null || parameters.Length == 0 || parameters[0] == null)
+        {
+            throw new ArgumentException("Parameter null or parameter missing. Cannot execute concatenate.");
+        }
+
+        if(parameters[0] is not PrismOperator)
+        {
+            throw new ArgumentException("Cannot concatenate when the parameter is not a prism.");
+        }
+
+        var _param = ((PrismOperator)parameters[0]).NullableValue;
+
+        Dictionary<string, OperatorValue> _output = [];
+
+        if(NullableValue != null)
+        {
+            foreach(KeyValuePair<string, OperatorValue> _deltaProperty in NullableValue)
+            {
+                _output.Add(_deltaProperty.Key, _deltaProperty.Value);
+            }
+        }
+
+        if(_param != null)
+        {
+            foreach(KeyValuePair<string, OperatorValue> _deltaProperty in _param)
+            {
+                _output.Add(_deltaProperty.Key, _deltaProperty.Value);
+            }
+        }
+
+        return new PrismOperator(_output);
     }
 
     public override OperatorValue? ConvertToBigInteger(OperatorValue[]? parameters)
@@ -124,7 +156,7 @@ public class PrismOperator : OperatorValue
 
     public override OperatorValue? IfNotFilled(OperatorValue[]? parameters)
     {
-        if(Value == null || Value.Count == 0)
+        if(NullableValue == null || NullableValue.Count == 0)
         {
             if(parameters == null || parameters.Length == 0 || parameters[0] is not OperatorValue)
             {
@@ -134,7 +166,7 @@ public class PrismOperator : OperatorValue
             return parameters[0];
         }
 
-        return new PrismOperator(Value);
+        return new PrismOperator(NullableValue);
     }
 
     public override OperatorValue? Includes(OperatorValue[]? parameters)
@@ -259,31 +291,89 @@ public class PrismOperator : OperatorValue
 
     public override string ToStringValue()
     {
-        throw new NotImplementedException();
+        if(NullableValue == null)
+        {
+            throw new ArgumentException("Value null. Cannot execute tostringvalue.");
+        }
+
+        StringBuilder _output = new();
+
+        foreach(KeyValuePair<string, OperatorValue> _deltaKeyValuePair in NullableValue)
+        {
+            _output.Append(_deltaKeyValuePair.Key);
+            _output.Append('|');
+            _output.Append(_deltaKeyValuePair.Value.ToStringValue());
+            _output.Append(',');
+        }
+
+        return _output.ToString();
     }
 
     public override string ToJsonStringValue()
-    {
-        throw new NotImplementedException();
+    {   
+        if(NullableValue == null)
+        {
+            return "null";
+        }
+
+        StringBuilder _output = new StringBuilder();
+
+        _output.Append('{');
+
+        if(NullableValue.Count != 0)
+        {
+            foreach(KeyValuePair<string, OperatorValue> _deltaKeyValuePair in NullableValue)
+            {
+                _output.Append(
+                    string.Format(
+                        "\"{0}\":",
+                        _deltaKeyValuePair.Key
+                    )
+                );
+
+                _output.Append(
+                    _deltaKeyValuePair.Value.ToJsonStringValue()
+                );
+                
+                _output.Append(',');
+            }
+
+            // remove the last comma
+            _output.Length -= 1;
+        }
+
+        _output.Append('}');
+
+        return _output.ToString();
     }
 
     public override void SetValue(OperatorValue value)
     {
-        throw new NotImplementedException();
+        if(value is not PrismOperator)
+        {
+            throw new ArgumentException("Cannot setvalue when the parameter is not a prism.");
+        }
+
+        NullableValue = ((PrismOperator)value).NullableValue;
     }
 
     public OperatorValue? GetOperatorByName(string name)
     {
-        return Value.TryGetValue(name, out var _value) ? _value : null;
+        if(NullableValue == null)
+        {
+            throw new ArgumentException("Value null. Cannot execute getoperatorbyname.");
+        }
+
+        return NullableValue.TryGetValue(name, out var _value) ? _value : null;
     }
     
     public static OperatorValue BuildFromParameters(string[] parameters)
     {
-        throw new NotImplementedException();
+        throw new InvalidOperationException();
     }
     
     public static OperatorValue BuildFromString(string? _input)
     {
-        throw new NotImplementedException();
+        throw new InvalidOperationException();
     }
 }

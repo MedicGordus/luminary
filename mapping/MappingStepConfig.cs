@@ -15,6 +15,8 @@ public class MappingStepConfig
 
     public List<ParameterMapJson>? StepActions;
 
+    public readonly SchemaJson? PrismSchema;
+
     public MappingStepConfig(MappingStepJson configuration)
     {
         Step = configuration.Step;
@@ -26,9 +28,9 @@ public class MappingStepConfig
             throw new ArgumentNullException("Output schema cannot be null, cannot build step.");
         }
         //
-        SchemaJson _schema = JsonSerializer.Deserialize<SchemaJson>(configuration.OutputPrismSchema) ?? throw new ArgumentException("Could not parse json element into json schema.");
+        PrismSchema = JsonSerializer.Deserialize<SchemaJson>(configuration.OutputPrismSchema) ?? throw new ArgumentException("Could not parse json element into json schema.");
         Dictionary<string, OperatorValue> outputDictionary = [];
-        Helper.BuildPrismOperatorDictionaryFromJsonSchema(_schema, outputDictionary);
+        Helper.BuildPrismOperatorDictionaryFromJsonSchema(PrismSchema, outputDictionary);
         OutputData = new PrismOperator(outputDictionary);
         //
         ////
@@ -41,7 +43,7 @@ public class MappingStepConfig
     /// </summary>
     /// <param name="context">All Prisms from previous steps, ulong = step, Prism = the output from that step</param>
     /// <returns></returns>
-    public Prism ProcessMappingActions(Dictionary<ulong, Prism> context)
+    public PrismOperator ProcessMappingActions(Dictionary<ulong, Prism> context)
     {
         // if there are steps to run, execute them
         if(StepActions != null && StepActions.Count != 0)
@@ -73,7 +75,7 @@ public class MappingStepConfig
             }
         }
 
-        return new Prism(OutputData);
+        return OutputData;
     }
 
     protected static OperatorValue ApplyMappingFunction(OperatorValue.OperatorValueType type, string functionToApply, Dictionary<ulong, Prism> _context)
