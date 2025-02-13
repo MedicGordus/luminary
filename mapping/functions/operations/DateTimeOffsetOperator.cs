@@ -1,6 +1,8 @@
+using luminary.mapping;
+using luminary.util;
+
 
 using System.Numerics;
-using luminary.mapping;
 
 namespace luminary.mapping.functions;
 

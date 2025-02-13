@@ -1,5 +1,6 @@
 ﻿using luminary.mapping.functions;
 using luminary.mapping;
+using luminary.util;
 
 using System;
 using System.Text.Json;
@@ -16,6 +17,19 @@ class Program
 {
     static void Main(string[] args)
     {
+        //// test totp
+        //
+        long _millisecondsSinceEpoch = Epoch.GetMillisecondsSinceUnixEpoch();
+        string _otp = HmacSha256.ComputeTotp([0,1,2,3,4,5,6,7,8,9,10], _millisecondsSinceEpoch);
+        Console.WriteLine(
+            string.Format(
+                "otp = {0}",
+                _otp
+            )
+        );
+        //
+        ////
+
         Console.WriteLine("To improve efficiency, we need a method that builds dummy inputs, runs the mapper, collects the fields that are referenced and then adjusts the mapping to ONLY map and fill those fields - to ignore the other ones, even if configured to map them.");
 
 

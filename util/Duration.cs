@@ -3,7 +3,7 @@
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace luminary;
+namespace luminary.util;
 
 /// <summary>
 /// This is a helper class to assist with ISO 8601 durations since dotnet doesn't have a native library for it.

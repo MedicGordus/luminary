@@ -1,3 +1,5 @@
+using luminary.util;
+
 using System;
 using System.Text.RegularExpressions;
 
@@ -48,21 +50,7 @@ public static class DateTimeHelper
             return null;
         }
 
-        return GetValueMillisecondsSinceEpoch(NullableValue.Value);
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="dateTime"></param>
-    /// <returns></returns>
-    /// <remarks>
-    /// WARNING: Glancing at the formula used in DateTime, I don't think the epoch is accurate.
-    ///     There are other leap factors in play other than days in a year~
-    /// </remarks
-    public static long GetValueMillisecondsSinceEpoch(DateTimeOffset dateTime)
-    {
-        return (long)Math.Round((dateTime - DateTimeOffset.UnixEpoch).TotalMilliseconds,0);
+        return Epoch.GetMillisecondsSinceUnixEpoch(NullableValue.Value);
     }
 
     public static bool TrySpecialParseExactDateTimeOffset(string _input, out DateTimeOffset _output)
