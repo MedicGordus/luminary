@@ -19,12 +19,10 @@ class Program
     {
         //// test totp
         //
-        long _millisecondsSinceEpoch = Epoch.GetMillisecondsSinceUnixEpoch();
-        string _otp = HmacSha256.ComputeTotp([0,1,2,3,4,5,6,7,8,9,10], _millisecondsSinceEpoch);
         Console.WriteLine(
             string.Format(
                 "otp = {0}",
-                _otp
+                HmacSha256.ComputeTotp([0,1,2,3,4,5,6,7,8,9,10], Epoch.GetMillisecondsSinceUnixEpoch())
             )
         );
         //

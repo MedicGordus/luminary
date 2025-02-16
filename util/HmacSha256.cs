@@ -81,12 +81,8 @@ public static class HmacSha256
 
     private static byte[] ComputeSha256Hash(byte[] rawData)
     {
-        // Create a SHA256   
-        using (SHA256 sha256Hash = SHA256.Create())
-        {
-            // Compute the hash from the byte array.
-            return sha256Hash.ComputeHash(rawData);
-        }
+        // Compute the hash from the byte array.
+        return SHA256.HashData(rawData);
     }
 
     private static byte[] XorByteArrays(byte[] array1, byte[] array2)
