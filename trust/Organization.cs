@@ -1,10 +1,10 @@
-using luminary.trust.json;
+using luminary.util;
 
 namespace luminary.trust;
 
 public class Organization
 {
-    protected string BaseUrl;
+    public readonly string BaseUrl;
     protected Dictionary<string, List<PublicKeyJson>> SelfPublicKeysByGroup;
     protected Dictionary<string, List<PublicKeyJson>> OpsPublicKeysByGroup;
 
@@ -13,5 +13,16 @@ public class Organization
         BaseUrl = _baseUrl;
         SelfPublicKeysByGroup = _selfPublicKeysByGroup;
         OpsPublicKeysByGroup = _opsPublicKeysByGroup;
+    }
+
+    public bool SelfContainsPublicKey (PublicKeyJson _publicKeyToCheck)
+    {
+        return SelfPublicKeysByGroup.Any(_item =>
+            _item.Value.Any(_selfPublicKey =>
+                    _selfPublicKey.KeyType == _publicKeyToCheck.KeyType
+                &&
+                    _selfPublicKey.PublicKeyBase64 == _publicKeyToCheck.PublicKeyBase64
+            )
+        );
     }
 }

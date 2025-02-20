@@ -1,9 +1,11 @@
+using luminary.util;
+
+
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
 
 namespace luminary.trust.json;
-
 /// <summary>
 /// This is the object sent to the auth update endpoint of luminary as an indicator they need to update their keys for this organization.
 /// </summary>
@@ -20,4 +22,14 @@ public class AuthUpdateJson
 
     [JsonPropertyName("signature-base64")]
     public string? SignatureBase64 { get; set; }
+
+    public string? GetSignableData()
+    {
+        if(Url == null || Nuance == null)
+        {
+            return null;
+        }
+
+        return Url + Nuance;
+    }
 }

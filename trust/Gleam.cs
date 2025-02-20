@@ -1,6 +1,6 @@
 using luminary.trust.json;
 using luminary.util;
-
+using static luminary.util.Bytes;
 
 namespace luminary.trust;
 
@@ -52,12 +52,17 @@ public class Gleam
 #endregion
 
 
+    /// <summary>
+    /// Organizations that are trusted.
+    /// </summary>
     protected readonly List<Organization> TrustedOrganizations;
+
+    protected readonly AsyncLock AuthUpdateLock = AsyncLock.Create();
 
     /// <summary>
     /// Constructor.
     /// </summary>
-    /// <param name="_trustedOrganizationUrls">See TrustedOrganizationUrls.</param>
+    /// <param name="_trustedOrganizations">See TrustedOrganizations.</param>
     protected Gleam(List<Organization> _trustedOrganizations)
     {
         TrustedOrganizations = _trustedOrganizations;
@@ -65,7 +70,56 @@ public class Gleam
 
     public async Task ProcessAuthUpdateAsync(AuthUpdateJson _update)
     {
-        // todo
+        try
+        {
+            if(_update != null && _update.Url != null && _update.PublicKey != null && _update.SignatureBase64 != null)
+            {
+                var _message = _update.GetSignableData();
+
+                if(_message != null)
+                {
+                    string _lowercaseUrl = _update.Url.ToLower();
+
+                    // make sure this org is trusted
+                    Organization? _trustedOrganizationMatch = null;
+                    //
+                    // note that we cannot access TrustedOrganizations without an asynclock:
+                    using(await AuthUpdateLock.LockAsync())
+                    {
+                        _trustedOrganizationMatch = TrustedOrganizations.FirstOrDefault(_item => _item.BaseUrl == _lowercaseUrl);
+                    }
+                    if(_trustedOrganizationMatch == null)
+                    {
+                        return;
+                    }
+                    if(!_trustedOrganizationMatch.SelfContainsPublicKey(_update.PublicKey))
+                    {
+                        return;
+                    }
+
+                    // make sure the signature is good
+                    if(!Cryptography.VerifySignature(_update.PublicKey, _message.ToUtf8Bytes(), _update.SignatureBase64))
+                    {
+                        return;
+                    }
+
+                    // collect the new information
+                    ScrubbableResult<Organization> _org = await BuildOrganizationFromUrlAsync(_lowercaseUrl);
+                    if(!_org.Scrub && _org.ReturnValue != null)
+                    {
+                        using(await AuthUpdateLock.LockAsync())
+                        {
+                            TrustedOrganizations.RemoveAll(
+                                _item => _item.BaseUrl == _update.Url
+                            );
+
+                            TrustedOrganizations.Add(_org.ReturnValue);
+                        }
+                    }
+                }
+            }
+        }
+        catch {}
     }
 
     public static async Task<ScrubbableResult<Gleam>> CreateAsync(List<string> _trustedOrganizationUrls)
@@ -86,7 +140,10 @@ public class Gleam
                     break;
                 }
 
-                _trustedOrganizations.Add(_org.ReturnValue);
+                if(_org.ReturnValue != null)
+                {
+                    _trustedOrganizations.Add(_org.ReturnValue);
+                }
             }
 
             _output.ReturnValue = new Gleam(_trustedOrganizations);
@@ -100,6 +157,11 @@ public class Gleam
     }
 
 
+    /// <summary>
+    /// Retrieves organization information via http/https to build an Organization object.
+    /// </summary>
+    /// <param name="_url">Base url for the trusted organization.</param>
+    /// <returns></returns>
     public static async Task<ScrubbableResult<Organization>> BuildOrganizationFromUrlAsync(string _url)
     {
         ScrubbableResult<Organization> _output = new();
@@ -154,9 +216,10 @@ public class Gleam
             //
             ////
 
-            // add trusted organization
+
+            // build organization
             _output.ReturnValue = new Organization(
-                _url,
+                _url.ToLower(),
                 _selfCreds.ReturnValue?.PublicKeysByGroup ?? [],
                 _opsCreds.ReturnValue?.PublicKeysByGroup  ?? []
             );
@@ -168,4 +231,7 @@ public class Gleam
 
         return _output;
     }
+
+    public static async Task<ScrubbableResult<ApiSecretJson>> RetrieveSecretForOrganizationAsync(string _organizationUrl, string _organizationGroup)
+    {}
 }
