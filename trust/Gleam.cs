@@ -10,7 +10,7 @@ namespace luminary.trust;
 public class Gleam
 {
 
-#region "url constants"
+    #region "url constants"
     public const string URL_API = "/api";
 
     //// creds paths
@@ -49,7 +49,7 @@ public class Gleam
     public const string URL_AUTH_UPDATE = URL_AUTH + "/update";
     //
     ////
-#endregion
+    #endregion
 
 
     /// <summary>
@@ -72,11 +72,11 @@ public class Gleam
     {
         try
         {
-            if(_update != null && _update.Url != null && _update.PublicKey != null && _update.SignatureBase64 != null)
+            if (_update != null && _update.Url != null && _update.PublicKey != null && _update.SignatureBase64 != null)
             {
                 var _message = _update.GetSignableData();
 
-                if(_message != null)
+                if (_message != null)
                 {
                     string _lowercaseUrl = _update.Url.ToLower();
 
@@ -84,30 +84,30 @@ public class Gleam
                     Organization? _trustedOrganizationMatch = null;
                     //
                     // note that we cannot access TrustedOrganizations without an asynclock:
-                    using(await AuthUpdateLock.LockAsync())
+                    using (await AuthUpdateLock.LockAsync())
                     {
                         _trustedOrganizationMatch = TrustedOrganizations.FirstOrDefault(_item => _item.BaseUrl == _lowercaseUrl);
                     }
-                    if(_trustedOrganizationMatch == null)
+                    if (_trustedOrganizationMatch == null)
                     {
                         return;
                     }
-                    if(!_trustedOrganizationMatch.SelfContainsPublicKey(_update.PublicKey))
+                    if (!_trustedOrganizationMatch.SelfContainsPublicKey(_update.PublicKey))
                     {
                         return;
                     }
 
                     // make sure the signature is good
-                    if(!Cryptography.VerifySignature(_update.PublicKey, _message.ToUtf8Bytes(), _update.SignatureBase64))
+                    if (!Cryptography.VerifySignature(_update.PublicKey, _message.ToUtf8Bytes(), _update.SignatureBase64))
                     {
                         return;
                     }
 
                     // collect the new information
                     ScrubbableResult<Organization> _org = await BuildOrganizationFromUrlAsync(_lowercaseUrl);
-                    if(!_org.Scrub && _org.ReturnValue != null)
+                    if (!_org.Scrub && _org.ReturnValue != null)
                     {
-                        using(await AuthUpdateLock.LockAsync())
+                        using (await AuthUpdateLock.LockAsync())
                         {
                             TrustedOrganizations.RemoveAll(
                                 _item => _item.BaseUrl == _update.Url
@@ -119,7 +119,7 @@ public class Gleam
                 }
             }
         }
-        catch {}
+        catch { }
     }
 
     public static async Task<ScrubbableResult<Gleam>> CreateAsync(List<string> _trustedOrganizationUrls)
@@ -130,17 +130,17 @@ public class Gleam
         {
             List<Organization> _trustedOrganizations = [];
 
-            foreach(string _deltaUrl in _trustedOrganizationUrls)
+            foreach (string _deltaUrl in _trustedOrganizationUrls)
             {
                 ScrubbableResult<Organization> _org = await BuildOrganizationFromUrlAsync(_deltaUrl);
 
-                if(_org.Scrub)
+                if (_org.Scrub)
                 {
                     _output.AddResults(_org.GetResults());
                     break;
                 }
 
-                if(_org.ReturnValue != null)
+                if (_org.ReturnValue != null)
                 {
                     _trustedOrganizations.Add(_org.ReturnValue);
                 }
@@ -178,7 +178,7 @@ public class Gleam
                 )
             );
             //
-            if(_selfCreds.Scrub)
+            if (_selfCreds.Scrub)
             {
                 _output.AddResult(
                     string.Format(
@@ -202,7 +202,7 @@ public class Gleam
                 )
             );
             //
-            if(_opsCreds.Scrub)
+            if (_opsCreds.Scrub)
             {
                 _output.AddResult(
                     string.Format(
@@ -221,7 +221,7 @@ public class Gleam
             _output.ReturnValue = new Organization(
                 _url.ToLower(),
                 _selfCreds.ReturnValue?.PublicKeysByGroup ?? [],
-                _opsCreds.ReturnValue?.PublicKeysByGroup  ?? []
+                _opsCreds.ReturnValue?.PublicKeysByGroup ?? []
             );
         }
         catch (Exception _e)
@@ -233,5 +233,5 @@ public class Gleam
     }
 
     public static async Task<ScrubbableResult<ApiSecretJson>> RetrieveSecretForOrganizationAsync(string _organizationUrl, string _organizationGroup)
-    {}
+    { }
 }

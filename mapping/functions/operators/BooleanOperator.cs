@@ -34,19 +34,19 @@ public class BooleanOperator : OperatorValue
 
     public override OperatorValue? BitwiseXor(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute bitwisexor.");
         }
 
-        if(parameters[0] is not BooleanOperator)
+        if (parameters[0] is not BooleanOperator)
         {
             throw new ArgumentException("Cannot bitwisexor when the parameter is not a boolean.");
         }
 
         bool? _paramValue = ((BooleanOperator)parameters[0]).GetValue();
 
-        if(_paramValue == null)
+        if (_paramValue == null)
         {
             throw new ArgumentException("Cannot bitwisexor when the parameter is null.");
         }
@@ -56,19 +56,19 @@ public class BooleanOperator : OperatorValue
 
     public override OperatorValue? BooleanAnd(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute booleanand.");
         }
 
-        if(parameters[0] is not BooleanOperator)
+        if (parameters[0] is not BooleanOperator)
         {
             throw new ArgumentException("Cannot booleanand when the parameter is not a boolean.");
         }
 
         bool? _paramValue = ((BooleanOperator)parameters[0]).GetValue();
 
-        if(_paramValue == null)
+        if (_paramValue == null)
         {
             throw new ArgumentException("Cannot booleanand when the parameter is null.");
         }
@@ -78,7 +78,7 @@ public class BooleanOperator : OperatorValue
 
     public override OperatorValue? BooleanNot(OperatorValue[]? parameters)
     {
-        if(NullableValue == null)
+        if (NullableValue == null)
         {
             throw new ArgumentException("Value null. Cannot execute booleannot.");
         }
@@ -88,19 +88,19 @@ public class BooleanOperator : OperatorValue
 
     public override OperatorValue? BooleanOr(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute booleanor.");
         }
 
-        if(parameters[0] is not BooleanOperator)
+        if (parameters[0] is not BooleanOperator)
         {
             throw new ArgumentException("Cannot booleanor when the parameter is not a boolean.");
         }
 
         bool? _paramValue = ((BooleanOperator)parameters[0]).GetValue();
 
-        if(_paramValue == null)
+        if (_paramValue == null)
         {
             throw new ArgumentException("Cannot booleanor when the parameter is null.");
         }
@@ -115,7 +115,7 @@ public class BooleanOperator : OperatorValue
 
     public override OperatorValue? ConvertToBigInteger(OperatorValue[]? parameters)
     {
-        if(NullableValue == null)
+        if (NullableValue == null)
         {
             return new IntegerOperator(null);
         }
@@ -130,7 +130,7 @@ public class BooleanOperator : OperatorValue
 
     public override OperatorValue? ConvertToDecimal(OperatorValue[]? parameters)
     {
-        if(NullableValue == null)
+        if (NullableValue == null)
         {
             return new IntegerOperator(null);
         }
@@ -145,7 +145,7 @@ public class BooleanOperator : OperatorValue
 
     public override OperatorValue? ConvertToDouble(OperatorValue[]? parameters)
     {
-        if(NullableValue == null)
+        if (NullableValue == null)
         {
             return new IntegerOperator(null);
         }
@@ -160,7 +160,7 @@ public class BooleanOperator : OperatorValue
 
     public override OperatorValue? ConvertToInteger(OperatorValue[]? parameters)
     {
-        if(NullableValue == null)
+        if (NullableValue == null)
         {
             return new IntegerOperator(null);
         }
@@ -200,14 +200,14 @@ public class BooleanOperator : OperatorValue
 
     public override OperatorValue? IfNotFilled(OperatorValue[]? parameters)
     {
-        if(NullableValue == null)
+        if (NullableValue == null)
         {
-            if(parameters == null || parameters.Length == 0 || parameters[0] == null)
+            if (parameters == null || parameters.Length == 0 || parameters[0] == null)
             {
                 throw new ArgumentException("Parameters null or parameter missing. Cannot execute ifnotfilled.");
             }
 
-            if(parameters[0] is not BooleanOperator)
+            if (parameters[0] is not BooleanOperator)
             {
                 throw new ArgumentException("Cannot ifnotfilled when the parameter is not a boolean.");
             }
@@ -300,19 +300,19 @@ public class BooleanOperator : OperatorValue
 
     public override OperatorValue? NotEqual(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute notequal.");
         }
 
-        if(parameters[0] is not BooleanOperator)
+        if (parameters[0] is not BooleanOperator)
         {
             throw new ArgumentException("Cannot notequal when the parameter is not a boolean.");
         }
 
         bool? _paramValue = ((BooleanOperator)parameters[0]).GetValue();
 
-        if(_paramValue == null)
+        if (_paramValue == null)
         {
             throw new ArgumentException("Cannot notequal when the parameter is null.");
         }
@@ -342,7 +342,7 @@ public class BooleanOperator : OperatorValue
 
     public override string ToJsonStringValue()
     {
-        if(NullableValue == null)
+        if (NullableValue == null)
         {
             throw new ArgumentException("Value null. Cannot execute tojsonstringvalue.");
         }
@@ -357,7 +357,7 @@ public class BooleanOperator : OperatorValue
 
     public override string ToStringValue()
     {
-        if(NullableValue == null)
+        if (NullableValue == null)
         {
             throw new ArgumentException("Value null. Cannot execute tostringvalue.");
         }
@@ -377,19 +377,19 @@ public class BooleanOperator : OperatorValue
 
     public override OperatorValue? ValueEqual(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute valueequal.");
         }
 
-        if(parameters[0] is not BooleanOperator)
+        if (parameters[0] is not BooleanOperator)
         {
             throw new ArgumentException("Cannot valueequal when the parameter is not a boolean.");
         }
 
         bool? _paramValue = ((BooleanOperator)parameters[0]).GetValue();
 
-        if(_paramValue == null)
+        if (_paramValue == null)
         {
             throw new ArgumentException("Cannot valueequal when the parameter is null.");
         }
@@ -399,32 +399,32 @@ public class BooleanOperator : OperatorValue
 
     public override void SetValue(OperatorValue value)
     {
-        if(value is not BooleanOperator)
+        if (value is not BooleanOperator)
         {
             throw new ArgumentException("Cannot setvalue when the parameter is not a boolean.");
         }
 
         NullableValue = ((BooleanOperator)value).GetValue();
     }
-    
+
     public static OperatorValue BuildFromParameters(string[] parameters)
     {
-        if(parameters == null || parameters.Length == 0)
+        if (parameters == null || parameters.Length == 0)
         {
             throw new ArgumentException("Cannot create a BooleanOperator, null or missing parameter.");
         }
 
         return BuildFromString(parameters[0]);
     }
-    
+
     public static OperatorValue BuildFromString(string? _input)
     {
-        if(_input == null)
+        if (_input == null)
         {
             return new BooleanOperator(null);
         }
 
-        if(bool.TryParse(_input, out bool _value))
+        if (bool.TryParse(_input, out bool _value))
         {
             return new BooleanOperator(_value);
         }
@@ -441,6 +441,6 @@ public class BooleanOperator : OperatorValue
 
     public void SetNativeValue(bool? _input)
     {
-        NullableValue =_input;
+        NullableValue = _input;
     }
 }

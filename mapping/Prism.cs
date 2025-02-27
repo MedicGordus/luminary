@@ -10,7 +10,7 @@ public class Prism
 
     public SchemaJson? PrismSchema;
 
-    public Prism (PrismOperator _payload, SchemaJson? _prismSchema)
+    public Prism(PrismOperator _payload, SchemaJson? _prismSchema)
     {
         Payload = _payload;
         PrismSchema = _prismSchema;

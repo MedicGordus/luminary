@@ -77,9 +77,9 @@ public class Scrubbable
 
     public Exception GetException()
     {
-        if(E == null)
+        if (E == null)
         {
-            if(Scrub)
+            if (Scrub)
             {
                 return new Exception("An unknown exception caused a scrub.");
             }

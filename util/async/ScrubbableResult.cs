@@ -13,7 +13,7 @@ public class ScrubbableResult<T> : Scrubbable<T>
         Results = [];
     }
 
-    public void AddResult(string result)   
+    public void AddResult(string result)
     {
         Results.Add(result);
     }
@@ -38,7 +38,7 @@ public class ScrubbableResult : Scrubbable
         Results = [];
     }
 
-    public void AddResult(string result)   
+    public void AddResult(string result)
     {
         Results.Add(result);
     }

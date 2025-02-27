@@ -13,16 +13,16 @@ public class IntegerOperator : OperatorValue
 
     protected int InheritableBooleanAnd(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute booleanand.");
         }
 
-        if(parameters[0] is not IntegerOperator)
+        if (parameters[0] is not IntegerOperator)
         {
             throw new ArgumentException("Cannot booleanand when the parameter is not an integer.");
         }
-        
+
         int _paramValue = ((IntegerOperator)parameters[0]).NullableValue ?? throw new ArgumentException("Parameter null. Cannot execute booleanand.");
 
         return NullableValue.Value & _paramValue;
@@ -35,17 +35,17 @@ public class IntegerOperator : OperatorValue
 
     protected int InheritableBitwiseLeftShift(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute bitwiseleftshift.");
         }
 
-        if(parameters[0] is not IntegerOperator)
+        if (parameters[0] is not IntegerOperator)
         {
             throw new ArgumentException("Cannot bitwiseleftshift when the parameter is not an integer.");
         }
 
-        return NullableValue.Value << ((IntegerOperator)parameters[0]).GetValue() ?? throw new ArgumentException("Parameter not null but GetValue() unexpectedly returned null. Cannot execute bitwiseleftshift");;
+        return NullableValue.Value << ((IntegerOperator)parameters[0]).GetValue() ?? throw new ArgumentException("Parameter not null but GetValue() unexpectedly returned null. Cannot execute bitwiseleftshift"); ;
     }
 
     public override OperatorValue? BitwiseLeftShift(OperatorValue[]? parameters)
@@ -55,12 +55,12 @@ public class IntegerOperator : OperatorValue
 
     protected int InheritableBitwiseMod(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute bitwisemod.");
         }
 
-        if(parameters[0] is not IntegerOperator)
+        if (parameters[0] is not IntegerOperator)
         {
             throw new ArgumentException("Cannot bitwisemod when the parameter is not an integer.");
         }
@@ -77,17 +77,17 @@ public class IntegerOperator : OperatorValue
 
     protected int InheritableBitwiseRightShift(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute bitwiserightshift.");
         }
 
-        if(parameters[0] is not IntegerOperator)
+        if (parameters[0] is not IntegerOperator)
         {
             throw new ArgumentException("Cannot rightshift when the parameter is not an integer.");
         }
 
-        return NullableValue >> ((IntegerOperator)parameters[0]).GetValue() ?? throw new ArgumentException("Parameter was not null but the GetValue unexpectedly returned null.");;
+        return NullableValue >> ((IntegerOperator)parameters[0]).GetValue() ?? throw new ArgumentException("Parameter was not null but the GetValue unexpectedly returned null."); ;
     }
 
     public override OperatorValue? BitwiseRightShift(OperatorValue[]? parameters)
@@ -97,16 +97,16 @@ public class IntegerOperator : OperatorValue
 
     protected int InheritableBitwiseXor(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute bitwisexor.");
         }
 
-        if(parameters[0] is not IntegerOperator)
+        if (parameters[0] is not IntegerOperator)
         {
             throw new ArgumentException("Cannot rightshift when the parameter is not an integer.");
         }
-        
+
         int _paramValue = ((IntegerOperator)parameters[0]).NullableValue ?? throw new ArgumentException("Parameter null. Cannot execute bitwisexor.");
 
         return NullableValue.Value ^ _paramValue;
@@ -159,12 +159,12 @@ public class IntegerOperator : OperatorValue
 
     public override OperatorValue? ConvertToIntegerUnits(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute converttointegerunits.");
         }
 
-        if(parameters[0] is not StringOperator)
+        if (parameters[0] is not StringOperator)
         {
             throw new ArgumentException("Cannot converttointegerunits when the unit parameter is not a string.");
         }
@@ -184,12 +184,12 @@ public class IntegerOperator : OperatorValue
 
     protected bool InheritableValueEqual(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute valueequal.");
         }
 
-        if(parameters[0] is not IntegerOperator)
+        if (parameters[0] is not IntegerOperator)
         {
             throw new ArgumentException("Cannot valueequal when the parameter is not an integer.");
         }
@@ -209,12 +209,12 @@ public class IntegerOperator : OperatorValue
 
     protected bool InheritableGreaterOrEqual(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute greaterorequal.");
         }
 
-        if(parameters[0] is not IntegerOperator)
+        if (parameters[0] is not IntegerOperator)
         {
             throw new ArgumentException("Cannot greaterorequal when the parameter is not an integer.");
         }
@@ -231,12 +231,12 @@ public class IntegerOperator : OperatorValue
 
     protected bool InheritableGreatherThan(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute greaterthan.");
         }
 
-        if(parameters[0] is not IntegerOperator)
+        if (parameters[0] is not IntegerOperator)
         {
             throw new ArgumentException("Cannot greaterthan when the parameter is not an integer.");
         }
@@ -253,12 +253,12 @@ public class IntegerOperator : OperatorValue
 
     public override OperatorValue? IfNotFilled(OperatorValue[]? parameters)
     {
-        if(NullableValue != null)
+        if (NullableValue != null)
         {
             return new IntegerOperator(NullableValue);
         }
 
-        if(parameters == null || parameters.Length == 0)
+        if (parameters == null || parameters.Length == 0)
         {
             throw new ArgumentException("parameters null or parameter missing. Cannot execute ifnotfilled.");
         }
@@ -293,12 +293,12 @@ public class IntegerOperator : OperatorValue
 
     protected bool InheritableLessOrEqual(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute lessorequal.");
         }
 
-        if(parameters[0] is not IntegerOperator)
+        if (parameters[0] is not IntegerOperator)
         {
             throw new ArgumentException("Cannot lessorequal when the parameter is not an integer.");
         }
@@ -315,12 +315,12 @@ public class IntegerOperator : OperatorValue
 
     protected bool InheritableLessThan(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute lessthan.");
         }
 
-        if(parameters[0] is not IntegerOperator)
+        if (parameters[0] is not IntegerOperator)
         {
             throw new ArgumentException("Cannot lessorequal when the parameter is not an integer.");
         }
@@ -337,12 +337,12 @@ public class IntegerOperator : OperatorValue
 
     protected int InheritableMathAdd(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute mathadd.");
         }
 
-        if(parameters[0] is not IntegerOperator)
+        if (parameters[0] is not IntegerOperator)
         {
             throw new ArgumentException("Cannot mathadd when the parameter is not an integer.");
         }
@@ -359,12 +359,12 @@ public class IntegerOperator : OperatorValue
 
     protected int InheritableMathAverage(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute mathaverage.");
         }
 
-        if(parameters[0] is not IntegerOperator)
+        if (parameters[0] is not IntegerOperator)
         {
             throw new ArgumentException("Cannot mathaverage when the parameter is not an integer.");
         }
@@ -386,12 +386,12 @@ public class IntegerOperator : OperatorValue
 
     protected int InheritableMathDivide(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute mathdivide.");
         }
 
-        if(parameters[0] is not IntegerOperator)
+        if (parameters[0] is not IntegerOperator)
         {
             throw new ArgumentException("Cannot mathdivide when the parameter is not an integer.");
         }
@@ -413,12 +413,12 @@ public class IntegerOperator : OperatorValue
 
     protected int InheritableMathMultiply(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute mathmultiply.");
         }
 
-        if(parameters[0] is not IntegerOperator)
+        if (parameters[0] is not IntegerOperator)
         {
             throw new ArgumentException("Cannot mathmultiply when the parameter is not an integer.");
         }
@@ -435,12 +435,12 @@ public class IntegerOperator : OperatorValue
 
     protected int InheritableMathPower(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute mathpower.");
         }
 
-        if(parameters[0] is not IntegerOperator)
+        if (parameters[0] is not IntegerOperator)
         {
             throw new ArgumentException("Cannot mathpower when the parameter is not an integer.");
         }
@@ -462,12 +462,12 @@ public class IntegerOperator : OperatorValue
 
     protected int InheritableMathSubtract(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute mathsubtract.");
         }
 
-        if(parameters[0] is not IntegerOperator)
+        if (parameters[0] is not IntegerOperator)
         {
             throw new ArgumentException("Cannot mathsubtract when the parameter is not an integer.");
         }
@@ -484,12 +484,12 @@ public class IntegerOperator : OperatorValue
 
     protected bool InheritableNotEqual(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute notequal.");
         }
 
-        if(parameters[0] is not IntegerOperator)
+        if (parameters[0] is not IntegerOperator)
         {
             throw new ArgumentException("Cannot notequal when the parameter is not an integer.");
         }
@@ -504,12 +504,12 @@ public class IntegerOperator : OperatorValue
 
     protected int InheritableBooleanOr(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute booleanor.");
         }
 
-        if(parameters[0] is not IntegerOperator)
+        if (parameters[0] is not IntegerOperator)
         {
             throw new ArgumentException("Cannot booleanor when the parameter is not an integer.");
         }
@@ -566,7 +566,7 @@ public class IntegerOperator : OperatorValue
 
     protected int InheritableBooleanNot(OperatorValue[]? parameters)
     {
-        if(NullableValue == null)
+        if (NullableValue == null)
         {
             throw new ArgumentException("Value null. Cannot execute booleannot.");
         }
@@ -581,7 +581,7 @@ public class IntegerOperator : OperatorValue
 
     public override string ToStringValue()
     {
-        if(NullableValue == null)
+        if (NullableValue == null)
         {
             throw new ArgumentException("Value null. Cannot execute tostringvalue.");
         }
@@ -591,32 +591,32 @@ public class IntegerOperator : OperatorValue
 
     public override void SetValue(OperatorValue _source)
     {
-        if(_source is not IntegerOperator)
+        if (_source is not IntegerOperator)
         {
             throw new ArgumentException("Source OperatorValue wrong type, cannot set value.");
         }
 
         NullableValue = ((IntegerOperator)_source).NullableValue;
     }
-    
+
     public static OperatorValue BuildFromParameters(string[] parameters)
     {
-        if(parameters == null || parameters.Length == 0)
+        if (parameters == null || parameters.Length == 0)
         {
             throw new ArgumentException("Cannot create an IntegerOperator, null or missing parameter.");
         }
 
         return BuildFromString(parameters[0]);
     }
-    
+
     public static OperatorValue BuildFromString(string? _input)
     {
-        if(_input == null)
+        if (_input == null)
         {
             return new IntegerOperator(null);
         }
 
-        if(int.TryParse(_input, out int _value))
+        if (int.TryParse(_input, out int _value))
         {
             return new IntegerOperator(_value);
         }
@@ -633,6 +633,6 @@ public class IntegerOperator : OperatorValue
 
     public void SetNativeValue(int? _input)
     {
-        NullableValue =_input;
+        NullableValue = _input;
     }
 }

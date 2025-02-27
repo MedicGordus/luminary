@@ -21,7 +21,7 @@ public class PublicKeyJson
     /// </summary>
     [JsonPropertyName("key-type")]
     public string? KeyType { get; set; }
-    
+
 
     [JsonPropertyName("public-key-base64")]
     public string? PublicKeyBase64 { get; set; }

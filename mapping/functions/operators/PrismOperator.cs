@@ -51,12 +51,12 @@ public class PrismOperator : OperatorValue
 
     public override OperatorValue? Concatenate(OperatorValue[]? parameters)
     {
-        if(parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Parameter null or parameter missing. Cannot execute concatenate.");
         }
 
-        if(parameters[0] is not PrismOperator)
+        if (parameters[0] is not PrismOperator)
         {
             throw new ArgumentException("Cannot concatenate when the parameter is not a prism.");
         }
@@ -65,17 +65,17 @@ public class PrismOperator : OperatorValue
 
         Dictionary<string, OperatorValue> _output = [];
 
-        if(NullableValue != null)
+        if (NullableValue != null)
         {
-            foreach(KeyValuePair<string, OperatorValue> _deltaProperty in NullableValue)
+            foreach (KeyValuePair<string, OperatorValue> _deltaProperty in NullableValue)
             {
                 _output.Add(_deltaProperty.Key, _deltaProperty.Value);
             }
         }
 
-        if(_param != null)
+        if (_param != null)
         {
-            foreach(KeyValuePair<string, OperatorValue> _deltaProperty in _param)
+            foreach (KeyValuePair<string, OperatorValue> _deltaProperty in _param)
             {
                 _output.Add(_deltaProperty.Key, _deltaProperty.Value);
             }
@@ -156,13 +156,13 @@ public class PrismOperator : OperatorValue
 
     public override OperatorValue? IfNotFilled(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || NullableValue.Count == 0)
+        if (NullableValue == null || NullableValue.Count == 0)
         {
-            if(parameters == null || parameters.Length == 0 || parameters[0] is not OperatorValue)
+            if (parameters == null || parameters.Length == 0 || parameters[0] is not OperatorValue)
             {
                 throw new ArgumentException("Parameters null, parameter missing, or wrong parameter type. Cannot execute ifnotfilled.");
             }
-            
+
             return parameters[0];
         }
 
@@ -291,14 +291,14 @@ public class PrismOperator : OperatorValue
 
     public override string ToStringValue()
     {
-        if(NullableValue == null)
+        if (NullableValue == null)
         {
             throw new ArgumentException("Value null. Cannot execute tostringvalue.");
         }
 
         StringBuilder _output = new();
 
-        foreach(KeyValuePair<string, OperatorValue> _deltaKeyValuePair in NullableValue)
+        foreach (KeyValuePair<string, OperatorValue> _deltaKeyValuePair in NullableValue)
         {
             _output.Append(_deltaKeyValuePair.Key);
             _output.Append('|');
@@ -310,8 +310,8 @@ public class PrismOperator : OperatorValue
     }
 
     public override string ToJsonStringValue()
-    {   
-        if(NullableValue == null)
+    {
+        if (NullableValue == null)
         {
             return "null";
         }
@@ -320,9 +320,9 @@ public class PrismOperator : OperatorValue
 
         _output.Append('{');
 
-        if(NullableValue.Count != 0)
+        if (NullableValue.Count != 0)
         {
-            foreach(KeyValuePair<string, OperatorValue> _deltaKeyValuePair in NullableValue)
+            foreach (KeyValuePair<string, OperatorValue> _deltaKeyValuePair in NullableValue)
             {
                 _output.Append(
                     string.Format(
@@ -334,7 +334,7 @@ public class PrismOperator : OperatorValue
                 _output.Append(
                     _deltaKeyValuePair.Value.ToJsonStringValue()
                 );
-                
+
                 _output.Append(',');
             }
 
@@ -349,7 +349,7 @@ public class PrismOperator : OperatorValue
 
     public override void SetValue(OperatorValue value)
     {
-        if(value is not PrismOperator)
+        if (value is not PrismOperator)
         {
             throw new ArgumentException("Cannot setvalue when the parameter is not a prism.");
         }
@@ -359,19 +359,19 @@ public class PrismOperator : OperatorValue
 
     public OperatorValue? GetOperatorByName(string name)
     {
-        if(NullableValue == null)
+        if (NullableValue == null)
         {
             throw new ArgumentException("Value null. Cannot execute getoperatorbyname.");
         }
 
         return NullableValue.TryGetValue(name, out var _value) ? _value : null;
     }
-    
+
     public static OperatorValue BuildFromParameters(string[] parameters)
     {
         throw new InvalidOperationException();
     }
-    
+
     public static OperatorValue BuildFromString(string? _input)
     {
         throw new InvalidOperationException();

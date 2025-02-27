@@ -31,7 +31,7 @@ public class DateTimeOffsetWithDurationOperator : DateTimeOffsetOperator
 
     public override OperatorValue? ConvertToString(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || NullableDuration == null)
+        if (NullableValue == null || NullableDuration == null)
         {
             return new StringOperator(null);
         }
@@ -48,19 +48,19 @@ public class DateTimeOffsetWithDurationOperator : DateTimeOffsetOperator
 
     public override OperatorValue? ValueEqual(OperatorValue[]? parameters)
     {
-        if(InheritableValueEqual(parameters) == false)
+        if (InheritableValueEqual(parameters) == false)
         {
             return new BooleanOperator(false);
         }
 
-        if(parameters[0] is not DateTimeOffsetWithDurationOperator)
+        if (parameters[0] is not DateTimeOffsetWithDurationOperator)
         {
             throw new ArgumentException("Cannot valueequal when the parameter is not a datetimeoffsetwithduration.");
         }
 
         Duration? _paramValue = ((DateTimeOffsetWithDurationOperator)parameters[0]).GetDuration();
 
-        if(NullableDuration == null || _paramValue == null)
+        if (NullableDuration == null || _paramValue == null)
         {
             throw new ArgumentException("Cannot valueequal when the duration or parameter is null.");
         }
@@ -85,14 +85,14 @@ public class DateTimeOffsetWithDurationOperator : DateTimeOffsetOperator
 
     public override OperatorValue? IfNotFilled(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || NullableDuration == null)
+        if (NullableValue == null || NullableDuration == null)
         {
-            if(parameters == null || parameters.Length == 0 || parameters[0] == null)
+            if (parameters == null || parameters.Length == 0 || parameters[0] == null)
             {
                 throw new ArgumentException("Parameters null or parameter missing. Cannot execute ifnotfilled.");
             }
 
-            if(parameters[0] is not DateTimeOffsetWithDurationOperator)
+            if (parameters[0] is not DateTimeOffsetWithDurationOperator)
             {
                 throw new ArgumentException("Cannot ifnotfilled when the parameter is not a datetimeoffsetwithduration.");
             }
@@ -116,19 +116,19 @@ public class DateTimeOffsetWithDurationOperator : DateTimeOffsetOperator
 
     public override OperatorValue? NotEqual(OperatorValue[]? parameters)
     {
-        if(InheritableNotEqual(parameters))
+        if (InheritableNotEqual(parameters))
         {
             return new BooleanOperator(true);
         }
 
-        if(parameters[0] is not DateTimeOffsetWithDurationOperator)
+        if (parameters[0] is not DateTimeOffsetWithDurationOperator)
         {
             throw new ArgumentException("Cannot notequal when the parameter is not a datetimeoffsetwithduration.");
         }
 
         Duration? _paramValue = ((DateTimeOffsetWithDurationOperator)parameters[0]).GetDuration();
 
-        if(_paramValue == null)
+        if (_paramValue == null)
         {
             throw new ArgumentException("Cannot notequal when the parameter is null.");
         }
@@ -138,7 +138,7 @@ public class DateTimeOffsetWithDurationOperator : DateTimeOffsetOperator
 
     public override string ToJsonStringValue()
     {
-        if(NullableValue == null || NullableDuration == null)
+        if (NullableValue == null || NullableDuration == null)
         {
             return "null";
         }
@@ -161,7 +161,7 @@ public class DateTimeOffsetWithDurationOperator : DateTimeOffsetOperator
 
     public override void SetValue(OperatorValue value)
     {
-        if(value is not DateTimeOffsetWithDurationOperator)
+        if (value is not DateTimeOffsetWithDurationOperator)
         {
             throw new ArgumentException("Cannot setvalue when the parameter is not a datetimeoffsetwithduration.");
         }
@@ -170,15 +170,15 @@ public class DateTimeOffsetWithDurationOperator : DateTimeOffsetOperator
         NullableValue = _dto.GetValue();
         NullableDuration = _dto.GetDuration();
     }
-    
+
     public new static OperatorValue BuildFromParameters(string[] parameters)
     {
-        if(parameters == null || parameters.Length < 2)
+        if (parameters == null || parameters.Length < 2)
         {
             throw new ArgumentException("Cannot create a DateTimeOffsetWithDurationOperator, null or missing parameter.");
         }
-        
-        if(
+
+        if (
                 DateTimeHelper.TrySpecialParseExactDateTimeOffset(parameters[0], out DateTimeOffset _value)
             &&
                 Duration.TryParse(parameters[1], out Duration? _durationValue)
@@ -197,16 +197,16 @@ public class DateTimeOffsetWithDurationOperator : DateTimeOffsetOperator
             );
         }
     }
-    
+
     public new static OperatorValue BuildFromString(string? _input)
     {
-        if(_input == null)
+        if (_input == null)
         {
             return new DateTimeOffsetWithDurationOperator(null, null);
         }
 
         int _dtzSeparatorIndex = _input.IndexOf(Helper.DATE_TIME_ZONE_DURATION_SEPARATOR);
-        if(_dtzSeparatorIndex == -1)
+        if (_dtzSeparatorIndex == -1)
         {
             throw new Exception(
                 string.Format(
@@ -219,7 +219,7 @@ public class DateTimeOffsetWithDurationOperator : DateTimeOffsetOperator
         string _dtzValue = _input[.._dtzSeparatorIndex];
         string _dtzDuration = _input[(_dtzSeparatorIndex + 1)..];
 
-        return BuildFromParameters([ _dtzValue, _dtzDuration ]);
+        return BuildFromParameters([_dtzValue, _dtzDuration]);
     }
 
     public override OperatorValue? MathAdd(OperatorValue[]? parameters)

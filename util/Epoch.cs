@@ -13,7 +13,7 @@ public static class Epoch
     /// </remarks
     public static long GetMillisecondsSinceUnixEpoch(DateTimeOffset dateTime)
     {
-        return (long)Math.Round((dateTime - DateTimeOffset.UnixEpoch).TotalMilliseconds,0);
+        return (long)Math.Round((dateTime - DateTimeOffset.UnixEpoch).TotalMilliseconds, 0);
     }
 
     /// <summary>

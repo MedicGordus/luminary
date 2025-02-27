@@ -14,9 +14,9 @@ public class HealthStatusJson
 
     [JsonPropertyName("current-precedence")]
     public SpookPrecedence CurrentPrecedence { get; set; }
-    
+
     [JsonPropertyName("current-tangled-state")]
-    public SpookTangledState CurrentTangledState  { get; set; }
+    public SpookTangledState CurrentTangledState { get; set; }
 
     [JsonPropertyName("tangle-health")]
     public List<HealthStatusJson>? TangleHealth { get; set; }

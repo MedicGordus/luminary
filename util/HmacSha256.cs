@@ -21,12 +21,12 @@ public static class HmacSha256
         byte[] _messageBytes = BitConverter.GetBytes((ulong)_ms);
 
         // ensure the key is KEY_SIZE bytes exactly
-        if(_secretKey.Length > KEY_SIZE)
+        if (_secretKey.Length > KEY_SIZE)
         {
             // hash the key if it is too long so that the remaining bits still apply to the resulting usage of the key
             _secretKey = ComputeSha256Hash(_secretKey)[0..KEY_SIZE];
         }
-        else if(_secretKey.Length < KEY_SIZE)
+        else if (_secretKey.Length < KEY_SIZE)
         {
             // pads the right side of the array with zeroes to make sure it is KEY_SIZE bytes long
 
@@ -50,12 +50,12 @@ public static class HmacSha256
 
         // perform the first hash
         byte[] _hashedResult = ComputeSha256Hash(_bytesToHash);
-        
+
         // append the hash result with the outer xor'd key
         _bytesToHash = new byte[_outerXorKey.Length + _hashedResult.Length];
         Buffer.BlockCopy(_outerXorKey, 0, _bytesToHash, 0, _outerXorKey.Length);
         Buffer.BlockCopy(_hashedResult, 0, _bytesToHash, _outerXorKey.Length, _hashedResult.Length);
-        
+
         // perform the second hash
         _hashedResult = ComputeSha256Hash(_bytesToHash);
 

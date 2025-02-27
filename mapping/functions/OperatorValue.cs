@@ -82,7 +82,7 @@ public abstract class OperatorValue
         //{ OperatorValueTypeFormat.Prism, OperatorValueType.Prism }
     };
 
-    public static readonly List<string> MethodNameList = 
+    public static readonly List<string> MethodNameList =
         [
             MethodNames.Filled,
             MethodNames.BooleanNot,
@@ -353,7 +353,8 @@ public abstract class OperatorValue
 
     public static OperatorValue? CreateByType(OperatorValueType type)
     {
-        return type switch {
+        return type switch
+        {
             OperatorValueType.String => new StringOperator(default),
             OperatorValueType.Integer => new IntegerOperator(default),
             OperatorValueType.BigInteger => new BigIntegerOperator(default),

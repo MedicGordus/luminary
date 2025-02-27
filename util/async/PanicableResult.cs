@@ -13,7 +13,7 @@ public class PanicableResult<T> : Panicable<T>
         Results = [];
     }
 
-    public void AddResult(string result)   
+    public void AddResult(string result)
     {
         Results.Add(result);
     }
@@ -33,7 +33,7 @@ public class PanicableResult : Panicable
         Results = [];
     }
 
-    public void AddResult(string result)   
+    public void AddResult(string result)
     {
         Results.Add(result);
     }

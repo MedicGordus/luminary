@@ -22,30 +22,30 @@ public class StringOperator : OperatorValue
 
     public override OperatorValue? BitwiseLeftShift(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute bitwiseleftshift.");
         }
 
-        if(NullableValue.Length == 0)
+        if (NullableValue.Length == 0)
         {
             return new StringOperator(NullableValue);
         }
 
-        if(parameters[0] is not IntegerOperator)
+        if (parameters[0] is not IntegerOperator)
         {
             throw new ArgumentException("Cannot bitwiseleftshift when the parameter is not an integer.");
         }
 
         int? _numberOfCharsToMove = ((IntegerOperator)parameters[0]).GetValue();
 
-        if(_numberOfCharsToMove == null)
+        if (_numberOfCharsToMove == null)
         {
             throw new ArgumentException("Cannot bitwiseleftshift when the parameter is null.");
         }
         // Extract the characters to move
         string leftPart = NullableValue.Substring(0, _numberOfCharsToMove.Value);
-        
+
         // Extract the rest of the strzing after the characters to move
         string rightPart = NullableValue.Substring(_numberOfCharsToMove.Value);
 
@@ -60,24 +60,24 @@ public class StringOperator : OperatorValue
 
     public override OperatorValue? BitwiseRightShift(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null || NullableValue == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null || NullableValue == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute bitwiserightshift.");
         }
 
-        if(NullableValue.Length == 0)
+        if (NullableValue.Length == 0)
         {
             return new StringOperator(NullableValue);
         }
 
-        if(parameters[0] is not IntegerOperator)
+        if (parameters[0] is not IntegerOperator)
         {
             throw new ArgumentException("Cannot bitwiserightshift when the parameter is not an integer.");
         }
 
         int? _numberOfCharsToMove = ((IntegerOperator)parameters[0]).GetValue();
 
-        if(_numberOfCharsToMove == null)
+        if (_numberOfCharsToMove == null)
         {
             throw new ArgumentException("Cannot bitwiserightshift when the parameter is null.");
         }
@@ -86,7 +86,7 @@ public class StringOperator : OperatorValue
 
         // Extract the characters to move
         string leftPart = NullableValue.Substring(0, _adjustedNumberOfCharsToMove);
-        
+
         // Extract the rest of the strzing after the characters to move
         string rightPart = NullableValue.Substring(_adjustedNumberOfCharsToMove);
 
@@ -102,17 +102,17 @@ public class StringOperator : OperatorValue
     public override OperatorValue? Concatenate(OperatorValue[]? parameters)
     {
         // if there is nothing to concatenate, return copy of ourself
-        if(parameters == null || parameters.Length == 0)
+        if (parameters == null || parameters.Length == 0)
         {
             return new StringOperator(NullableValue);
         }
 
         StringBuilder sb = new StringBuilder(NullableValue);
-        foreach(OperatorValue? deltaValue in parameters)
+        foreach (OperatorValue? deltaValue in parameters)
         {
-            if(deltaValue != null)
+            if (deltaValue != null)
             {
-                if(deltaValue is ArrayOperator)
+                if (deltaValue is ArrayOperator)
                 {
                     sb.Append(AppendArrayAsString((ArrayOperator)deltaValue));
                 }
@@ -129,9 +129,9 @@ public class StringOperator : OperatorValue
     protected string AppendArrayAsString(ArrayOperator array)
     {
         StringBuilder sb = new StringBuilder();
-        foreach(OperatorValue deltaValue in array.NullableValue)
+        foreach (OperatorValue deltaValue in array.NullableValue)
         {
-            if(deltaValue is ArrayOperator)
+            if (deltaValue is ArrayOperator)
             {
                 sb.Append(AppendArrayAsString((ArrayOperator)deltaValue));
             }
@@ -145,7 +145,7 @@ public class StringOperator : OperatorValue
 
     public override OperatorValue? ConvertToBigInteger(OperatorValue[]? parameters)
     {
-        if(NullableValue == null)
+        if (NullableValue == null)
         {
             throw new ArgumentNullException("Cannot parse null string to big integer.");
         }
@@ -156,13 +156,13 @@ public class StringOperator : OperatorValue
     public override OperatorValue? ConvertToBigIntegerUnits(OperatorValue[]? parameters)
     {
         var (_value, _unit) = UnitHelper.ParseStringToBigIntegerUnits(NullableValue);
-        
+
         return new BigIntegerUnitsOperator(_value, _unit);
     }
 
     public override OperatorValue? ConvertToDecimal(OperatorValue[]? parameters)
     {
-        if(NullableValue == null)
+        if (NullableValue == null)
         {
             throw new ArgumentNullException("Cannot parse null string to decimal.");
         }
@@ -173,13 +173,13 @@ public class StringOperator : OperatorValue
     public override OperatorValue? ConvertToDecimalUnits(OperatorValue[]? parameters)
     {
         var (_value, _unit) = UnitHelper.ParseStringToDecimalUnits(NullableValue);
-        
+
         return new DecimalUnitsOperator(_value, _unit);
     }
 
     public override OperatorValue? ConvertToDouble(OperatorValue[]? parameters)
     {
-        if(NullableValue == null)
+        if (NullableValue == null)
         {
             throw new ArgumentNullException("Cannot parse null string to double.");
         }
@@ -190,13 +190,13 @@ public class StringOperator : OperatorValue
     public override OperatorValue? ConvertToDoubleUnits(OperatorValue[]? parameters)
     {
         var (_value, _unit) = UnitHelper.ParseStringToDoubleUnits(NullableValue);
-        
+
         return new DoubleUnitsOperator(_value, _unit);
     }
 
     public override OperatorValue? ConvertToInteger(OperatorValue[]? parameters)
     {
-        if(NullableValue == null)
+        if (NullableValue == null)
         {
             throw new ArgumentNullException("Cannot parse null string to integer.");
         }
@@ -207,7 +207,7 @@ public class StringOperator : OperatorValue
     public override OperatorValue? ConvertToIntegerUnits(OperatorValue[]? parameters)
     {
         var (_value, _unit) = UnitHelper.ParseStringToIntegerUnits(NullableValue);
-        
+
         return new IntegerUnitsOperator(_value, _unit);
     }
 
@@ -218,7 +218,7 @@ public class StringOperator : OperatorValue
 
     public override OperatorValue? EndsWith(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0)
+        if (NullableValue == null || parameters == null || parameters.Length == 0)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute endswith.");
         }
@@ -228,12 +228,12 @@ public class StringOperator : OperatorValue
 
     public override OperatorValue? ValueEqual(OperatorValue[]? parameters)
     {
-        if(parameters == null || parameters.Length == 0)
+        if (parameters == null || parameters.Length == 0)
         {
             throw new ArgumentException("parameters null or parameter missing. Cannot execute valueequal.");
         }
 
-        if(NullableValue == null)
+        if (NullableValue == null)
         {
             // return if they are both null or not
             return new BooleanOperator(parameters[0].ToStringValue() == null);
@@ -259,12 +259,12 @@ public class StringOperator : OperatorValue
 
     public override OperatorValue? IfNotFilled(OperatorValue[]? parameters)
     {
-        if(NullableValue != null)
+        if (NullableValue != null)
         {
             return new StringOperator(NullableValue);
         }
 
-        if(parameters == null || parameters.Length == 0)
+        if (parameters == null || parameters.Length == 0)
         {
             throw new ArgumentException("parameters null or parameter missing. Cannot execute ifnotfilled.");
         }
@@ -274,7 +274,7 @@ public class StringOperator : OperatorValue
 
     public override OperatorValue? Includes(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0)
+        if (NullableValue == null || parameters == null || parameters.Length == 0)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute includes.");
         }
@@ -284,7 +284,7 @@ public class StringOperator : OperatorValue
 
     public override OperatorValue? IndexOf(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0)
+        if (NullableValue == null || parameters == null || parameters.Length == 0)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute indexof.");
         }
@@ -294,12 +294,12 @@ public class StringOperator : OperatorValue
 
     public override OperatorValue? EqualsIgnoreCase(OperatorValue[]? parameters)
     {
-        if(parameters == null || parameters.Length == 0)
+        if (parameters == null || parameters.Length == 0)
         {
             throw new ArgumentException("parameters null or parameter missing. Cannot execute valueequal.");
         }
 
-        if(NullableValue == null)
+        if (NullableValue == null)
         {
             // return if they are both null or not
             return new BooleanOperator(parameters[0].ToStringValue() == null);
@@ -316,7 +316,7 @@ public class StringOperator : OperatorValue
 
     public override OperatorValue? Length(OperatorValue[]? parameters)
     {
-        if(NullableValue == null)
+        if (NullableValue == null)
         {
             throw new ArgumentException("parameters null or parameter missing. Cannot execute operatorvalue.");
         }
@@ -381,12 +381,12 @@ public class StringOperator : OperatorValue
 
     public override OperatorValue? NotEqual(OperatorValue[]? parameters)
     {
-        if(parameters == null || parameters.Length == 0)
+        if (parameters == null || parameters.Length == 0)
         {
             throw new ArgumentException("parameters null or parameter missing. Cannot execute valueequal.");
         }
 
-        if(NullableValue == null)
+        if (NullableValue == null)
         {
             // return if one is not and the other is not (or not)
             return new BooleanOperator(parameters[0].ToStringValue() != null);
@@ -402,7 +402,7 @@ public class StringOperator : OperatorValue
 
     public override OperatorValue? Replace(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length < 2)
+        if (NullableValue == null || parameters == null || parameters.Length < 2)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute replace.");
         }
@@ -415,7 +415,7 @@ public class StringOperator : OperatorValue
 
     public override OperatorValue? Split(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0)
+        if (NullableValue == null || parameters == null || parameters.Length == 0)
         {
             throw new ArgumentException("value null, parameters null or parameter missing. Cannot execute split.");
         }
@@ -423,7 +423,7 @@ public class StringOperator : OperatorValue
         string? separator = parameters[0].ToStringValue();
         string[] stringArray = NullableValue.Split(separator);
         List<OperatorValue> strings = new();
-        foreach(string deltaString in stringArray)
+        foreach (string deltaString in stringArray)
         {
             strings.Add(new StringOperator(deltaString));
         }
@@ -433,7 +433,7 @@ public class StringOperator : OperatorValue
 
     public override OperatorValue? StartsWith(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0)
+        if (NullableValue == null || parameters == null || parameters.Length == 0)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute startswith.");
         }
@@ -443,7 +443,7 @@ public class StringOperator : OperatorValue
 
     public override OperatorValue? Substring(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0)
+        if (NullableValue == null || parameters == null || parameters.Length == 0)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute startswith.");
         }
@@ -452,12 +452,12 @@ public class StringOperator : OperatorValue
         int? length = null;
         string? newString;
 
-        if(parameters.Length <= 2)
+        if (parameters.Length <= 2)
         {
             length = int.Parse(parameters[1].ToStringValue());
         }
 
-        if(length == null)
+        if (length == null)
         {
             newString = NullableValue.Substring(start);
         }
@@ -471,7 +471,7 @@ public class StringOperator : OperatorValue
 
     public override string ToJsonStringValue()
     {
-        if(NullableValue == null)
+        if (NullableValue == null)
         {
             return "null";
         }
@@ -486,7 +486,7 @@ public class StringOperator : OperatorValue
 
     public override OperatorValue? ToLower(OperatorValue[]? parameters)
     {
-        if(NullableValue == null)
+        if (NullableValue == null)
         {
             throw new ArgumentException("Value null. Cannot execute tolower.");
         }
@@ -496,7 +496,7 @@ public class StringOperator : OperatorValue
 
     public override OperatorValue? ToUpper(OperatorValue[]? parameters)
     {
-        if(NullableValue == null)
+        if (NullableValue == null)
         {
             throw new ArgumentException("Value null. Cannot execute toupper.");
         }
@@ -506,7 +506,7 @@ public class StringOperator : OperatorValue
 
     public override OperatorValue? Trim(OperatorValue[]? parameters)
     {
-        if(NullableValue == null)
+        if (NullableValue == null)
         {
             throw new ArgumentException("Value null. Cannot execute trim.");
         }
@@ -521,7 +521,7 @@ public class StringOperator : OperatorValue
 
     public override string ToStringValue()
     {
-        if(NullableValue == null)
+        if (NullableValue == null)
         {
             throw new ArgumentException("Value null. Cannot execute tostringvalue.");
         }
@@ -531,7 +531,7 @@ public class StringOperator : OperatorValue
 
     public override void SetValue(OperatorValue _source)
     {
-        if(_source is not StringOperator)
+        if (_source is not StringOperator)
         {
             throw new ArgumentException("Source OperatorValue wrong type, cannot set value.");
         }
@@ -541,14 +541,14 @@ public class StringOperator : OperatorValue
 
     public static OperatorValue BuildFromParameters(string[] parameters)
     {
-        if(parameters == null || parameters.Length == 0)
+        if (parameters == null || parameters.Length == 0)
         {
             throw new ArgumentException("Cannot create a StringOperator, null or missing parameter.");
         }
 
         return BuildFromString(parameters[0]);
     }
-    
+
     public static OperatorValue BuildFromString(string? _input)
     {
         return new StringOperator(_input);

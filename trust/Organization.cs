@@ -15,7 +15,7 @@ public class Organization
         OpsPublicKeysByGroup = _opsPublicKeysByGroup;
     }
 
-    public bool SelfContainsPublicKey (PublicKeyJson _publicKeyToCheck)
+    public bool SelfContainsPublicKey(PublicKeyJson _publicKeyToCheck)
     {
         return SelfPublicKeysByGroup.Any(_item =>
             _item.Value.Any(_selfPublicKey =>

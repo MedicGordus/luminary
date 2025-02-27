@@ -18,30 +18,30 @@ public static class Helper
 
     public static void BuildPrismOperatorDictionaryFromJsonSchema(SchemaJson _schema, IDictionary<string, OperatorValue> outputDictionary)
     {
-        if(outputDictionary == null)
+        if (outputDictionary == null)
         {
             throw new ArgumentNullException("Unable to build a prism operator when the dictionary is null.");
         }
 
-        if(_schema.Properties != null)
+        if (_schema.Properties != null)
         {
-            foreach(KeyValuePair<string, SchemaJson> _deltaSchema in _schema.Properties)
+            foreach (KeyValuePair<string, SchemaJson> _deltaSchema in _schema.Properties)
             {
                 var _deltaType = GetOperatorValueTypeFromSchema(_deltaSchema.Value);
                 OperatorValue? _deltaOv = null;
 
                 // setup further structure for objects (prisms) and arrays
-                if(_deltaSchema.Value.Properties != null && _deltaSchema.Value.Properties.Count != 0)
+                if (_deltaSchema.Value.Properties != null && _deltaSchema.Value.Properties.Count != 0)
                 {
-                    if(_deltaType == OperatorValue.OperatorValueType.Prism)
+                    if (_deltaType == OperatorValue.OperatorValueType.Prism)
                     {
                         Dictionary<string, OperatorValue> _parameters = new();
                         BuildPrismOperatorDictionaryFromJsonSchema(_deltaSchema.Value, _parameters);
                         _deltaOv = new PrismOperator(_parameters);
                     }
-                    else if(_deltaType == OperatorValue.OperatorValueType.Array)
+                    else if (_deltaType == OperatorValue.OperatorValueType.Array)
                     {
-                        if(OperatorValue.OperatorValueTypeLookup.TryGetValue(_deltaSchema.Value.ArrayFormat ?? "", out var _arrayType))
+                        if (OperatorValue.OperatorValueTypeLookup.TryGetValue(_deltaSchema.Value.ArrayFormat ?? "", out var _arrayType))
                         {
                             _deltaOv = new ArrayOperator(_arrayType, []);
                         }
@@ -61,7 +61,7 @@ public static class Helper
                     _deltaOv = OperatorValue.CreateByType(_deltaType);
                 }
 
-                if(_deltaOv == null)
+                if (_deltaOv == null)
                 {
                     throw new Exception("Parsing of property failed, properties were not null or empty but the parent was not a prism or an array.");
                 }
@@ -80,27 +80,27 @@ public static class Helper
     {
         OperatorValue.OperatorValueType _output;
 
-        if(_schema.Type == SchemaJson.JsonTypes.Object)
+        if (_schema.Type == SchemaJson.JsonTypes.Object)
         {
             _output = OperatorValue.OperatorValueType.Prism;
         }
-        else if(_schema.Type == SchemaJson.JsonTypes.Array)
+        else if (_schema.Type == SchemaJson.JsonTypes.Array)
         {
             _output = OperatorValue.OperatorValueType.Array;
         }
-        else if(_schema.Type == SchemaJson.JsonTypes.Boolean)
+        else if (_schema.Type == SchemaJson.JsonTypes.Boolean)
         {
             _output = OperatorValue.OperatorValueType.Boolean;
         }
-        else if(_schema.Type == SchemaJson.JsonTypes.Integer)
+        else if (_schema.Type == SchemaJson.JsonTypes.Integer)
         {
             _output = OperatorValue.OperatorValueType.Integer;
         }
-        else if(_schema.Type == SchemaJson.JsonTypes.String)
+        else if (_schema.Type == SchemaJson.JsonTypes.String)
         {
             _output = OperatorValue.OperatorValueType.String;
         }
-        else if(_schema.Type == SchemaJson.JsonTypes.Null)
+        else if (_schema.Type == SchemaJson.JsonTypes.Null)
         {
             // wtf is a null type lol
             _output = OperatorValue.OperatorValueType.z_error;
@@ -109,7 +109,7 @@ public static class Helper
         {
             // not an object, array, boolean or null
 
-            if(_schema.Format == null)
+            if (_schema.Format == null)
             {
                 throw new Exception("Unable to get value type for string since the format is missing");
             }
@@ -122,7 +122,7 @@ public static class Helper
     public static OperatorValue? GetTarget(string targetIdentifier, PrismOperator prismContainingTarget)
     {
         (var _deltaJsonName, var _remainder) = RetrieveNextJsonName(targetIdentifier);
-        if(_deltaJsonName == null)
+        if (_deltaJsonName == null)
         {
             throw new ArgumentException(
                 string.Format(
@@ -132,11 +132,11 @@ public static class Helper
             );
         }
         OperatorValue? deltaOperator = prismContainingTarget.GetOperatorByName(_deltaJsonName);
-        if(deltaOperator != null)
+        if (deltaOperator != null)
         {
-            while(_deltaJsonName != null && _remainder.Length !=0)
+            while (_deltaJsonName != null && _remainder.Length != 0)
             {
-                if(deltaOperator is not PrismOperator)
+                if (deltaOperator is not PrismOperator)
                 {
                     throw new ArgumentException(
                         string.Format(
@@ -173,7 +173,7 @@ public static class Helper
             }
         }
 
-        return (null,input);
+        return (null, input);
     }
 
     /// <summary>
@@ -183,7 +183,7 @@ public static class Helper
     /// <param name="_payload">Payload of data.</param>
     public static void MapDataPerSchema(Dictionary<string, OperatorValue> _prismData, JsonElement _payload)
     {
-        foreach(KeyValuePair<string, OperatorValue> _deltaKeyValue in _prismData)
+        foreach (KeyValuePair<string, OperatorValue> _deltaKeyValue in _prismData)
         {
             JsonElement _childElement = _payload.GetProperty(_deltaKeyValue.Key);
 
@@ -194,7 +194,7 @@ public static class Helper
     public static void MapPropertyPerSchema(OperatorValue _data, JsonElement _element)
     {
         // parse json data
-        switch(_data.Type)
+        switch (_data.Type)
         {
             //// string-based parameters
             //
@@ -322,11 +322,11 @@ public static class Helper
             case OperatorValue.OperatorValueType.Array:
                 List<OperatorValue> _arrayData = [];
                 OperatorValue.OperatorValueType _arrayType = ((ArrayOperator)_data).ArrayType;
-                foreach(var _deltaArrayElement in _element.EnumerateArray())
+                foreach (var _deltaArrayElement in _element.EnumerateArray())
                 {
                     // create blank ov
                     var _deltaData = OperatorValue.CreateByType(_arrayType);
-                    if(_deltaData == null)
+                    if (_deltaData == null)
                     {
                         throw new Exception("Null operator value returned, array type must be bad.");
                     }
@@ -352,14 +352,14 @@ public static class Helper
                         _data.Type
                     )
                 );
-            //
-            ////
+                //
+                ////
         }
     }
 
     public static string ConvertPrismOperatorToJsonString(Dictionary<string, OperatorValue>? _keyValuePairs)
     {
-        if(_keyValuePairs == null)
+        if (_keyValuePairs == null)
         {
             return "null";
         }
@@ -368,9 +368,9 @@ public static class Helper
 
         _output.Append('{');
 
-        if(_keyValuePairs.Count != 0)
+        if (_keyValuePairs.Count != 0)
         {
-            foreach(KeyValuePair<string, OperatorValue> _deltaKeyValuePair in _keyValuePairs)
+            foreach (KeyValuePair<string, OperatorValue> _deltaKeyValuePair in _keyValuePairs)
             {
                 _output.Append(
                     string.Format(
@@ -379,7 +379,7 @@ public static class Helper
                     )
                 );
 
-                switch(_deltaKeyValuePair.Value.Type)
+                switch (_deltaKeyValuePair.Value.Type)
                 {
                     case OperatorValue.OperatorValueType.Prism:
                         _output.Append(
@@ -405,53 +405,53 @@ public static class Helper
         return _output.ToString();
     }
 
-/* this code is now in the array operator code
-    public static string ConvertArrayOperatorToJsonString(OperatorValue.OperatorValueType _arrayType, List<OperatorValue>? _entries)
-    {
-        if(_entries == null)
+    /* this code is now in the array operator code
+        public static string ConvertArrayOperatorToJsonString(OperatorValue.OperatorValueType _arrayType, List<OperatorValue>? _entries)
         {
-            return "null";
-        }
-
-        StringBuilder _output = new StringBuilder();
-
-        _output.Append('[');
-
-        if(_entries.Count != 0)
-        {
-            // this is somewhat wasteful since arrays are supposed to hold only one type but I think it is best
-            foreach(OperatorValue _deltaEntry in _entries)
+            if(_entries == null)
             {
-                switch(_deltaEntry.Type)
-                {
-                    case OperatorValue.OperatorValueType.Array:
-                        _output.Append(
-                            ConvertArrayOperatorToJsonString(((ArrayOperator)_deltaEntry).ArrayType, ((ArrayOperator)_deltaEntry).GetValue())
-                        );
-                        break;
-
-                    case OperatorValue.OperatorValueType.Prism:
-                        _output.Append(
-                            ConvertPrismOperatorToJsonString(((PrismOperator)_deltaEntry).GetValue())
-                        );
-                        break;
-
-                    default:
-                        _output.Append(
-                            _deltaEntry.ToJsonStringValue()
-                        );
-                        break;
-                }
-                _output.Append(',');
+                return "null";
             }
 
-            // remove the last comma
-            _output.Length -= 1;
+            StringBuilder _output = new StringBuilder();
+
+            _output.Append('[');
+
+            if(_entries.Count != 0)
+            {
+                // this is somewhat wasteful since arrays are supposed to hold only one type but I think it is best
+                foreach(OperatorValue _deltaEntry in _entries)
+                {
+                    switch(_deltaEntry.Type)
+                    {
+                        case OperatorValue.OperatorValueType.Array:
+                            _output.Append(
+                                ConvertArrayOperatorToJsonString(((ArrayOperator)_deltaEntry).ArrayType, ((ArrayOperator)_deltaEntry).GetValue())
+                            );
+                            break;
+
+                        case OperatorValue.OperatorValueType.Prism:
+                            _output.Append(
+                                ConvertPrismOperatorToJsonString(((PrismOperator)_deltaEntry).GetValue())
+                            );
+                            break;
+
+                        default:
+                            _output.Append(
+                                _deltaEntry.ToJsonStringValue()
+                            );
+                            break;
+                    }
+                    _output.Append(',');
+                }
+
+                // remove the last comma
+                _output.Length -= 1;
+            }
+
+            _output.Append(']');
+
+            return _output.ToString();
         }
-
-        _output.Append(']');
-
-        return _output.ToString();
-    }
-*/
+    */
 }

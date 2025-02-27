@@ -15,11 +15,11 @@ public class SchemaJson
         public const string Boolean = "boolean";
         public const string Null = "null";
     }
-    
+
     [JsonPropertyName("title")]
     public string? Title { get; set; }
 
-    
+
     [JsonPropertyName("description")]
     public string? Description { get; set; }
 

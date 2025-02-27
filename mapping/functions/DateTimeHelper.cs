@@ -35,7 +35,7 @@ public static class DateTimeHelper
 
     public static long? GetValueMillisecondsSinceEpoch(DateOnly? NullableValue)
     {
-        if(NullableValue == null)
+        if (NullableValue == null)
         {
             return null;
         }
@@ -45,7 +45,7 @@ public static class DateTimeHelper
 
     public static long? GetValueMillisecondsSinceEpoch(DateTimeOffset? NullableValue)
     {
-        if(NullableValue == null)
+        if (NullableValue == null)
         {
             return null;
         }
@@ -67,17 +67,17 @@ public static class DateTimeHelper
 
 
             // Group 2 will be the fractional part if it exists, otherwise it's an empty string
-            string _fractionalSeconds = _match.Groups[2].Success ? _match.Groups[2].Value.PadRight(7,'0') : "";
+            string _fractionalSeconds = _match.Groups[2].Success ? _match.Groups[2].Value.PadRight(7, '0') : "";
 
             // DateTimeZone deals with ticks (100 nanoseconds), so we can only parse 7 digits
-            if(_fractionalSeconds.Length > 7)
+            if (_fractionalSeconds.Length > 7)
             {
                 _fractionalSeconds = _fractionalSeconds[..7];
             }
 
-            if(DateTimeOffset.TryParseExact(_dateTimeZonePortion, DateTimeHelper.DATE_TIME_OFFSET_FORMAT, null, System.Globalization.DateTimeStyles.None, out _output))
+            if (DateTimeOffset.TryParseExact(_dateTimeZonePortion, DateTimeHelper.DATE_TIME_OFFSET_FORMAT, null, System.Globalization.DateTimeStyles.None, out _output))
             {
-                if(_fractionalSeconds != "")
+                if (_fractionalSeconds != "")
                 {
                     // add the ticks, we already made sure it is 7 digits by this time to be exactly ticks
                     _output = _output.AddTicks(int.Parse(_fractionalSeconds));
@@ -89,7 +89,7 @@ public static class DateTimeHelper
         }
         //
         //// 
-        
+
         _output = new DateTimeOffset();
 
         return false;

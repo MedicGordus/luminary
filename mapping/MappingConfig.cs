@@ -14,11 +14,11 @@ public class MappingConfig
         ExpectedInputPrismSchema = expectedInputPrismSchema;
 
         // make sure the steps are zero thru length-1 so later during execution, the steps perform as expected
-        if(steps != null && steps.Count != 0)
+        if (steps != null && steps.Count != 0)
         {
-            for(ulong _delta = 1; _delta < (ulong)steps.Count; _delta++)
+            for (ulong _delta = 1; _delta < (ulong)steps.Count; _delta++)
             {
-                if(!steps.ContainsKey(_delta))
+                if (!steps.ContainsKey(_delta))
                 {
                     throw new ArgumentException(
                         string.Format(
@@ -37,7 +37,7 @@ public class MappingConfig
 
         Steps = steps;
     }
-    
+
     public Prism Execute(JsonDocument inputPayload)
     {
         //// build empty prism operator from expected input
@@ -47,13 +47,13 @@ public class MappingConfig
         Helper.BuildPrismOperatorDictionaryFromJsonSchema(_schema, _inputPayloadPrismDictionary);
         //
         ////
-        
+
         //// map data from the payload (this way the entire input isn't "wastefully" mapped, only what is defined in the schema)
         //
         Helper.MapDataPerSchema(_inputPayloadPrismDictionary, inputPayload.RootElement);
         //
         ////
-        
+
         // at this point, an empty prism dictionary was structured, and then input data was parsed across from the payload
 
         return Execute(
@@ -61,7 +61,7 @@ public class MappingConfig
             _schema
         );
     }
-    
+
     public Prism Execute(PrismOperator inputPrismPayload, SchemaJson _inputSchema)
     {
         // build filled prism as it is used as input for each step below
@@ -82,14 +82,14 @@ public class MappingConfig
         _stepCounter += 1;
         //
         // loop thru steps (validation in constructor)
-        while(Steps.TryGetValue(_stepCounter, out var _deltaStep))
+        while (Steps.TryGetValue(_stepCounter, out var _deltaStep))
         {
             _outputPrism = new Prism(
                 _deltaStep.ProcessMappingActions(_context.GetAll()),
                 _deltaStep.PrismSchema
             );
             _context.Add(_outputPrism);
-            _stepCounter+=1;
+            _stepCounter += 1;
         }
         //
         ////

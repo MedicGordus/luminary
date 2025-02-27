@@ -1,0 +1,23 @@
+# Apply to all C# files
+[*.cs]
+
+# Naming style for parameters: _lowerCamelCase
+dotnet_naming_rule.parameters_underscore.severity = warning
+dotnet_naming_rule.parameters_underscore.symbols = parameter_symbols
+dotnet_naming_rule.parameters_underscore.style = underscore_camel_case
+
+dotnet_naming_symbols.parameter_symbols.applicable_kinds = parameter
+dotnet_naming_symbols.parameter_symbols.applicable_accessibilities = *
+
+dotnet_naming_style.underscore_camel_case.required_prefix = _
+dotnet_naming_style.underscore_camel_case.capitalization = camel_case
+
+# Naming style for local variables: lowerCamelCase (no underscore)
+dotnet_naming_rule.local_variables_camel_case.severity = warning
+dotnet_naming_rule.local_variables_camel_case.symbols = local_variable_symbols
+dotnet_naming_rule.local_variables_camel_case.style = lower_camel_case
+
+dotnet_naming_symbols.local_variable_symbols.applicable_kinds = local
+dotnet_naming_symbols.local_variable_symbols.applicable_accessibilities = *
+
+dotnet_naming_style.lower_camel_case.capitalization = camel_case

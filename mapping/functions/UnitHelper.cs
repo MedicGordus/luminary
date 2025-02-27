@@ -72,7 +72,7 @@ public static class UnitHelper
 
     private static Match UnitMatch(string? input, string unitPattern)
     {
-        if(input == null)
+        if (input == null)
         {
             throw new ArgumentNullException("Cannot parse null to value with units.");
         }

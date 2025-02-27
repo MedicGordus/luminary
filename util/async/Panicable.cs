@@ -44,9 +44,9 @@ public class Panicable
 
     public Exception GetException()
     {
-        if(E == null)
+        if (E == null)
         {
-            if(Paniced)
+            if (Paniced)
             {
                 return new Exception("An unknown exception caused a panic.");
             }

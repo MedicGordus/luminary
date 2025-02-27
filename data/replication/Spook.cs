@@ -29,7 +29,7 @@ public enum SpookTangledState : int
     /// <summary>
     /// Starting up or intentionally shut down.
     /// </summary>
-    Dead = 4
+    Dim = 4
 }
 
 /// <summary>
@@ -82,12 +82,12 @@ public class Spook
     /// <summary>
     /// What this Spook is configured for (not necessarily what is actual).
     /// </summary>
-    protected readonly SpookPrecedence ConfiguredPrecedence;   
+    protected readonly SpookPrecedence ConfiguredPrecedence;
 
     /// <summary>
     /// What this Spook is currently at.
     /// </summary>
-    protected SpookPrecedence CurrentPrecedence;   
+    protected SpookPrecedence CurrentPrecedence;
 
     /// <summary>
     /// What we identify as within our Tangle.
@@ -95,7 +95,7 @@ public class Spook
     protected readonly string SelfAddress;
 
     /// <summary>
-    /// List of expected Spooks in current Tangle.
+    /// List of expected Spooks in current Tangle (ALL IN LOWERCASE).
     /// </summary>
     protected readonly List<string> ExpectedTangleSpooks;
 
@@ -137,7 +137,7 @@ public class Spook
     /// The duration that each Spook in this Tangle expects to share health updates.
     /// </summary>
     protected readonly TimeSpan HealthInterval;
-    
+
     /// <summary>
     /// The duration that is waited before assuming a Spook unexpectedly left the Tangle.
     /// </summary>
@@ -154,23 +154,41 @@ public class Spook
     protected Task? HealthUpdator;
 
     /// <summary>
+    /// List of parallel tasks processing messages.
+    /// </summary>
+    /// <remarks>
+    /// Be aware the health loop cleans this up and awaits these before shutting down.
+    /// </remarks>
+    protected readonly List<Task> MessageProcessing;
+
+    /// <summary>
+    /// Used to prevent race conditions on the MessageProcessing list.
+    /// </summary>
+    protected readonly AsyncLock MessageProcessingLock;
+
+    /// <summary>
     /// Constructor.
     /// </summary>
+    /// <param name="_expectedTangleSpooks">Other spooks we expect within the Tangle (some may go dim at times).</param>
     /// <param name="_selfAddress">What we identify as within the Tangle.</param>
     /// <param name="_healthIntervalSeconds">How many seconds to wait before pinging a health update to the Tangle</param>
     /// <param name="_healthTimeoutSeconds">How many seconds to wait before other Spooks within our Tangle are assumed drifted.</param>
     public Spook(List<string> _expectedTangleSpooks, string _selfAddress, int _healthIntervalSeconds, int _healthTimeoutSeconds)
     {
-        ExpectedTangleSpooks = _expectedTangleSpooks;
+        ExpectedTangleSpooks = [];
+        foreach (var _deltaSpook in _expectedTangleSpooks)
+        {
+            ExpectedTangleSpooks.Add(_deltaSpook.ToLower());
+        }
         SelfAddress = _selfAddress;
         HealthInterval = TimeSpan.FromSeconds(_healthIntervalSeconds);
         HealthTimeout = TimeSpan.FromSeconds(_healthTimeoutSeconds);
 
         StopSpook = new();
-        CurrentTangledState = SpookTangledState.Dead;
+        CurrentTangledState = SpookTangledState.Dim;
         TopSpookAddress = null;
         OffloadSpookAddress = null;
-        HealthyTangleSpooks = [ _selfAddress ];
+        HealthyTangleSpooks = [_selfAddress];
         UnhealthyTangleSpooks = [];
         HealthyTangleSpookLock = AsyncLock.Create();
         TangleHealthUpdates = new Dictionary<string, HealthUpdate>() {
@@ -189,6 +207,9 @@ public class Spook
         };
 
         HealthUpdator = null;
+
+        MessageProcessing = [];
+        MessageProcessingLock = AsyncLock.Create();
     }
 
     public void Start(string[] _tangleAddresses)
@@ -215,7 +236,7 @@ public class Spook
     private async Task BroadcastAsync(string message)
     {
         List<string> _cloneHealthyTangleSpooks = [];
-        using(await HealthyTangleSpookLock.LockAsync().ConfigureAwait(false))
+        using (await HealthyTangleSpookLock.LockAsync().ConfigureAwait(false))
         {
             _cloneHealthyTangleSpooks.AddRange(HealthyTangleSpooks);
         }
@@ -248,22 +269,24 @@ public class Spook
         string _type = _parts[0];
         string _payload = _parts[1];
 
+        Task _process;
+
         switch (_type)
         {
             // this is called by new spooks joining the tangle
             //  (they are not done joining until the announce)
             case "JOIN":
-                HandleJoin(_payload);
+                _process = Task.Run(() => HandleJoinAsync(_fromAddress));
                 break;
 
             // this is the reply to joiners, with health status
             case "WELCOME":
-                await HandleWelcomeAsync(_payload).ConfigureAwait(false);
+                _process = Task.Run(() => HandleWelcomeAsync(_payload));
                 break;
 
             // this is called by a spook that has completed joining
             case "ANNOUNCE":
-                await HandleAnnounceAsync(_payload).ConfigureAwait(false);
+                _process = Task.Run(() => HandleAnnounceAsync(_payload).ConfigureAwait(false));
                 break;
 
             // distribution of data payload
@@ -296,15 +319,20 @@ public class Spook
 
             // called when a spook shuts down expectedly
             //  (regardless of it's tangled state)
-            case "DEATH":
-                HandleDeath(_payload);
+            case "DIMMING":
+                HandleDimming(_payload);
                 break;
+        }
+
+        using (await MessageProcessingLock.LockAsync().ConfigureAwait(false))
+        {
+            MessageProcessing.Add(_process);
         }
     }
 
-    private async Task HandleJoin(string _newSpookAddress)
+    private async Task HandleJoinAsync(string _newSpookAddress)
     {
-        if(!ExpectedTangleSpooks.Contains(_newSpookAddress))
+        if (!ExpectedTangleSpooks.Contains(_newSpookAddress.ToLower()))
         {
             return;
         }
@@ -317,16 +345,16 @@ public class Spook
     {
         HealthStatusJson? _theirHealthStatus = HealthStatusJson.Parse(_payload);
 
-        if(_theirHealthStatus == null || _theirHealthStatus.TangleHealth == null)
+        if (_theirHealthStatus == null || _theirHealthStatus.TangleHealth == null)
         {
             return;
         }
 
-        using(await HealthyTangleSpookLock.LockAsync().ConfigureAwait(false))
+        using (await HealthyTangleSpookLock.LockAsync().ConfigureAwait(false))
         {
             foreach (var _deltaStatus in _theirHealthStatus.TangleHealth)
             {
-                if(_deltaStatus.CurrentTangledState == SpookTangledState.Entangled)
+                if (_deltaStatus.CurrentTangledState == SpookTangledState.Entangled)
                 {
                     if (!HealthyTangleSpooks.Contains(_deltaStatus.Address))
                     {
@@ -343,7 +371,7 @@ public class Spook
 
     private async Task HandleAnnounceAsync(string _newSpookAddress)
     {
-        using(await HealthyTangleSpookLock.LockAsync().ConfigureAwait(false))
+        using (await HealthyTangleSpookLock.LockAsync().ConfigureAwait(false))
         {
             if (!HealthyTangleSpooks.Contains(_newSpookAddress))
             {
@@ -363,46 +391,54 @@ public class Spook
     {
         HealthStatusJson? _healthStatus = HealthStatusJson.Parse(_healthStatusJson);
 
-        if(_healthStatus == null)
+        if (_healthStatus == null)
         {
             return;
         }
 
-        using(await HealthyTangleSpookLock.LockAsync().ConfigureAwait(false))
+        if (ExpectedTangleSpooks.Contains(_healthStatus.Address))
         {
-            if(ExpectedTangleSpooks.Contains(_healthStatus.Address))
+            HealthUpdate? _previousHealthUpdate;
+
+            using (await HealthyTangleSpookLock.LockAsync().ConfigureAwait(false))
             {
                 // if this tangle was certainly unhealthy before, add back to healthy
                 //
                 //  note that healthy doesn't mean entangled.
                 //
-                if(UnhealthyTangleSpooks.Contains(_healthStatus.Address))
+                if (UnhealthyTangleSpooks.Contains(_healthStatus.Address))
                 {
                     UnhealthyTangleSpooks.Remove(_healthStatus.Address);
                 }
-                
-                TangleHealthUpdates.TryGetValue(_healthStatus.Address, out var _previousHealthUpdate);
 
-                var _newHealthUpdate = new HealthUpdate(
+                // try to capture the last update, if there was one
+                TangleHealthUpdates.TryGetValue(_healthStatus.Address, out _previousHealthUpdate);
+
+                TangleHealthUpdates[_healthStatus.Address] = new HealthUpdate(
                     _healthStatus,
                     DateTime.UtcNow
                 );
+            }
 
-                TangleHealthUpdates[_healthStatus.Address] = _newHealthUpdate;
-
-                if(_previousHealthUpdate != null)
+            // if the precedence (configured or current) changed, double check precedence is correct.
+            if (_previousHealthUpdate != null)
+            {
+                if (
+                        _previousHealthUpdate.Status.CurrentPrecedence != _healthStatus.CurrentPrecedence
+                    ||
+                        _previousHealthUpdate.Status.ConfiguredPrecedence != _healthStatus.ConfiguredPrecedence
+                )
                 {
-                    todo("if something changed, we may need to adjust the tangle.");
+                    await UpdatePrecedenceAsync().ConfigureAwait(false);
                 }
             }
         }
-
     }
 
     private async Task UpdatePrecedenceAsync()
     {
         // do nothing if we are in a peer tangle
-        if(CurrentPrecedence == SpookPrecedence.Peer)
+        if (CurrentPrecedence == SpookPrecedence.Peer)
         {
             return;
         }
@@ -411,9 +447,9 @@ public class Spook
         //
         // collects the statuses into a single list
         List<HealthStatusJson> _tangledSpookStatuses;
-        using(await HealthyTangleSpookLock.LockAsync().ConfigureAwait(false))
+        using (await HealthyTangleSpookLock.LockAsync().ConfigureAwait(false))
         {
-            _tangledSpookStatuses = [.. 
+            _tangledSpookStatuses = [..
                 (
                     from
                         _item in TangleHealthUpdates.Values
@@ -426,22 +462,39 @@ public class Spook
         //
         // scores each spook based on it's configured precedence
         Dictionary<string, int> _entangledSpookScores = [];
+        int _spookCount = 0;
         int _topScore = -10;
-        foreach(var _deltaStatus in _tangledSpookStatuses)
+        foreach (var _deltaStatus in _tangledSpookStatuses)
         {
             // only score spooks that are entangled
-            if(_deltaStatus.CurrentTangledState == SpookTangledState.Entangled)
+            if (_deltaStatus.CurrentTangledState == SpookTangledState.Entangled)
             {
-                int _score = (int)_deltaStatus.ConfiguredPrecedence;
+                // increment how many spooks are entangled
+                _spookCount += 1;
 
-                if(_score > _topScore)
+                //// gather scores
+                //
+                int _score = (int)_deltaStatus.ConfiguredPrecedence;
+                //
+                if (_score > _topScore)
                 {
                     _topScore = _score;
                 }
-
+                //
                 _entangledSpookScores.Add(_deltaStatus.Address, _score);
+                //
+                ////
             }
         }
+        ////// verifies we have a quorum
+        ////
+        if (_spookCount == 1 || (((double)_spookCount) / ((double)ExpectedTangleSpooks.Count) <= 0.5d))
+        {
+            // if there is only one spook in our tangle, or less or equal to half reachable, we assume the other spooks are handling things.
+            todo("we have to dim until we have a quorum");
+        }
+        ////
+        //////
         //
         // collects the list of addresses for the top scorers
         //  (typically one, but could temporarily be multiple)
@@ -458,7 +511,7 @@ public class Spook
         ];
         //
         // basic check if we are alone
-        if(_entangledSpookScores.Count < 2 || _topScorers.Count == 0)
+        if (_entangledSpookScores.Count < 2 || _topScorers.Count == 0)
         {
             //
             // for clarity: A spook that is alone cannot form a quorum so it
@@ -469,7 +522,7 @@ public class Spook
 
 
             // if we knew we were alone already, do nothing
-            if(CurrentTangledState == SpookTangledState.Drifting)
+            if (CurrentTangledState == SpookTangledState.Drifting)
             {
                 return;
             }
@@ -483,33 +536,43 @@ public class Spook
 
         //// now that we have scores, we will try to make sure the top spook is selected
         //
-        if(_topScorers.Count == 1)
+        // if the top spook is already the top, we don't need to do anything
+        using (await HealthyTangleSpookLock.LockAsync().ConfigureAwait(false))
         {
-            // if the top spook is already the top, we don't need to do anything
-            using(await HealthyTangleSpookLock.LockAsync().ConfigureAwait(false))
+            int _topPrecendenceCount = 0;
+            foreach (var _deltaScorer in _topScorers)
             {
-                if(TangleHealthUpdates[_topScorers[0]].Status.CurrentPrecedence == SpookPrecedence.Top)
+                if (TangleHealthUpdates[_deltaScorer].Status.CurrentPrecedence == SpookPrecedence.Top)
                 {
-                    return;
+                    _topPrecendenceCount += 1;
+
+                    // once we have more than one, we exit the loop as that is all we need to know.
+                    if (_topPrecendenceCount > 1)
+                    {
+                        break;
+                    }
                 }
             }
+
+            // the top spook is already the correct one so we can exit
+            if (_topPrecendenceCount == 1)
+            {
+                return;
+            }
+        }
+        //
+        // at this point, 0 or 2+ spooks think they are the top...
+        //
+        //  ultimately, the top configured spook isn't the top one at this point.
+        //
+        if (_topScorers.Count == 1)
+        {
 
             // at this point there is a spook that should be the top but it isn't, so we need to vote it in
             todo("vote top scorer");
         }
         else
         {
-            // if the top spook is already the top, we don't need to do anything
-            using(await HealthyTangleSpookLock.LockAsync().ConfigureAwait(false))
-            {
-                foreach(var _deltaScorer in _topScorers)
-                {
-                    if(TangleHealthUpdates[_deltaScorer].Status.CurrentPrecedence == SpookPrecedence.Top)
-                    {
-                        return;
-                    }
-                }
-            }
 
             // at this point there is a spook that should be the top but it isn't, so we need to vote it in
             todo("vote top scorer");
@@ -520,18 +583,18 @@ public class Spook
 
     private async Task StartHealthUpdatesAsync()
     {
-        while(!StopSpook.Task.IsCompleted)
+        while (!StopSpook.Task.IsCompleted)
         {
             // capture start ticks so we can deduct the duration of processing from the wait
             long _startTicks = DateTime.Now.Ticks;
 
-            // Check for timeouts
+
+            // update the list of healthy and unhealthy spooks based on our last received health from each
             DateTimeOffset now = DateTime.UtcNow;
-            
-            using(await HealthyTangleSpookLock.LockAsync().ConfigureAwait(false))
+            using (await HealthyTangleSpookLock.LockAsync().ConfigureAwait(false))
             {
                 List<string> _unhealthySpooks;
-                
+
                 _unhealthySpooks = [..
                     (
                         from
@@ -565,25 +628,36 @@ public class Spook
 
 
             // Send health update
-            string _selfHealth = (await BuildSelfHealthStatusAsync().ConfigureAwait(false)).ToJsonString() ?? "";;
+            string _selfHealth = (await BuildSelfHealthStatusAsync().ConfigureAwait(false)).ToJsonString() ?? ""; ;
             await BroadcastAsync($"HEALTH|{_selfHealth}").ConfigureAwait(false);
+
+
+            // lastly we clean up message task list    
+            using (await MessageProcessingLock.LockAsync().ConfigureAwait(false))
+            {
+                MessageProcessing.RemoveAll(_item => _item.IsCompleted || _item.IsCanceled);
+            }
+
 
             // wait for the health interval minus how long ^ this took to run
             long _durationTicks = DateTime.Now.Ticks - _startTicks;
-            if(_durationTicks > 0)
+            if (_durationTicks > 0)
             {
                 // wait the duration or when this spook shuts down
                 await Task.WhenAny(Task.Delay(HealthInterval.Add(new TimeSpan(-_durationTicks))), StopSpook.Task).ConfigureAwait(false);
             }
         }
 
+        // make sure all our messages are done processing before we dim
+        await Task.WhenAll(MessageProcessing);
+
         // let tangle know we are going down
-        await BroadcastAsync($"DEATH|{SelfAddress}").ConfigureAwait(false);
+        await BroadcastAsync($"DIMMING|{SelfAddress}").ConfigureAwait(false);
     }
 
     protected async Task<HealthStatusJson> BuildSelfHealthStatusAsync()
     {
-        using(await HealthyTangleSpookLock.LockAsync().ConfigureAwait(false))
+        using (await HealthyTangleSpookLock.LockAsync().ConfigureAwait(false))
         {
             return BuildSelfHealthStatusNoLock();
         }
@@ -591,19 +665,20 @@ public class Spook
 
     protected HealthStatusJson BuildSelfHealthStatusNoLock()
     {
-        return new HealthStatusJson {
+        return new HealthStatusJson
+        {
             Address = SelfAddress,
             ConfiguredPrecedence = ConfiguredPrecedence,
             CurrentPrecedence = CurrentPrecedence,
             CurrentTangledState = CurrentTangledState,
             TangleHealth = [..
                 (
-                    from 
+                    from
                         _item in TangleHealthUpdates
                     select
                         _item.Value.Status
                     into _itemWithoutDeeperHealth
-                        let _ = _itemWithoutDeeperHealth.TangleHealth = null
+                    let _ = _itemWithoutDeeperHealth.TangleHealth = null
                     select _itemWithoutDeeperHealth
                 )
             ]

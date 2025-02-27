@@ -10,17 +10,17 @@ public class MappingContext
 
     public void Add(Prism data, ulong? step = null)
     {
-        if(step == null)
+        if (step == null)
         {
             step = Interlocked.Increment(ref StepCounter);
-            
+
             // make sure we increment past any used keys
-            while(DataStore.ContainsKey(StepCounter))
+            while (DataStore.ContainsKey(StepCounter))
             {
                 step = Interlocked.Increment(ref StepCounter);
             }
         }
-        
+
         DataStore[step.Value] = data;
     }
 

@@ -19,9 +19,9 @@ public class MappingStepJson
     {
         Dictionary<ulong, MappingStepConfig> output = [];
 
-        if(_steps != null && _steps.Count != 0)
-        {        
-            foreach(KeyValuePair<ulong, MappingStepJson> _deltaJson in _steps)
+        if (_steps != null && _steps.Count != 0)
+        {
+            foreach (KeyValuePair<ulong, MappingStepJson> _deltaJson in _steps)
             {
                 output.Add(
                     _deltaJson.Key,

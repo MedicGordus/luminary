@@ -52,12 +52,12 @@ public class DateTimeOffsetOperator : OperatorValue
     {
         long? _epoch = DateTimeHelper.GetValueMillisecondsSinceEpoch(NullableValue);
 
-        if(_epoch == null)
+        if (_epoch == null)
         {
             return new BigIntegerOperator(null);
         }
 
-        if(BigInteger.TryParse(_epoch.ToString(), out var _converted))
+        if (BigInteger.TryParse(_epoch.ToString(), out var _converted))
         {
             return new BigIntegerOperator(_converted);
         }
@@ -76,7 +76,7 @@ public class DateTimeOffsetOperator : OperatorValue
     {
         long? _epoch = DateTimeHelper.GetValueMillisecondsSinceEpoch(NullableValue);
 
-        if(_epoch == null)
+        if (_epoch == null)
         {
             return new DecimalOperator(null);
         }
@@ -93,7 +93,7 @@ public class DateTimeOffsetOperator : OperatorValue
     {
         long? _epoch = DateTimeHelper.GetValueMillisecondsSinceEpoch(NullableValue);
 
-        if(_epoch == null)
+        if (_epoch == null)
         {
             return new DecimalOperator(null);
         }
@@ -128,19 +128,19 @@ public class DateTimeOffsetOperator : OperatorValue
 
     protected bool InheritableValueEqual(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute valueequal.");
         }
 
-        if(parameters[0] is not DateTimeOffsetOperator)
+        if (parameters[0] is not DateTimeOffsetOperator)
         {
             throw new ArgumentException("Cannot valueequal when the parameter is not a datetimeoffset.");
         }
 
         DateTimeOffset? _paramValue = ((DateTimeOffsetOperator)parameters[0]).GetValue();
 
-        if(_paramValue == null)
+        if (_paramValue == null)
         {
             throw new ArgumentException("Cannot valueequal when the parameter is null.");
         }
@@ -160,19 +160,19 @@ public class DateTimeOffsetOperator : OperatorValue
 
     public override OperatorValue? GreaterOrEqual(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute greaterorequal.");
         }
 
-        if(parameters[0] is not DateTimeOffsetOperator)
+        if (parameters[0] is not DateTimeOffsetOperator)
         {
             throw new ArgumentException("Cannot greaterorequal when the parameter is not a datetimeoffset.");
         }
 
         DateTimeOffset? _paramValue = ((DateTimeOffsetOperator)parameters[0]).GetValue();
 
-        if(_paramValue == null)
+        if (_paramValue == null)
         {
             throw new ArgumentException("Cannot greaterorequal when the parameter is null.");
         }
@@ -182,19 +182,19 @@ public class DateTimeOffsetOperator : OperatorValue
 
     public override OperatorValue? GreatherThan(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute greaterthan.");
         }
 
-        if(parameters[0] is not DateTimeOffsetOperator)
+        if (parameters[0] is not DateTimeOffsetOperator)
         {
             throw new ArgumentException("Cannot greaterthan when the parameter is not a datetimeoffset.");
         }
 
         DateTimeOffset? _paramValue = ((DateTimeOffsetOperator)parameters[0]).GetValue();
 
-        if(_paramValue == null)
+        if (_paramValue == null)
         {
             throw new ArgumentException("Cannot greaterthan when the parameter is null.");
         }
@@ -204,14 +204,14 @@ public class DateTimeOffsetOperator : OperatorValue
 
     public override OperatorValue? IfNotFilled(OperatorValue[]? parameters)
     {
-        if(NullableValue == null)
+        if (NullableValue == null)
         {
-            if(parameters == null || parameters.Length == 0 || parameters[0] == null)
+            if (parameters == null || parameters.Length == 0 || parameters[0] == null)
             {
                 throw new ArgumentException("Parameters null or parameter missing. Cannot execute ifnotfilled.");
             }
 
-            if(parameters[0] is not DateTimeOffsetOperator)
+            if (parameters[0] is not DateTimeOffsetOperator)
             {
                 throw new ArgumentException("Cannot ifnotfilled when the parameter is not a datetimeoffset.");
             }
@@ -249,19 +249,19 @@ public class DateTimeOffsetOperator : OperatorValue
 
     public override OperatorValue? LessOrEqual(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute lessorequal.");
         }
 
-        if(parameters[0] is not DateTimeOffsetOperator)
+        if (parameters[0] is not DateTimeOffsetOperator)
         {
             throw new ArgumentException("Cannot lessorequal when the parameter is not a datetimeoffset.");
         }
 
         DateTimeOffset? _paramValue = ((DateTimeOffsetOperator)parameters[0]).GetValue();
 
-        if(_paramValue == null)
+        if (_paramValue == null)
         {
             throw new ArgumentException("Cannot lessorequal when the parameter is null.");
         }
@@ -271,19 +271,19 @@ public class DateTimeOffsetOperator : OperatorValue
 
     public override OperatorValue? LessThan(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute lessthan.");
         }
 
-        if(parameters[0] is not DateTimeOffsetOperator)
+        if (parameters[0] is not DateTimeOffsetOperator)
         {
             throw new ArgumentException("Cannot lessthan when the parameter is not a datetimeoffset.");
         }
 
         DateTimeOffset? _paramValue = ((DateTimeOffsetOperator)parameters[0]).GetValue();
 
-        if(_paramValue == null)
+        if (_paramValue == null)
         {
             throw new ArgumentException("Cannot lessthan when the parameter is null.");
         }
@@ -338,19 +338,19 @@ public class DateTimeOffsetOperator : OperatorValue
 
     protected bool InheritableNotEqual(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute notequal.");
         }
 
-        if(parameters[0] is not DateTimeOffsetOperator)
+        if (parameters[0] is not DateTimeOffsetOperator)
         {
             throw new ArgumentException("Cannot notequal when the parameter is not a datetimeoffset.");
         }
 
         DateTimeOffset? _paramValue = ((DateTimeOffsetOperator)parameters[0]).GetValue();
 
-        if(_paramValue == null)
+        if (_paramValue == null)
         {
             throw new ArgumentException("Cannot notequal when the parameter is null.");
         }
@@ -390,7 +390,7 @@ public class DateTimeOffsetOperator : OperatorValue
 
     public override string ToJsonStringValue()
     {
-        if(NullableValue == null)
+        if (NullableValue == null)
         {
             return "null";
         }
@@ -423,7 +423,7 @@ public class DateTimeOffsetOperator : OperatorValue
 
     public override string ToStringValue()
     {
-        if(NullableValue == null)
+        if (NullableValue == null)
         {
             throw new ArgumentException("Value null. Cannot execute tostringvalue.");
         }
@@ -433,32 +433,32 @@ public class DateTimeOffsetOperator : OperatorValue
 
     public override void SetValue(OperatorValue value)
     {
-        if(value is not DateTimeOffsetOperator)
+        if (value is not DateTimeOffsetOperator)
         {
             throw new ArgumentException("Cannot setvalue when the parameter is not a datetimeoffset.");
         }
 
         NullableValue = ((DateTimeOffsetOperator)value).GetValue();
     }
-    
+
     public static OperatorValue BuildFromParameters(string[] parameters)
     {
-        if(parameters == null || parameters.Length == 0)
+        if (parameters == null || parameters.Length == 0)
         {
             throw new ArgumentException("Cannot create a DateTimeOffsetOperator, null or missing parameter.");
         }
 
         return BuildFromString(parameters[0]);
     }
-    
+
     public static OperatorValue BuildFromString(string? _input)
     {
-        if(_input == null)
+        if (_input == null)
         {
             return new DateTimeOffsetOperator(null);
         }
 
-        if(DateTimeHelper.TrySpecialParseExactDateTimeOffset(_input,  out DateTimeOffset _value))
+        if (DateTimeHelper.TrySpecialParseExactDateTimeOffset(_input, out DateTimeOffset _value))
         {
             return new DateTimeOffsetOperator(_value);
         }
@@ -471,29 +471,29 @@ public class DateTimeOffsetOperator : OperatorValue
                 )
             );
         }
-    }    
-    protected OperatorValue?  MathAddOrSubtract(OperatorValue[]? parameters, bool _adding)
+    }
+    protected OperatorValue? MathAddOrSubtract(OperatorValue[]? parameters, bool _adding)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute mathaddorsubtract.");
         }
 
-        if(parameters[0] is not DurationOperator)
+        if (parameters[0] is not DurationOperator)
         {
             throw new ArgumentException("Cannot mathaddorsubtract when the parameter is not a duration.");
         }
 
         Duration? _paramValue = ((DurationOperator)parameters[0]).GetValue();
 
-        if(_paramValue == null)
+        if (_paramValue == null)
         {
             throw new ArgumentException("Cannot mathaddorsubtract when the parameter is null.");
         }
 
 
         DateTimeOffset _dto;
-        if(_adding)
+        if (_adding)
         {
             _dto = _paramValue.AddToDateTimeOffset(
                 NullableValue.Value

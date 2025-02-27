@@ -16,7 +16,7 @@ public class AuthUpdateJson
 
     [JsonPropertyName("nuance")]
     public string? Nuance { get; set; }
-    
+
     [JsonPropertyName("public-key")]
     public PublicKeyJson? PublicKey { get; set; }
 
@@ -25,7 +25,7 @@ public class AuthUpdateJson
 
     public string? GetSignableData()
     {
-        if(Url == null || Nuance == null)
+        if (Url == null || Nuance == null)
         {
             return null;
         }

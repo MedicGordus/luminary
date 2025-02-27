@@ -24,12 +24,12 @@ public class DoubleOperator : OperatorValue
 
     protected double InheritableBitwiseMod(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute bitwisemod.");
         }
 
-        if(parameters[0] is not DoubleOperator)
+        if (parameters[0] is not DoubleOperator)
         {
             throw new ArgumentException("Cannot bitwisemod when the parameter is not a double.");
         }
@@ -86,12 +86,12 @@ public class DoubleOperator : OperatorValue
 
     public override OperatorValue? ConvertToDoubleUnits(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute converttointegerunits.");
         }
 
-        if(parameters[0] is not StringOperator)
+        if (parameters[0] is not StringOperator)
         {
             throw new ArgumentException("Cannot converttodoubleunits when the unit parameter is not a string.");
         }
@@ -121,12 +121,12 @@ public class DoubleOperator : OperatorValue
 
     protected bool InheritableValueEqual(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute valueequal.");
         }
 
-        if(parameters[0] is not DoubleOperator)
+        if (parameters[0] is not DoubleOperator)
         {
             throw new ArgumentException("Cannot valueequal when the parameter is not a double.");
         }
@@ -146,12 +146,12 @@ public class DoubleOperator : OperatorValue
 
     protected bool InheritableGreaterOrEqual(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute greaterorequal.");
         }
 
-        if(parameters[0] is not DoubleOperator)
+        if (parameters[0] is not DoubleOperator)
         {
             throw new ArgumentException("Cannot greaterorequal when the parameter is not a double.");
         }
@@ -168,12 +168,12 @@ public class DoubleOperator : OperatorValue
 
     protected bool InheritableGreatherThan(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute greaterthan.");
         }
 
-        if(parameters[0] is not DoubleOperator)
+        if (parameters[0] is not DoubleOperator)
         {
             throw new ArgumentException("Cannot greaterthan when the parameter is not a double.");
         }
@@ -190,12 +190,12 @@ public class DoubleOperator : OperatorValue
 
     public override OperatorValue? IfNotFilled(OperatorValue[]? parameters)
     {
-        if(NullableValue != null)
+        if (NullableValue != null)
         {
             return new DoubleOperator(NullableValue);
         }
 
-        if(parameters == null || parameters.Length == 0)
+        if (parameters == null || parameters.Length == 0)
         {
             throw new ArgumentException("parameters null or parameter missing. Cannot execute ifnotfilled.");
         }
@@ -230,12 +230,12 @@ public class DoubleOperator : OperatorValue
 
     protected bool InheritableLessOrEqual(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute lessorequal.");
         }
 
-        if(parameters[0] is not DoubleOperator)
+        if (parameters[0] is not DoubleOperator)
         {
             throw new ArgumentException("Cannot lessorequal when the parameter is not a double.");
         }
@@ -252,12 +252,12 @@ public class DoubleOperator : OperatorValue
 
     protected bool InheritableLessThan(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute lessthan.");
         }
 
-        if(parameters[0] is not DoubleOperator)
+        if (parameters[0] is not DoubleOperator)
         {
             throw new ArgumentException("Cannot lessorequal when the parameter is not a double.");
         }
@@ -274,12 +274,12 @@ public class DoubleOperator : OperatorValue
 
     protected double InheritableMathAdd(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute mathadd.");
         }
 
-        if(parameters[0] is not DoubleOperator)
+        if (parameters[0] is not DoubleOperator)
         {
             throw new ArgumentException("Cannot mathadd when the parameter is not a double.");
         }
@@ -296,12 +296,12 @@ public class DoubleOperator : OperatorValue
 
     protected double InheritableMathAverage(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute mathaverage.");
         }
 
-        if(parameters[0] is not DoubleOperator)
+        if (parameters[0] is not DoubleOperator)
         {
             throw new ArgumentException("Cannot mathaverage when the parameter is not a double.");
         }
@@ -318,7 +318,7 @@ public class DoubleOperator : OperatorValue
 
     protected double InheritableMathCeiling(OperatorValue[]? parameters)
     {
-        if(NullableValue == null)
+        if (NullableValue == null)
         {
             throw new ArgumentException("Value null. Cannot execute mathceiling.");
         }
@@ -332,12 +332,12 @@ public class DoubleOperator : OperatorValue
 
     protected double InheritableMathDivide(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute mathdivide.");
         }
 
-        if(parameters[0] is not DoubleOperator)
+        if (parameters[0] is not DoubleOperator)
         {
             throw new ArgumentException("Cannot mathdivide when the parameter is not a double.");
         }
@@ -354,7 +354,7 @@ public class DoubleOperator : OperatorValue
 
     protected double InheritableMathFloor(OperatorValue[]? parameters)
     {
-        if(NullableValue == null)
+        if (NullableValue == null)
         {
             throw new ArgumentException("Value null. Cannot execute mathfloor.");
         }
@@ -369,12 +369,12 @@ public class DoubleOperator : OperatorValue
 
     protected double InheritableMathMultiply(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute mathmultiply.");
         }
 
-        if(parameters[0] is not DoubleOperator)
+        if (parameters[0] is not DoubleOperator)
         {
             throw new ArgumentException("Cannot mathmultiply when the parameter is not a decimal.");
         }
@@ -391,12 +391,12 @@ public class DoubleOperator : OperatorValue
 
     protected double InheritableMathPower(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute mathpower.");
         }
 
-        if(parameters[0] is not DoubleOperator)
+        if (parameters[0] is not DoubleOperator)
         {
             throw new ArgumentException("Cannot mathpower when the parameter is not a decimal.");
         }
@@ -413,12 +413,12 @@ public class DoubleOperator : OperatorValue
 
     protected double InheritableMathRound(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute mathround.");
         }
 
-        if(parameters[0] is not IntegerOperator)
+        if (parameters[0] is not IntegerOperator)
         {
             throw new ArgumentException("Cannot mathround when the parameter is not an integer.");
         }
@@ -435,12 +435,12 @@ public class DoubleOperator : OperatorValue
 
     protected double InheritableMathSubtract(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute mathsubtract.");
         }
 
-        if(parameters[0] is not DoubleOperator)
+        if (parameters[0] is not DoubleOperator)
         {
             throw new ArgumentException("Cannot mathsubtract when the parameter is not a double.");
         }
@@ -457,12 +457,12 @@ public class DoubleOperator : OperatorValue
 
     protected bool InheritableNotEqual(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute notequal.");
         }
 
-        if(parameters[0] is not DoubleOperator)
+        if (parameters[0] is not DoubleOperator)
         {
             throw new ArgumentException("Cannot notequal when the parameter is not an integer.");
         }
@@ -527,7 +527,7 @@ public class DoubleOperator : OperatorValue
 
     public override string ToStringValue()
     {
-        if(NullableValue == null)
+        if (NullableValue == null)
         {
             throw new ArgumentException("Value null. Cannot execute tostringvalue.");
         }
@@ -537,32 +537,32 @@ public class DoubleOperator : OperatorValue
 
     public override void SetValue(OperatorValue _source)
     {
-        if(_source is not DoubleOperator)
+        if (_source is not DoubleOperator)
         {
             throw new ArgumentException("Source OperatorValue wrong type, cannot set value.");
         }
 
         NullableValue = ((DoubleOperator)_source).NullableValue;
     }
-    
+
     public static OperatorValue BuildFromParameters(string[] parameters)
     {
-        if(parameters == null || parameters.Length == 0)
+        if (parameters == null || parameters.Length == 0)
         {
             throw new ArgumentException("Cannot create a DoubleOperator, null or missing parameter.");
         }
-        
+
         return BuildFromString(parameters[0]);
     }
-    
+
     public static OperatorValue BuildFromString(string? _input)
     {
-        if(_input == null)
+        if (_input == null)
         {
             return new DoubleOperator(null);
         }
 
-        if(double.TryParse(_input, out double _value))
+        if (double.TryParse(_input, out double _value))
         {
             return new DoubleOperator(_value);
         }

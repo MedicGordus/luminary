@@ -33,7 +33,7 @@ public class Duration
     /// </summary>
     public const string ISO_8601_DURATION_REGEX = @"^P((?<years>\d+(\.\d+)?)Y)?((?<months>\d+(\.\d+)?)M)?((?<weeks>\d+(\.\d+)?)W)?((?<days>\d+(\.\d+)?)D)?(T((?<hours>\d+(\.\d+)?)H)?((?<minutes>\d+(\.\d+)?)M)?((?<seconds>\d+(\.\d+)?)S)?)?$";
 
-    
+
 
     /// <summary>
     /// How many nanoseconds are in a second lol.
@@ -60,7 +60,7 @@ public class Duration
         Seconds = _seconds;
         Nanoseconds = _nanoseconds;
     }
-    
+
     // Add two durations
     public static Duration operator +(Duration _left, Duration _right)
     {
@@ -77,7 +77,7 @@ public class Duration
 
         return _output;
     }
-    
+
     // Subtract one duration from another
     public static Duration operator -(Duration _left, Duration _right)
     {
@@ -103,12 +103,12 @@ public class Duration
     {
         return new Duration(Years, Months, Weeks, Days, Hours, Minutes, Seconds, Nanoseconds);
     }
-    
-#region "base additions(reusable for subtractions)"
+
+    #region "base additions(reusable for subtractions)"
 
     public void AddYears(double? _years)
     {
-        if(_years != null)
+        if (_years != null)
         {
             Years = (Years ?? 0) + _years;
         }
@@ -116,7 +116,7 @@ public class Duration
 
     public void AddMonths(double? _months)
     {
-        if(_months != null)
+        if (_months != null)
         {
             Months = (Months ?? 0) + _months;
         }
@@ -124,7 +124,7 @@ public class Duration
 
     public void AddWeeks(double? _weeks)
     {
-        if(_weeks != null)
+        if (_weeks != null)
         {
             Weeks = (Weeks ?? 0) + _weeks;
         }
@@ -132,7 +132,7 @@ public class Duration
 
     public void AddDays(double? _days)
     {
-        if(_days != null)
+        if (_days != null)
         {
             Days = (Days ?? 0) + _days;
         }
@@ -140,7 +140,7 @@ public class Duration
 
     public void AddHours(double? _hours)
     {
-        if(_hours != null)
+        if (_hours != null)
         {
             Hours = (Hours ?? 0) + _hours;
         }
@@ -148,7 +148,7 @@ public class Duration
 
     public void AddMinutes(double? _minutes)
     {
-        if(_minutes != null)
+        if (_minutes != null)
         {
             Minutes = (Minutes ?? 0) + _minutes;
         }
@@ -156,7 +156,7 @@ public class Duration
 
     public void AddSeconds(long? _seconds)
     {
-        if(_seconds != null)
+        if (_seconds != null)
         {
             Seconds = (Seconds ?? 0) + _seconds;
         }
@@ -164,15 +164,15 @@ public class Duration
 
     public void AddNanoseconds(long? _nanoseconds)
     {
-        if(_nanoseconds != null)
+        if (_nanoseconds != null)
         {
             Nanoseconds = (Nanoseconds ?? 0) + _nanoseconds;
         }
     }
 
-#endregion
+    #endregion
 
-#region "operators"
+    #region "operators"
     protected static bool AllValuesEqual(Duration _left, Duration _right)
     {
         bool _yearsMatch = _left.Years == _right.Years;
@@ -189,33 +189,33 @@ public class Duration
 
     public static bool operator ==(Duration? _left, Duration? _right)
     {
-        if(_left == null)
+        if (_left == null)
         {
-            if(_right == null)
+            if (_right == null)
             {
                 return true;
             }
-            
+
             return false;
         }
-        else if(_right == null)
+        else if (_right == null)
         {
             return false;
         }
 
         // performs a check if both right and left only have one parameter set
-        if(DurationsSingleValueComparable(_left, _right, out ComparableResult _difference))
+        if (DurationsSingleValueComparable(_left, _right, out ComparableResult _difference))
         {
             return _difference == ComparableResult.LeftEqualToRight;
         }
 
-        if(!DurationsComparable(_left, _right))
+        if (!DurationsComparable(_left, _right))
         {
             throw new ArgumentException("Cannot compare the two durations with their designated field values since leap years and leap seconds exist.");
         }
 
         // if by random chance, all fields are equal, we can return that they are equal
-        if(AllValuesEqual(_left, _right))
+        if (AllValuesEqual(_left, _right))
         {
             return true;
         }
@@ -232,27 +232,27 @@ public class Duration
 
     public static bool operator !=(Duration? _left, Duration? _right)
     {
-        if(_left == null)
+        if (_left == null)
         {
-            if(_right == null)
+            if (_right == null)
             {
                 return false;
             }
-            
+
             return true;
         }
-        else if(_right == null)
+        else if (_right == null)
         {
             return true;
         }
 
         // performs a check if both right and left only have one parameter set
-        if(DurationsSingleValueComparable(_left, _right, out ComparableResult _difference))
+        if (DurationsSingleValueComparable(_left, _right, out ComparableResult _difference))
         {
             return _difference != ComparableResult.LeftEqualToRight;
         }
 
-        if(!DurationsComparable(_left, _right))
+        if (!DurationsComparable(_left, _right))
         {
             throw new ArgumentException("Cannot compare the two durations with their designated field values since leap years and leap seconds exist.");
         }
@@ -287,7 +287,7 @@ public class Duration
     protected static bool DurationsSingleValueComparable(Duration _left, Duration _right, out ComparableResult _difference)
     {
         // first ensure that the left nulls are the same as the right nulls
-        if(
+        if (
             !(
                 YearsComparible(_left, _right)
             &
@@ -323,7 +323,7 @@ public class Duration
         bool _secondsNull = _left.Seconds == null;
         bool _nanosecondsNull = _left.Nanoseconds == null;
         //
-        int _nullCount = 
+        int _nullCount =
                 (_yearsNull ? 1 : 0)
             +
                 (_monthsNull ? 1 : 0)
@@ -341,7 +341,7 @@ public class Duration
                 (_nanosecondsNull ? 1 : 0)
         ;
         //
-        if(_nullCount != 7)
+        if (_nullCount != 7)
         {
             // more than one parameter is not null, so we cannot compare a single one of them
             _difference = ComparableResult.z_error;
@@ -351,35 +351,35 @@ public class Duration
         ////
 
         // now we return the comparible result based on which one is not null
-        if(_yearsNull == false)
+        if (_yearsNull == false)
         {
             _difference = _left.Years < _right.Years ? ComparableResult.LeftLessThanRight : (_left.Years == _right.Years ? ComparableResult.LeftEqualToRight : ComparableResult.LeftGreaterThanRight);
         }
-        else if(_monthsNull == false)
+        else if (_monthsNull == false)
         {
             _difference = _left.Months < _right.Months ? ComparableResult.LeftLessThanRight : (_left.Years == _right.Years ? ComparableResult.LeftEqualToRight : ComparableResult.LeftGreaterThanRight);
         }
-        else if(_weeksNull == false)
+        else if (_weeksNull == false)
         {
             _difference = _left.Weeks < _right.Weeks ? ComparableResult.LeftLessThanRight : (_left.Weeks == _right.Weeks ? ComparableResult.LeftEqualToRight : ComparableResult.LeftGreaterThanRight);
         }
-        else if(_daysNull == false)
+        else if (_daysNull == false)
         {
             _difference = _left.Days < _right.Days ? ComparableResult.LeftLessThanRight : (_left.Days == _right.Days ? ComparableResult.LeftEqualToRight : ComparableResult.LeftGreaterThanRight);
         }
-        else if(_hoursNull == false)
+        else if (_hoursNull == false)
         {
             _difference = _left.Hours < _right.Hours ? ComparableResult.LeftLessThanRight : (_left.Hours == _right.Hours ? ComparableResult.LeftEqualToRight : ComparableResult.LeftGreaterThanRight);
         }
-        else if(_minutesNull == false)
+        else if (_minutesNull == false)
         {
             _difference = _left.Minutes < _right.Minutes ? ComparableResult.LeftLessThanRight : (_left.Minutes == _right.Minutes ? ComparableResult.LeftEqualToRight : ComparableResult.LeftGreaterThanRight);
         }
-        else if(_secondsNull == false)
+        else if (_secondsNull == false)
         {
             _difference = _left.Seconds < _right.Seconds ? ComparableResult.LeftLessThanRight : (_left.Seconds == _right.Seconds ? ComparableResult.LeftEqualToRight : ComparableResult.LeftGreaterThanRight);
         }
-        else if(_nanosecondsNull == false)
+        else if (_nanosecondsNull == false)
         {
             _difference = _left.Nanoseconds < _right.Nanoseconds ? ComparableResult.LeftLessThanRight : (_left.Nanoseconds == _right.Nanoseconds ? ComparableResult.LeftEqualToRight : ComparableResult.LeftGreaterThanRight);
         }
@@ -393,18 +393,18 @@ public class Duration
 
     public static bool operator >(Duration? _left, Duration? _right)
     {
-        if(_left == null || _right == null)
+        if (_left == null || _right == null)
         {
             throw new ArgumentException("Cannot compare the two durations when one or both are null.");
         }
 
         // performs a check if both right and left only have one parameter set
-        if(DurationsSingleValueComparable(_left, _right, out ComparableResult _difference))
+        if (DurationsSingleValueComparable(_left, _right, out ComparableResult _difference))
         {
             return _difference == ComparableResult.LeftGreaterThanRight;
         }
 
-        if(!DurationsComparable(_left, _right))
+        if (!DurationsComparable(_left, _right))
         {
             throw new ArgumentException("Cannot compare the two durations with their designated field values since leap years and leap seconds exist.");
         }
@@ -418,21 +418,21 @@ public class Duration
 
         return _leftNanoseconds > _rightNanoseconds;
     }
-    
+
     public static bool operator >=(Duration? _left, Duration? _right)
     {
-        if(_left == null || _right == null)
+        if (_left == null || _right == null)
         {
             throw new ArgumentException("Cannot compare the two durations when one or both are null.");
         }
 
         // performs a check if both right and left only have one parameter set
-        if(DurationsSingleValueComparable(_left, _right, out ComparableResult _difference))
+        if (DurationsSingleValueComparable(_left, _right, out ComparableResult _difference))
         {
             return (_difference == ComparableResult.LeftGreaterThanRight) || (_difference == ComparableResult.LeftEqualToRight);
         }
 
-        if(!DurationsComparable(_left, _right))
+        if (!DurationsComparable(_left, _right))
         {
             throw new ArgumentException("Cannot compare the two durations with their designated field values since leap years and leap seconds exist.");
         }
@@ -449,18 +449,18 @@ public class Duration
 
     public static bool operator <(Duration? _left, Duration? _right)
     {
-        if(_left == null || _right == null)
+        if (_left == null || _right == null)
         {
             throw new ArgumentException("Cannot compare the two durations when one or both are null.");
         }
 
         // performs a check if both right and left only have one parameter set
-        if(DurationsSingleValueComparable(_left, _right, out ComparableResult _difference))
+        if (DurationsSingleValueComparable(_left, _right, out ComparableResult _difference))
         {
             return _difference == ComparableResult.LeftLessThanRight;
         }
 
-        if(!DurationsComparable(_left, _right))
+        if (!DurationsComparable(_left, _right))
         {
             throw new ArgumentException("Cannot compare the two durations with their designated field values since leap years and leap seconds exist.");
         }
@@ -477,18 +477,18 @@ public class Duration
 
     public static bool operator <=(Duration? _left, Duration? _right)
     {
-        if(_left == null || _right == null)
+        if (_left == null || _right == null)
         {
             throw new ArgumentException("Cannot compare the two durations when one or both are null.");
         }
 
         // performs a check if both right and left only have one parameter set
-        if(DurationsSingleValueComparable(_left, _right, out ComparableResult _difference))
+        if (DurationsSingleValueComparable(_left, _right, out ComparableResult _difference))
         {
             return (_difference == ComparableResult.LeftLessThanRight) || (_difference == ComparableResult.LeftEqualToRight);
         }
-        
-        if(!DurationsComparable(_left, _right))
+
+        if (!DurationsComparable(_left, _right))
         {
             throw new ArgumentException("Cannot compare the two durations with their designated field values since leap years and leap seconds exist.");
         }
@@ -505,27 +505,27 @@ public class Duration
 
     protected static (long, long) RetrieveSecondsAndNanosecondsAsNanoseconds(Duration _left, Duration _right)
     {
-        long _leftNanoseconds = 
+        long _leftNanoseconds =
                 (_left.Seconds == null ? 0 : _left.Seconds.Value * NANOSECONDS_PER_SECOND)
             +
                 (_left.Nanoseconds == null ? 0 : _left.Nanoseconds.Value);
-        
-        
-        long _rightNanoseconds = 
+
+
+        long _rightNanoseconds =
                 (_right.Seconds == null ? 0 : _right.Seconds.Value * NANOSECONDS_PER_SECOND)
             +
                 (_right.Nanoseconds == null ? 0 : _right.Nanoseconds.Value);
 
         return (_leftNanoseconds, _rightNanoseconds);
     }
-#endregion
+    #endregion
 
-#region "comparible checks"
+    #region "comparible checks"
 
     public static bool DurationsComparable(Duration _left, Duration _right)
     {
         // make sure both sides have all units the other does
-        if(
+        if (
                 YearsComparible(_left, _right)
             &
                 MonthsComparible(_left, _right)
@@ -592,7 +592,7 @@ public class Duration
         return (_left.Nanoseconds == null & _right.Nanoseconds == null) || (_left.Nanoseconds != null & _right.Nanoseconds != null);
     }
 
-#endregion
+    #endregion
 
     /// <summary>
     /// This uses ISO 8601 to parse a duration.
@@ -601,13 +601,13 @@ public class Duration
     /// <returns></returns>
     public static Duration Parse(string? _input)
     {
-        if(_input == null)
+        if (_input == null)
         {
             return new Duration();
         }
 
         var _match = Regex.Match(_input, ISO_8601_DURATION_REGEX);
-        if(!_match.Success)
+        if (!_match.Success)
         {
             throw new Exception(
                 string.Format(
@@ -629,11 +629,11 @@ public class Duration
         long? _seconds = null;
         long? _nanoSeconds = null;
 
-        if(_secondsString != null && _secondsString != "")
+        if (_secondsString != null && _secondsString != "")
         {
             // check if there are fractional seconds
             var _decimalPosition = _secondsString.IndexOf('.');
-            if(_decimalPosition != -1)
+            if (_decimalPosition != -1)
             {
 
                 // capture the whole seconds portion
@@ -642,8 +642,8 @@ public class Duration
                 //// capture the fractional seconds portion
                 //
                 // make sure we only capture nanoseconds (there could be less or more chars, but we fix it to nanoseconds)
-                var _nanoSecondsString = _secondsString[(_decimalPosition+1)..].PadRight(9, '0');
-                if(_nanoSecondsString.Length > 9)
+                var _nanoSecondsString = _secondsString[(_decimalPosition + 1)..].PadRight(9, '0');
+                if (_nanoSecondsString.Length > 9)
                 {
                     _nanoSecondsString = _nanoSecondsString[..9];
                 }
@@ -662,69 +662,69 @@ public class Duration
         }
 
         return new Duration(_years, _months, _weeks, _days, _hours, _minutes, _seconds, _nanoSeconds);
-     }
+    }
 
-     public static bool TryParse(string? _input, out Duration? _output)
-     {
+    public static bool TryParse(string? _input, out Duration? _output)
+    {
         try
         {
             _output = Parse(_input);
 
             return true;
-        }  
+        }
         catch
         {
             _output = null;
             return false;
         }
-     }
+    }
 
     public override string ToString()
     {
         var sb = new StringBuilder();
 
         sb.Append('P');
-        if(Years.HasValue && Years.Value != 0d)
+        if (Years.HasValue && Years.Value != 0d)
         {
             sb.Append(Years.Value);
             sb.Append('Y');
         }
-        if(Months.HasValue && Months.Value != 0d)
+        if (Months.HasValue && Months.Value != 0d)
         {
             sb.Append(Months.Value);
             sb.Append('M');
         }
-        if(Weeks.HasValue && Weeks.Value != 0d)
+        if (Weeks.HasValue && Weeks.Value != 0d)
         {
             sb.Append(Weeks.Value);
             sb.Append('W');
         }
-        if(Days.HasValue && Days.Value != 0d)
+        if (Days.HasValue && Days.Value != 0d)
         {
             sb.Append(Days.Value);
             sb.Append('D');
         }
 
-        if(Hours.HasValue | Minutes.HasValue | Seconds.HasValue | Nanoseconds.HasValue)
+        if (Hours.HasValue | Minutes.HasValue | Seconds.HasValue | Nanoseconds.HasValue)
         {
             sb.Append('T');
-            if(Hours.HasValue && Hours.Value != 0d)
+            if (Hours.HasValue && Hours.Value != 0d)
             {
                 sb.Append(Hours.Value);
                 sb.Append('H');
             }
-            if(Minutes.HasValue && Minutes.Value != 0d)
+            if (Minutes.HasValue && Minutes.Value != 0d)
             {
                 sb.Append(Minutes.Value);
                 sb.Append('M');
             }
-            
+
             // if we have whole or partial seconds we need to add the "S" part
-            if((Seconds.HasValue && Seconds.Value != 0) | (Nanoseconds.HasValue && Nanoseconds.Value != 0))
+            if ((Seconds.HasValue && Seconds.Value != 0) | (Nanoseconds.HasValue && Nanoseconds.Value != 0))
             {
-                if(Seconds.HasValue)
+                if (Seconds.HasValue)
                 {
-                    sb.Append(Seconds.Value);                    
+                    sb.Append(Seconds.Value);
                 }
                 else
                 {
@@ -732,7 +732,7 @@ public class Duration
                     sb.Append('0');
                 }
 
-                if(Nanoseconds.HasValue && Nanoseconds.Value != 0)
+                if (Nanoseconds.HasValue && Nanoseconds.Value != 0)
                 {
                     sb.Append('.');
                     var nanoSecondsString = Nanoseconds.Value.ToString().PadLeft(9, '0');
@@ -745,7 +745,7 @@ public class Duration
         return sb.ToString();
     }
 
-#region "these are literally here purely to suppress compiler errors lol"
+    #region "these are literally here purely to suppress compiler errors lol"
 
     public override bool Equals(object? obj)
     {
@@ -766,7 +766,7 @@ public class Duration
     {
         return base.GetHashCode();
     }
-#endregion
+    #endregion
 
     /// <summary>
     /// This returns if Date and/or Time have active fields in this Duration object.
@@ -777,13 +777,13 @@ public class Duration
     public DurationParts GetParts()
     {
         bool _containsDateParts = true;
-        if((Years == null) && (Months == null) && (Weeks == null) && (Days == null))
+        if ((Years == null) && (Months == null) && (Weeks == null) && (Days == null))
         {
             _containsDateParts = false;
         }
 
         bool _containsTimeParts = true;
-        if((Hours == null) && (Minutes == null) && (Seconds == null) && (Nanoseconds == null))
+        if ((Hours == null) && (Minutes == null) && (Seconds == null) && (Nanoseconds == null))
         {
             _containsTimeParts = false;
         }
@@ -807,7 +807,7 @@ public class Duration
 
     protected DateTimeOffset ApplyAdditionOrSubtractionFromDateTimeOffset(DateTimeOffset _dto, int _multiplier)
     {
-        var _output =  new DateTimeOffset(
+        var _output = new DateTimeOffset(
             _dto.Year,
             _dto.Month,
             _dto.Day,
@@ -817,35 +817,35 @@ public class Duration
             _dto.Offset
         );
 
-        if(Years != null)
+        if (Years != null)
         {
             _output.AddYears(_multiplier * (int)Years);
         }
-        if(Months != null)
+        if (Months != null)
         {
             _output.AddMonths(_multiplier * (int)Months);
         }
-        if(Weeks != null)
+        if (Weeks != null)
         {
             _output.AddDays(_multiplier * (int)(Weeks * 7d));
         }
-        if(Days != null)
+        if (Days != null)
         {
             _output.AddDays(_multiplier * (int)Days);
         }
-        if(Hours != null)
+        if (Hours != null)
         {
             _output.AddHours(_multiplier * (int)Hours);
         }
-        if(Minutes != null)
+        if (Minutes != null)
         {
             _output.AddMinutes(_multiplier * (int)Minutes);
         }
-        if(Seconds != null)
+        if (Seconds != null)
         {
             _output.AddSeconds(_multiplier * (int)Seconds);
         }
-        if(Nanoseconds != null)
+        if (Nanoseconds != null)
         {
             _output.AddTicks(_multiplier * ((long)(Nanoseconds / NANOSECONDS_PER_SECOND)));
         }
@@ -905,7 +905,7 @@ public class Duration
             _to.Millisecond + (_multiplier * _milliseconds),
             _to.Microsecond + (_multiplier * _microseconds)
         );
-        
+
     }
 
     public DateOnly AddToDateOnly(DateOnly _do)
@@ -927,8 +927,8 @@ public class Duration
         )
             .AddYears(Years == null ? 0 : (_multiplier * (int)Years))
             .AddMonths(Months == null ? 0 : (_multiplier * (int)Months))
-            .AddDays(Weeks == null ? 0 :  (7 * _multiplier * (int)Weeks))
-            .AddDays(Days == null ? 0 :  (_multiplier * (int)Days))
+            .AddDays(Weeks == null ? 0 : (7 * _multiplier * (int)Weeks))
+            .AddDays(Days == null ? 0 : (_multiplier * (int)Days))
         ;
     }
 
@@ -940,7 +940,7 @@ public class Duration
     /// <returns>Timespan representation of the duration.</returns>
     public TimeSpan ConvertToTimeSpan()
     {
-        if(GetParts().HasFlag(DurationParts.ContainsDatePortion))
+        if (GetParts().HasFlag(DurationParts.ContainsDatePortion))
         {
             throw new InvalidOperationException("Cannot convert duration to timespan when it contains date portions.");
         }

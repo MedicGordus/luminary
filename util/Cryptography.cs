@@ -19,7 +19,7 @@ public static class Cryptography
 
         byte[] _publicKeyBytes = Convert.FromBase64String(_publicKey.PublicKeyBase64);
         byte[] _signatureBytes = Convert.FromBase64String(_signatureBase64);
-        
+
         switch (_publicKey.KeyType.ToLower())
         {
             case "secp256r1":
@@ -44,10 +44,10 @@ public static class Cryptography
 
             case "ed25519":
                 throw new NotSupportedException("Ed25519 is not natively supported in .NET yet");
-                
+
             case "secp256k1":
                 throw new NotSupportedException("secp256k1 requires additional libraries");
-                
+
             default:
                 throw new ArgumentException($"Unsupported key type: {_publicKey.KeyType}");
         }
@@ -85,10 +85,10 @@ public static class Cryptography
 
             case "ed25519":
                 throw new NotSupportedException("Ed25519 is not natively supported in .NET yet");
-                
+
             case "secp256k1":
                 throw new NotSupportedException("secp256k1 requires additional libraries");
-                
+
             default:
                 throw new ArgumentException($"Unsupported key type: {_keyType}");
         }
@@ -107,10 +107,10 @@ public static class Cryptography
                 {
                     var _privateKey = ecdsa256.ExportPkcs8PrivateKey();
                     var _publicKey = ecdsa256.ExportSubjectPublicKeyInfo();
-                    return (_privateKey, new PublicKeyJson 
-                    { 
-                        KeyType = "secp256r1", 
-                        PublicKeyBase64 = Convert.ToBase64String(_publicKey) 
+                    return (_privateKey, new PublicKeyJson
+                    {
+                        KeyType = "secp256r1",
+                        PublicKeyBase64 = Convert.ToBase64String(_publicKey)
                     });
                 }
 
@@ -119,10 +119,10 @@ public static class Cryptography
                 {
                     var _privateKey = ecdsa384.ExportPkcs8PrivateKey();
                     var _publicKey = ecdsa384.ExportSubjectPublicKeyInfo();
-                    return (_privateKey, new PublicKeyJson 
-                    { 
-                        KeyType = "secp384r1", 
-                        PublicKeyBase64 = Convert.ToBase64String(_publicKey) 
+                    return (_privateKey, new PublicKeyJson
+                    {
+                        KeyType = "secp384r1",
+                        PublicKeyBase64 = Convert.ToBase64String(_publicKey)
                     });
                 }
 
@@ -131,10 +131,10 @@ public static class Cryptography
                 {
                     var _privateKey = ecdsa521.ExportPkcs8PrivateKey();
                     var _publicKey = ecdsa521.ExportSubjectPublicKeyInfo();
-                    return (_privateKey, new PublicKeyJson 
-                    { 
-                        KeyType = "secp521r1", 
-                        PublicKeyBase64 = Convert.ToBase64String(_publicKey) 
+                    return (_privateKey, new PublicKeyJson
+                    {
+                        KeyType = "secp521r1",
+                        PublicKeyBase64 = Convert.ToBase64String(_publicKey)
                     });
                 }
 
@@ -148,19 +148,19 @@ public static class Cryptography
                 {
                     var _privateKey = _rsa.ExportPkcs8PrivateKey();
                     var _publicKey = _rsa.ExportSubjectPublicKeyInfo();
-                    return (_privateKey, new PublicKeyJson 
-                    { 
-                        KeyType = _keyType, 
-                        PublicKeyBase64 = Convert.ToBase64String(_publicKey) 
+                    return (_privateKey, new PublicKeyJson
+                    {
+                        KeyType = _keyType,
+                        PublicKeyBase64 = Convert.ToBase64String(_publicKey)
                     });
                 }
 
             case "ed25519":
                 throw new NotSupportedException("Ed25519 is not natively supported in .NET yet");
-                
+
             case "secp256k1":
                 throw new NotSupportedException("secp256k1 requires additional libraries");
-                
+
             default:
                 throw new ArgumentException($"Unsupported key type: {_keyType}");
         }

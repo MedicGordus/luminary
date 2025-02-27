@@ -22,7 +22,7 @@ class Program
         Console.WriteLine(
             string.Format(
                 "otp = {0}",
-                HmacSha256.ComputeTotp([0,1,2,3,4,5,6,7,8,9,10], Epoch.GetMillisecondsSinceUnixEpoch())
+                HmacSha256.ComputeTotp([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10], Epoch.GetMillisecondsSinceUnixEpoch())
             )
         );
         //
@@ -126,15 +126,15 @@ class Program
             }
         }
         """;
-        _jsonTest = _jsonTest.Replace("\r\n","");
+        _jsonTest = _jsonTest.Replace("\r\n", "");
         var _config = MappingConfigJson.Build((MappingConfigJson)JsonSerializer.Deserialize<MappingConfigJson>(_jsonTest));
         //
         string? _resultingTestPayload = _config.Execute(
             JsonDocument.Parse(
                 "{" +
                     "\"Test\":\"this is a test string that is 78 characters which should result in 78 + 2 = 80\"" +
-                    //          0        1         2         3         4         5         6         7         8
-                    //          0        0         0         0         0         0         0         0         0
+                //          0        1         2         3         4         5         6         7         8
+                //          0        0         0         0         0         0         0         0         0
                 "}"
             )
         ).BuildJsonStringPayload();
@@ -161,7 +161,7 @@ class Program
                     1,
                     new MappingStepConfig(
                         new MappingStepJson() {
-                            OutputPrismSchema = 
+                            OutputPrismSchema =
                                 "{" +
                                     "\"type\":\"object\"," +
                                     "\"properties\":" +
@@ -186,7 +186,7 @@ class Program
                     2,
                     new MappingStepConfig(
                         new MappingStepJson() {
-                            OutputPrismSchema = 
+                            OutputPrismSchema =
                                 "{" +
                                     "\"type\":\"object\"," +
                                     "\"properties\":" +
@@ -211,7 +211,7 @@ class Program
                     3,
                     new MappingStepConfig(
                         new MappingStepJson() {
-                            OutputPrismSchema = 
+                            OutputPrismSchema =
                                 "{" +
                                     "\"type\":\"object\"," +
                                     "\"properties\":" +
@@ -236,7 +236,7 @@ class Program
                     4,
                     new MappingStepConfig(
                         new MappingStepJson() {
-                            OutputPrismSchema = 
+                            OutputPrismSchema =
                                 "{" +
                                     "\"type\":\"object\"," +
                                     "\"properties\":" +
@@ -264,8 +264,8 @@ class Program
             JsonDocument.Parse(
                 "{" +
                     "\"Test\":\"this is a test string that is 78 characters which should result in 78 + 2 = 80\"" +
-                    //          0        1         2         3         4         5         6         7         8
-                    //          0        0         0         0         0         0         0         0         0
+                //          0        1         2         3         4         5         6         7         8
+                //          0        0         0         0         0         0         0         0         0
                 "}"
             )
         ).BuildJsonStringPayload();
@@ -284,7 +284,7 @@ class Program
                     app.UseEndpoints(endpoints =>
                     {
                         endpoints.MapGet("{*path}", HandlePathCallAsync);
-                        
+
                     });
                 })
                 .UseUrls("http://localhost:80");

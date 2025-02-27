@@ -16,16 +16,16 @@ public class BigIntegerOperator : OperatorValue
 
     protected BigInteger InheritableBooleanAnd(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute booleanand.");
         }
 
-        if(parameters[0] is not BigIntegerOperator)
+        if (parameters[0] is not BigIntegerOperator)
         {
             throw new ArgumentException("Cannot booleanand when the parameter is not a biginteger.");
         }
-        
+
         (var _left, var _right) = GetArraysForDeepCalculations(
             NullableValue.Value,
             ((BigIntegerOperator)parameters[0]).NullableValue ?? throw new ArgumentException("Parameter null. Cannot execute booleanand.")
@@ -41,17 +41,17 @@ public class BigIntegerOperator : OperatorValue
 
     protected BigInteger InheritableBitwiseLeftShift(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute bitwiseleftshift.");
         }
 
-        if(parameters[0] is not IntegerOperator)
+        if (parameters[0] is not IntegerOperator)
         {
             throw new ArgumentException("Cannot bitwiseleftshift when the parameter is not an integer.");
         }
 
-        return NullableValue << ((IntegerOperator)parameters[0]).GetValue() ?? throw new ArgumentException("Parameter not null but GetValue() unexpectedly returned null. Cannot execute bitwiseleftshift");;
+        return NullableValue << ((IntegerOperator)parameters[0]).GetValue() ?? throw new ArgumentException("Parameter not null but GetValue() unexpectedly returned null. Cannot execute bitwiseleftshift"); ;
     }
 
     public override OperatorValue? BitwiseLeftShift(OperatorValue[]? parameters)
@@ -61,12 +61,12 @@ public class BigIntegerOperator : OperatorValue
 
     protected BigInteger InheritableBitwiseMod(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute bitwisemod.");
         }
 
-        if(parameters[0] is not BigIntegerOperator)
+        if (parameters[0] is not BigIntegerOperator)
         {
             throw new ArgumentException("Cannot bitwisemod when the parameter is not a biginteger.");
         }
@@ -83,17 +83,17 @@ public class BigIntegerOperator : OperatorValue
 
     protected BigInteger InheritableBitwiseRightShift(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute bitwiserightshift.");
         }
 
-        if(parameters[0] is not IntegerOperator)
+        if (parameters[0] is not IntegerOperator)
         {
             throw new ArgumentException("Cannot rightshift when the parameter is not an integer.");
         }
 
-        return NullableValue >> ((IntegerOperator)parameters[0]).GetValue() ?? throw new ArgumentException("Parameter was not null but the GetValue unexpectedly returned null.");;
+        return NullableValue >> ((IntegerOperator)parameters[0]).GetValue() ?? throw new ArgumentException("Parameter was not null but the GetValue unexpectedly returned null."); ;
     }
 
     public override OperatorValue? BitwiseRightShift(OperatorValue[]? parameters)
@@ -103,16 +103,16 @@ public class BigIntegerOperator : OperatorValue
 
     protected BigInteger InheritableBitwiseXor(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute bitwisexor.");
         }
 
-        if(parameters[0] is not BigIntegerOperator)
+        if (parameters[0] is not BigIntegerOperator)
         {
             throw new ArgumentException("Cannot rightshift when the parameter is not a biginteger.");
         }
-        
+
         (var _left, var _right) = GetArraysForDeepCalculations(
             NullableValue.Value,
             ((BigIntegerOperator)parameters[0]).NullableValue ?? throw new ArgumentException("Parameter null. Cannot execute bitwisexor.")
@@ -138,12 +138,12 @@ public class BigIntegerOperator : OperatorValue
 
     public override OperatorValue? ConvertToBigIntegerUnits(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute converttobigintegerunits.");
         }
 
-        if(parameters[0] is not StringOperator)
+        if (parameters[0] is not StringOperator)
         {
             throw new ArgumentException("Cannot converttobigintegerunits when the unit parameter is not a string.");
         }
@@ -193,12 +193,12 @@ public class BigIntegerOperator : OperatorValue
 
     protected bool InheritableValueEqual(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute valueequal.");
         }
 
-        if(parameters[0] is not BigIntegerOperator)
+        if (parameters[0] is not BigIntegerOperator)
         {
             throw new ArgumentException("Cannot valueequal when the parameter is not a biginteger.");
         }
@@ -218,12 +218,12 @@ public class BigIntegerOperator : OperatorValue
 
     protected bool InheritableGreaterOrEqual(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute greaterorequal.");
         }
 
-        if(parameters[0] is not BigIntegerOperator)
+        if (parameters[0] is not BigIntegerOperator)
         {
             throw new ArgumentException("Cannot greaterorequal when the parameter is not a biginteger.");
         }
@@ -240,12 +240,12 @@ public class BigIntegerOperator : OperatorValue
 
     protected bool InheritableGreatherThan(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute greaterthan.");
         }
 
-        if(parameters[0] is not BigIntegerOperator)
+        if (parameters[0] is not BigIntegerOperator)
         {
             throw new ArgumentException("Cannot greaterthan when the parameter is not a biginteger.");
         }
@@ -262,12 +262,12 @@ public class BigIntegerOperator : OperatorValue
 
     public override OperatorValue? IfNotFilled(OperatorValue[]? parameters)
     {
-        if(NullableValue != null)
+        if (NullableValue != null)
         {
             return new BigIntegerOperator(NullableValue);
         }
 
-        if(parameters == null || parameters.Length == 0)
+        if (parameters == null || parameters.Length == 0)
         {
             throw new ArgumentException("parameters null or parameter missing. Cannot execute ifnotfilled.");
         }
@@ -302,12 +302,12 @@ public class BigIntegerOperator : OperatorValue
 
     protected bool InheritableLessOrEqual(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute lessorequal.");
         }
 
-        if(parameters[0] is not BigIntegerOperator)
+        if (parameters[0] is not BigIntegerOperator)
         {
             throw new ArgumentException("Cannot lessorequal when the parameter is not a biginteger.");
         }
@@ -324,12 +324,12 @@ public class BigIntegerOperator : OperatorValue
 
     protected bool InheritableLessThan(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute lessthan.");
         }
 
-        if(parameters[0] is not BigIntegerOperator)
+        if (parameters[0] is not BigIntegerOperator)
         {
             throw new ArgumentException("Cannot lessorequal when the parameter is not a biginteger.");
         }
@@ -346,12 +346,12 @@ public class BigIntegerOperator : OperatorValue
 
     protected BigInteger InheritableMathAdd(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute mathadd.");
         }
 
-        if(parameters[0] is not BigIntegerOperator)
+        if (parameters[0] is not BigIntegerOperator)
         {
             throw new ArgumentException("Cannot mathadd when the parameter is not a biginteger.");
         }
@@ -368,12 +368,12 @@ public class BigIntegerOperator : OperatorValue
 
     protected BigInteger InheritableMathAverage(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute mathaverage.");
         }
 
-        if(parameters[0] is not BigIntegerOperator)
+        if (parameters[0] is not BigIntegerOperator)
         {
             throw new ArgumentException("Cannot mathaverage when the parameter is not a biginteger.");
         }
@@ -395,12 +395,12 @@ public class BigIntegerOperator : OperatorValue
 
     protected BigInteger InheritableMathDivide(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute mathdivide.");
         }
 
-        if(parameters[0] is not BigIntegerOperator)
+        if (parameters[0] is not BigIntegerOperator)
         {
             throw new ArgumentException("Cannot mathdivide when the parameter is not a biginteger.");
         }
@@ -422,12 +422,12 @@ public class BigIntegerOperator : OperatorValue
 
     protected BigInteger InheritableMathMultiply(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute mathmultiply.");
         }
 
-        if(parameters[0] is not BigIntegerOperator)
+        if (parameters[0] is not BigIntegerOperator)
         {
             throw new ArgumentException("Cannot mathmultiply when the parameter is not a biginteger.");
         }
@@ -444,12 +444,12 @@ public class BigIntegerOperator : OperatorValue
 
     protected BigInteger InheritableMathPower(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute mathpower.");
         }
 
-        if(parameters[0] is not IntegerOperator)
+        if (parameters[0] is not IntegerOperator)
         {
             throw new ArgumentException("Cannot mathpower when the parameter is not an integer.");
         }
@@ -471,12 +471,12 @@ public class BigIntegerOperator : OperatorValue
 
     protected BigInteger InheritableMathSubtract(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute mathsubtract.");
         }
 
-        if(parameters[0] is not BigIntegerOperator)
+        if (parameters[0] is not BigIntegerOperator)
         {
             throw new ArgumentException("Cannot mathsubtract when the parameter is not a biginteger.");
         }
@@ -493,12 +493,12 @@ public class BigIntegerOperator : OperatorValue
 
     protected bool InheritableNotEqual(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute notequal.");
         }
 
-        if(parameters[0] is not BigIntegerOperator)
+        if (parameters[0] is not BigIntegerOperator)
         {
             throw new ArgumentException("Cannot notequal when the parameter is not a biginteger.");
         }
@@ -513,16 +513,16 @@ public class BigIntegerOperator : OperatorValue
 
     protected BigInteger InheritableBooleanOr(OperatorValue[]? parameters)
     {
-        if(NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute booleanor.");
         }
 
-        if(parameters[0] is not BigIntegerOperator)
+        if (parameters[0] is not BigIntegerOperator)
         {
             throw new ArgumentException("Cannot booleanor when the parameter is not a biginteger.");
         }
-        
+
         (var _left, var _right) = GetArraysForDeepCalculations(
             NullableValue.Value,
             ((BigIntegerOperator)parameters[0]).NullableValue ?? throw new ArgumentException("Parameter null. Cannot execute booleanor.")
@@ -578,7 +578,7 @@ public class BigIntegerOperator : OperatorValue
 
     protected BigInteger InheritableBooleanNot(OperatorValue[]? parameters)
     {
-        if(NullableValue == null)
+        if (NullableValue == null)
         {
             throw new ArgumentException("Value null. Cannot execute booleannot.");
         }
@@ -597,7 +597,7 @@ public class BigIntegerOperator : OperatorValue
 
     public override string ToStringValue()
     {
-        if(NullableValue == null)
+        if (NullableValue == null)
         {
             throw new ArgumentException("Value null. Cannot execute tostringvalue.");
         }
@@ -607,32 +607,32 @@ public class BigIntegerOperator : OperatorValue
 
     public override void SetValue(OperatorValue _source)
     {
-        if(_source is not BigIntegerOperator)
+        if (_source is not BigIntegerOperator)
         {
             throw new ArgumentException("Source OperatorValue wrong type, cannot set value.");
         }
 
         NullableValue = ((BigIntegerOperator)_source).NullableValue;
     }
-    
+
     public static OperatorValue BuildFromParameters(string[] parameters)
     {
-        if(parameters == null || parameters.Length == 0)
+        if (parameters == null || parameters.Length == 0)
         {
             throw new ArgumentException("Cannot create a BigIntegerOperator, null or missing parameter.");
         }
 
         return BuildFromString(parameters[0]);
     }
-    
+
     public static OperatorValue BuildFromString(string? _input)
     {
-        if(_input == null)
+        if (_input == null)
         {
             return new BigIntegerOperator(null);
         }
 
-        if(BigInteger.TryParse(_input, out BigInteger _value))
+        if (BigInteger.TryParse(_input, out BigInteger _value))
         {
             return new BigIntegerOperator(_value);
         }
@@ -649,7 +649,7 @@ public class BigIntegerOperator : OperatorValue
 
     protected static (byte[], byte[]) GetArraysForDeepCalculations(BigInteger _left, BigInteger _right)
     {
-        return (_left.ToByteArray(),_right.ToByteArray());
+        return (_left.ToByteArray(), _right.ToByteArray());
     }
 
     /// <summary>
