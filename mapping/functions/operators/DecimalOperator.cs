@@ -9,289 +9,289 @@ public class DecimalOperator : OperatorValue
 
     public decimal? GetValue() => NullableValue;
 
-    public DecimalOperator(decimal? nullableValue, OperatorValueType _type = OperatorValueType.Decimal) : base(_type)
+    public DecimalOperator(decimal? _nullableValue, OperatorValueType _type = OperatorValueType.Decimal) : base(_type)
     {
-        NullableValue = nullableValue;
+        NullableValue = _nullableValue;
     }
 
-    public override OperatorValue? BooleanAnd(OperatorValue[]? parameters)
-    {
-        throw new InvalidOperationException();
-    }
-
-    public override OperatorValue? BitwiseLeftShift(OperatorValue[]? parameters)
+    public override OperatorValue? BooleanAnd(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? BitwiseMod(OperatorValue[]? parameters)
+    public override OperatorValue? BitwiseLeftShift(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? BitwiseRightShift(OperatorValue[]? parameters)
+    public override OperatorValue? BitwiseMod(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? BitwiseXor(OperatorValue[]? parameters)
+    public override OperatorValue? BitwiseRightShift(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? Concatenate(OperatorValue[]? parameters)
+    public override OperatorValue? BitwiseXor(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? ConvertToBigInteger(OperatorValue[]? parameters)
+    public override OperatorValue? Concatenate(OperatorValue[]? _parameters)
+    {
+        throw new InvalidOperationException();
+    }
+
+    public override OperatorValue? ConvertToBigInteger(OperatorValue[]? _parameters)
     {
         return BigIntegerOperator.BuildFromString(NullableValue?.ToString());
     }
 
-    public override OperatorValue? ConvertToBigIntegerUnits(OperatorValue[]? parameters)
+    public override OperatorValue? ConvertToBigIntegerUnits(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? ConvertToDecimal(OperatorValue[]? parameters)
+    public override OperatorValue? ConvertToDecimal(OperatorValue[]? _parameters)
     {
         return new DecimalOperator(NullableValue);
     }
 
-    public override OperatorValue? ConvertToDecimalUnits(OperatorValue[]? parameters)
+    public override OperatorValue? ConvertToDecimalUnits(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? ConvertToDouble(OperatorValue[]? parameters)
+    public override OperatorValue? ConvertToDouble(OperatorValue[]? _parameters)
     {
         return DoubleOperator.BuildFromString(NullableValue?.ToString());
     }
 
-    public override OperatorValue? ConvertToDoubleUnits(OperatorValue[]? parameters)
+    public override OperatorValue? ConvertToDoubleUnits(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? ConvertToInteger(OperatorValue[]? parameters)
+    public override OperatorValue? ConvertToInteger(OperatorValue[]? _parameters)
     {
         return IntegerOperator.BuildFromString(NullableValue?.ToString());
     }
 
-    public override OperatorValue? ConvertToIntegerUnits(OperatorValue[]? parameters)
+    public override OperatorValue? ConvertToIntegerUnits(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? ConvertToString(OperatorValue[]? parameters)
+    public override OperatorValue? ConvertToString(OperatorValue[]? _parameters)
     {
         return StringOperator.BuildFromString(NullableValue?.ToString());
     }
 
-    public override OperatorValue? EndsWith(OperatorValue[]? parameters)
+    public override OperatorValue? EndsWith(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    protected bool InheritableValueEqual(OperatorValue[]? parameters)
+    protected bool InheritableValueEqual(OperatorValue[]? _parameters)
     {
-        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || _parameters == null || _parameters.Length == 0 || _parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute valueequal.");
         }
 
-        if (parameters[0] is not DecimalOperator)
+        if (_parameters[0] is not DecimalOperator)
         {
             throw new ArgumentException("Cannot valueequal when the parameter is not a decimal.");
         }
 
-        return NullableValue.Value == ((DecimalOperator)parameters[0]).NullableValue;
+        return NullableValue.Value == ((DecimalOperator)_parameters[0]).NullableValue;
     }
 
-    public override OperatorValue? ValueEqual(OperatorValue[]? parameters)
+    public override OperatorValue? ValueEqual(OperatorValue[]? _parameters)
     {
-        return new BooleanOperator(InheritableValueEqual(parameters));
+        return new BooleanOperator(InheritableValueEqual(_parameters));
     }
 
-    public override OperatorValue? Filled(OperatorValue[]? parameters)
+    public override OperatorValue? Filled(OperatorValue[]? _parameters)
     {
         return new BooleanOperator(NullableValue != null);
     }
 
-    protected bool InheritableGreaterOrEqual(OperatorValue[]? parameters)
+    protected bool InheritableGreaterOrEqual(OperatorValue[]? _parameters)
     {
-        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || _parameters == null || _parameters.Length == 0 || _parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute greaterorequal.");
         }
 
-        if (parameters[0] is not DecimalOperator)
+        if (_parameters[0] is not DecimalOperator)
         {
             throw new ArgumentException("Cannot greaterorequal when the parameter is not a decimal.");
         }
 
-        decimal _check = ((DecimalOperator)parameters[0]).NullableValue ?? throw new ArgumentException("Parameter null. Cannot execute greaterorequal.");
+        decimal check = ((DecimalOperator)_parameters[0]).NullableValue ?? throw new ArgumentException("Parameter null. Cannot execute greaterorequal.");
 
-        return NullableValue >= _check;
+        return NullableValue >= check;
     }
 
-    public override OperatorValue? GreaterOrEqual(OperatorValue[]? parameters)
+    public override OperatorValue? GreaterOrEqual(OperatorValue[]? _parameters)
     {
-        return new BooleanOperator(InheritableGreaterOrEqual(parameters));
+        return new BooleanOperator(InheritableGreaterOrEqual(_parameters));
     }
 
-    protected bool InheritableGreatherThan(OperatorValue[]? parameters)
+    protected bool InheritableGreatherThan(OperatorValue[]? _parameters)
     {
-        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || _parameters == null || _parameters.Length == 0 || _parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute greaterthan.");
         }
 
-        if (parameters[0] is not DecimalOperator)
+        if (_parameters[0] is not DecimalOperator)
         {
             throw new ArgumentException("Cannot greaterthan when the parameter is not a decimal.");
         }
 
-        decimal _check = ((DecimalOperator)parameters[0]).NullableValue ?? throw new ArgumentException("Parameter null. Cannot execute greaterthan.");
+        decimal check = ((DecimalOperator)_parameters[0]).NullableValue ?? throw new ArgumentException("Parameter null. Cannot execute greaterthan.");
 
-        return NullableValue > _check;
+        return NullableValue > check;
     }
 
-    public override OperatorValue? GreatherThan(OperatorValue[]? parameters)
+    public override OperatorValue? GreatherThan(OperatorValue[]? _parameters)
     {
-        return new BooleanOperator(InheritableGreatherThan(parameters));
+        return new BooleanOperator(InheritableGreatherThan(_parameters));
     }
 
-    public override OperatorValue? IfNotFilled(OperatorValue[]? parameters)
+    public override OperatorValue? IfNotFilled(OperatorValue[]? _parameters)
     {
         if (NullableValue != null)
         {
             return new DecimalOperator(NullableValue);
         }
 
-        if (parameters == null || parameters.Length == 0)
+        if (_parameters == null || _parameters.Length == 0)
         {
             throw new ArgumentException("parameters null or parameter missing. Cannot execute ifnotfilled.");
         }
 
-        return parameters[0];
+        return _parameters[0];
     }
 
-    public override OperatorValue? Includes(OperatorValue[]? parameters)
+    public override OperatorValue? Includes(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? IndexOf(OperatorValue[]? parameters)
+    public override OperatorValue? IndexOf(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? EqualsIgnoreCase(OperatorValue[]? parameters)
+    public override OperatorValue? EqualsIgnoreCase(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? Join(OperatorValue[]? parameters)
+    public override OperatorValue? Join(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? Length(OperatorValue[]? parameters)
+    public override OperatorValue? Length(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    protected bool InheritableLessOrEqual(OperatorValue[]? parameters)
+    protected bool InheritableLessOrEqual(OperatorValue[]? _parameters)
     {
-        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || _parameters == null || _parameters.Length == 0 || _parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute lessorequal.");
         }
 
-        if (parameters[0] is not DecimalOperator)
+        if (_parameters[0] is not DecimalOperator)
         {
             throw new ArgumentException("Cannot lessorequal when the parameter is not a decimal.");
         }
 
-        decimal _check = ((DecimalOperator)parameters[0]).NullableValue ?? throw new ArgumentException("Parameter null. Cannot execute lessorequal.");
+        decimal check = ((DecimalOperator)_parameters[0]).NullableValue ?? throw new ArgumentException("Parameter null. Cannot execute lessorequal.");
 
-        return NullableValue <= _check;
+        return NullableValue <= check;
     }
 
-    public override OperatorValue? LessOrEqual(OperatorValue[]? parameters)
+    public override OperatorValue? LessOrEqual(OperatorValue[]? _parameters)
     {
-        return new BooleanOperator(InheritableLessOrEqual(parameters));
+        return new BooleanOperator(InheritableLessOrEqual(_parameters));
     }
 
-    protected bool InheritableLessThan(OperatorValue[]? parameters)
+    protected bool InheritableLessThan(OperatorValue[]? _parameters)
     {
-        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || _parameters == null || _parameters.Length == 0 || _parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute lessthan.");
         }
 
-        if (parameters[0] is not DecimalOperator)
+        if (_parameters[0] is not DecimalOperator)
         {
             throw new ArgumentException("Cannot lessorequal when the parameter is not a decimal.");
         }
 
-        decimal _check = ((DecimalOperator)parameters[0]).NullableValue ?? throw new ArgumentException("Parameter null. Cannot execute lessthan.");
+        decimal check = ((DecimalOperator)_parameters[0]).NullableValue ?? throw new ArgumentException("Parameter null. Cannot execute lessthan.");
 
-        return NullableValue < _check;
+        return NullableValue < check;
     }
 
-    public override OperatorValue? LessThan(OperatorValue[]? parameters)
+    public override OperatorValue? LessThan(OperatorValue[]? _parameters)
     {
-        return new BooleanOperator(InheritableLessThan(parameters));
+        return new BooleanOperator(InheritableLessThan(_parameters));
     }
 
-    protected decimal InheritableMathAdd(OperatorValue[]? parameters)
+    protected decimal InheritableMathAdd(OperatorValue[]? _parameters)
     {
-        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || _parameters == null || _parameters.Length == 0 || _parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute mathadd.");
         }
 
-        if (parameters[0] is not DecimalOperator)
+        if (_parameters[0] is not DecimalOperator)
         {
             throw new ArgumentException("Cannot mathadd when the parameter is not a decimal.");
         }
 
-        decimal _toAdd = ((DecimalOperator)parameters[0]).GetValue() ?? throw new ArgumentException("Add value was not null but the GetValue unexpectedly returned null.");
+        decimal toAdd = ((DecimalOperator)_parameters[0]).GetValue() ?? throw new ArgumentException("Add value was not null but the GetValue unexpectedly returned null.");
 
-        return NullableValue.Value + _toAdd;
+        return NullableValue.Value + toAdd;
     }
 
-    public override OperatorValue? MathAdd(OperatorValue[]? parameters)
+    public override OperatorValue? MathAdd(OperatorValue[]? _parameters)
     {
-        return new DecimalOperator(InheritableMathAdd(parameters));
+        return new DecimalOperator(InheritableMathAdd(_parameters));
     }
 
-    protected decimal InheritableMathAverage(OperatorValue[]? parameters)
+    protected decimal InheritableMathAverage(OperatorValue[]? _parameters)
     {
-        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || _parameters == null || _parameters.Length == 0 || _parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute mathaverage.");
         }
 
-        if (parameters[0] is not DecimalOperator)
+        if (_parameters[0] is not DecimalOperator)
         {
             throw new ArgumentException("Cannot mathaverage when the parameter is not a decimal.");
         }
 
-        decimal _toAverage = ((DecimalOperator)parameters[0]).GetValue() ?? throw new ArgumentException("Average value was not null but the GetValue unexpectedly returned null.");
+        decimal toAverage = ((DecimalOperator)_parameters[0]).GetValue() ?? throw new ArgumentException("Average value was not null but the GetValue unexpectedly returned null.");
 
-        return (NullableValue.Value + _toAverage) / 2m;
+        return (NullableValue.Value + toAverage) / 2m;
     }
 
-    public override OperatorValue? MathAverage(OperatorValue[]? parameters)
+    public override OperatorValue? MathAverage(OperatorValue[]? _parameters)
     {
-        return new DecimalOperator(InheritableMathAverage(parameters));
+        return new DecimalOperator(InheritableMathAverage(_parameters));
     }
 
-    protected decimal InheritableMathCeiling(OperatorValue[]? parameters)
+    protected decimal InheritableMathCeiling(OperatorValue[]? _parameters)
     {
         if (NullableValue == null)
         {
@@ -301,34 +301,34 @@ public class DecimalOperator : OperatorValue
         return Math.Ceiling(NullableValue.Value);
     }
 
-    public override OperatorValue? MathCeiling(OperatorValue[]? parameters)
+    public override OperatorValue? MathCeiling(OperatorValue[]? _parameters)
     {
-        return new DecimalOperator(InheritableMathCeiling(parameters));
+        return new DecimalOperator(InheritableMathCeiling(_parameters));
     }
 
-    protected decimal InheritableMathDivide(OperatorValue[]? parameters)
+    protected decimal InheritableMathDivide(OperatorValue[]? _parameters)
     {
-        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || _parameters == null || _parameters.Length == 0 || _parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute mathdivide.");
         }
 
-        if (parameters[0] is not DecimalOperator)
+        if (_parameters[0] is not DecimalOperator)
         {
             throw new ArgumentException("Cannot mathdivide when the parameter is not a decimal.");
         }
 
-        decimal _toDivide = ((DecimalOperator)parameters[0]).GetValue() ?? throw new ArgumentException("Divide value was not null but the GetValue unexpectedly returned null.");
+        decimal toDivide = ((DecimalOperator)_parameters[0]).GetValue() ?? throw new ArgumentException("Divide value was not null but the GetValue unexpectedly returned null.");
 
-        return NullableValue.Value / _toDivide;
+        return NullableValue.Value / toDivide;
     }
 
-    public override OperatorValue? MathDivide(OperatorValue[]? parameters)
+    public override OperatorValue? MathDivide(OperatorValue[]? _parameters)
     {
-        return new DecimalOperator(InheritableMathDivide(parameters));
+        return new DecimalOperator(InheritableMathDivide(_parameters));
     }
 
-    protected decimal InheritableMathFloor(OperatorValue[]? parameters)
+    protected decimal InheritableMathFloor(OperatorValue[]? _parameters)
     {
         if (NullableValue == null)
         {
@@ -338,145 +338,145 @@ public class DecimalOperator : OperatorValue
         return Math.Floor(NullableValue.Value);
     }
 
-    public override OperatorValue? MathFloor(OperatorValue[]? parameters)
+    public override OperatorValue? MathFloor(OperatorValue[]? _parameters)
     {
-        return new DecimalOperator(InheritableMathFloor(parameters));
+        return new DecimalOperator(InheritableMathFloor(_parameters));
     }
 
-    protected decimal InheritableMathMultiply(OperatorValue[]? parameters)
+    protected decimal InheritableMathMultiply(OperatorValue[]? _parameters)
     {
-        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || _parameters == null || _parameters.Length == 0 || _parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute mathmultiply.");
         }
 
-        if (parameters[0] is not DecimalOperator)
+        if (_parameters[0] is not DecimalOperator)
         {
             throw new ArgumentException("Cannot mathmultiply when the parameter is not a decimal.");
         }
 
-        decimal _toMultiply = ((DecimalOperator)parameters[0]).GetValue() ?? throw new ArgumentException("Multiply value was not null but the GetValue unexpectedly returned null.");
+        decimal toMultiply = ((DecimalOperator)_parameters[0]).GetValue() ?? throw new ArgumentException("Multiply value was not null but the GetValue unexpectedly returned null.");
 
-        return NullableValue.Value * _toMultiply;
+        return NullableValue.Value * toMultiply;
     }
 
-    public override OperatorValue? MathMultiply(OperatorValue[]? parameters)
+    public override OperatorValue? MathMultiply(OperatorValue[]? _parameters)
     {
-        return new DecimalOperator(InheritableMathMultiply(parameters));
+        return new DecimalOperator(InheritableMathMultiply(_parameters));
     }
 
-    protected decimal InheritableMathPower(OperatorValue[]? parameters)
+    protected decimal InheritableMathPower(OperatorValue[]? _parameters)
     {
-        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || _parameters == null || _parameters.Length == 0 || _parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute mathpower.");
         }
 
-        if (parameters[0] is not IntegerOperator)
+        if (_parameters[0] is not IntegerOperator)
         {
             throw new ArgumentException("Cannot mathpower when the parameter is not an integer.");
         }
 
-        decimal _toPow = ((DecimalOperator)parameters[0]).GetValue() ?? throw new ArgumentException("Power value was not null but the GetValue unexpectedly returned null.");
+        decimal toPow = ((DecimalOperator)_parameters[0]).GetValue() ?? throw new ArgumentException("Power value was not null but the GetValue unexpectedly returned null.");
 
         // there are no native decimal power functions and
         //  we are not supporting numbers that precise, so
         //  we lose some precision by going to double.
-        double _output = Math.Pow((double)NullableValue, (double)_toPow);
+        double output = Math.Pow((double)NullableValue, (double)toPow);
 
-        return (decimal)_output;
+        return (decimal)output;
     }
 
-    public override OperatorValue? MathPower(OperatorValue[]? parameters)
+    public override OperatorValue? MathPower(OperatorValue[]? _parameters)
     {
-        return new DecimalOperator(InheritableMathPower(parameters));
+        return new DecimalOperator(InheritableMathPower(_parameters));
     }
 
-    protected decimal InheritableMathRound(OperatorValue[]? parameters)
+    protected decimal InheritableMathRound(OperatorValue[]? _parameters)
     {
-        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || _parameters == null || _parameters.Length == 0 || _parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute mathround.");
         }
 
-        if (parameters[0] is not IntegerOperator)
+        if (_parameters[0] is not IntegerOperator)
         {
             throw new ArgumentException("Cannot mathround when the parameter is not an integer.");
         }
 
-        int _digits = ((IntegerOperator)parameters[0]).GetValue() ?? throw new ArgumentException("Round value was not null but the GetValue unexpectedly returned null.");
+        int digits = ((IntegerOperator)_parameters[0]).GetValue() ?? throw new ArgumentException("Round value was not null but the GetValue unexpectedly returned null.");
 
-        return Math.Round(NullableValue.Value, _digits);
+        return Math.Round(NullableValue.Value, digits);
     }
 
-    public override OperatorValue? MathRound(OperatorValue[]? parameters)
+    public override OperatorValue? MathRound(OperatorValue[]? _parameters)
     {
-        return new DecimalOperator(InheritableMathRound(parameters));
+        return new DecimalOperator(InheritableMathRound(_parameters));
     }
 
-    protected decimal InheritableMathSubtract(OperatorValue[]? parameters)
+    protected decimal InheritableMathSubtract(OperatorValue[]? _parameters)
     {
-        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || _parameters == null || _parameters.Length == 0 || _parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute mathsubtract.");
         }
 
-        if (parameters[0] is not DecimalOperator)
+        if (_parameters[0] is not DecimalOperator)
         {
             throw new ArgumentException("Cannot mathsubtract when the parameter is not a decimal.");
         }
 
-        decimal _toSubtract = ((DecimalOperator)parameters[0]).GetValue() ?? throw new ArgumentException("Subtract value was not null but the GetValue unexpectedly returned null.");
+        decimal toSubtract = ((DecimalOperator)_parameters[0]).GetValue() ?? throw new ArgumentException("Subtract value was not null but the GetValue unexpectedly returned null.");
 
-        return NullableValue.Value - _toSubtract;
+        return NullableValue.Value - toSubtract;
     }
 
-    public override OperatorValue? MathSubtract(OperatorValue[]? parameters)
+    public override OperatorValue? MathSubtract(OperatorValue[]? _parameters)
     {
-        return new DecimalOperator(InheritableMathSubtract(parameters));
+        return new DecimalOperator(InheritableMathSubtract(_parameters));
     }
 
-    protected bool InheritableNotEqual(OperatorValue[]? parameters)
+    protected bool InheritableNotEqual(OperatorValue[]? _parameters)
     {
-        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || _parameters == null || _parameters.Length == 0 || _parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute notequal.");
         }
 
-        if (parameters[0] is not DecimalOperator)
+        if (_parameters[0] is not DecimalOperator)
         {
             throw new ArgumentException("Cannot notequal when the parameter is not a decimal.");
         }
 
-        return NullableValue.Value == ((DecimalOperator)parameters[0]).NullableValue;
+        return NullableValue.Value == ((DecimalOperator)_parameters[0]).NullableValue;
     }
 
-    public override OperatorValue? NotEqual(OperatorValue[]? parameters)
+    public override OperatorValue? NotEqual(OperatorValue[]? _parameters)
     {
-        return new BooleanOperator(InheritableNotEqual(parameters));
+        return new BooleanOperator(InheritableNotEqual(_parameters));
     }
 
-    public override OperatorValue? BooleanOr(OperatorValue[]? parameters)
-    {
-        throw new InvalidOperationException();
-    }
-
-    public override OperatorValue? Replace(OperatorValue[]? parameters)
+    public override OperatorValue? BooleanOr(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? Split(OperatorValue[]? parameters)
+    public override OperatorValue? Replace(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? StartsWith(OperatorValue[]? parameters)
+    public override OperatorValue? Split(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? Substring(OperatorValue[]? parameters)
+    public override OperatorValue? StartsWith(OperatorValue[]? _parameters)
+    {
+        throw new InvalidOperationException();
+    }
+
+    public override OperatorValue? Substring(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
@@ -486,22 +486,22 @@ public class DecimalOperator : OperatorValue
         return NullableValue?.ToString() ?? "null";
     }
 
-    public override OperatorValue? ToLower(OperatorValue[]? parameters)
+    public override OperatorValue? ToLower(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? ToUpper(OperatorValue[]? parameters)
+    public override OperatorValue? ToUpper(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? Trim(OperatorValue[]? parameters)
+    public override OperatorValue? Trim(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? BooleanNot(OperatorValue[]? parameters)
+    public override OperatorValue? BooleanNot(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
@@ -526,14 +526,14 @@ public class DecimalOperator : OperatorValue
         NullableValue = ((DecimalOperator)_source).NullableValue;
     }
 
-    public static OperatorValue BuildFromParameters(string[] parameters)
+    public static OperatorValue BuildFromParameters(string[] _parameters)
     {
-        if (parameters == null || parameters.Length == 0)
+        if (_parameters == null || _parameters.Length == 0)
         {
             throw new ArgumentException("Cannot create a DecimalOperator, null or missing parameter.");
         }
 
-        return BuildFromString(parameters[0]);
+        return BuildFromString(_parameters[0]);
     }
 
     public static OperatorValue BuildFromString(string? _input)
@@ -543,9 +543,9 @@ public class DecimalOperator : OperatorValue
             return new DecimalOperator(null);
         }
 
-        if (decimal.TryParse(_input, out decimal _value))
+        if (decimal.TryParse(_input, out decimal value))
         {
-            return new DecimalOperator(_value);
+            return new DecimalOperator(value);
         }
         else
         {

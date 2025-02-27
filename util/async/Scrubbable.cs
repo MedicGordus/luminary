@@ -23,9 +23,9 @@ public class Scrubbable<T> : Scrubbable
     /// </summary>
     public T? ReturnValue;
 
-    public Scrubbable(T? t = default) : base()
+    public Scrubbable(T? _t = default) : base()
     {
-        ReturnValue = t;
+        ReturnValue = _t;
     }
 }
 
@@ -63,15 +63,15 @@ public class Scrubbable
         Scrub = false;
     }
 
-    public void ActivateScrub(Exception e)
+    public void ActivateScrub(Exception _e)
     {
-        E = e;
+        E = _e;
         Scrub = true;
     }
 
-    public void ManuallyScrub(string message)
+    public void ManuallyScrub(string _message)
     {
-        E = new Exception(message);
+        E = new Exception(_message);
         Scrub = true;
     }
 

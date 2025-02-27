@@ -176,9 +176,9 @@ public class Spook
     public Spook(List<string> _expectedTangleSpooks, string _selfAddress, int _healthIntervalSeconds, int _healthTimeoutSeconds)
     {
         ExpectedTangleSpooks = [];
-        foreach (var _deltaSpook in _expectedTangleSpooks)
+        foreach (var deltaSpook in _expectedTangleSpooks)
         {
-            ExpectedTangleSpooks.Add(_deltaSpook.ToLower());
+            ExpectedTangleSpooks.Add(deltaSpook.ToLower());
         }
         SelfAddress = _selfAddress;
         HealthInterval = TimeSpan.FromSeconds(_healthIntervalSeconds);
@@ -220,37 +220,37 @@ public class Spook
     }
 
     // Called by external class to distribute data
-    public async Task ReceiveDataToDistributeAsync(string data)
+    public async Task ReceiveDataToDistributeAsync(string _data)
     {
-        await BroadcastAsync($"DATA|{data}").ConfigureAwait(false);
+        await BroadcastAsync($"DATA|{_data}").ConfigureAwait(false);
     }
 
     private void JoinTangle(string[] _tangleAddresses)
     {
-        foreach (var _deltaAddress in _tangleAddresses)
+        foreach (var deltaAddress in _tangleAddresses)
         {
-            SendMessage(_deltaAddress, $"JOIN|{SelfAddress}");
+            SendMessage(deltaAddress, $"JOIN|{SelfAddress}");
         }
     }
 
-    private async Task BroadcastAsync(string message)
+    private async Task BroadcastAsync(string _message)
     {
-        List<string> _cloneHealthyTangleSpooks = [];
+        List<string> cloneHealthyTangleSpooks = [];
         using (await HealthyTangleSpookLock.LockAsync().ConfigureAwait(false))
         {
-            _cloneHealthyTangleSpooks.AddRange(HealthyTangleSpooks);
+            cloneHealthyTangleSpooks.AddRange(HealthyTangleSpooks);
         }
 
-        foreach (var spook in _cloneHealthyTangleSpooks)
+        foreach (var spook in cloneHealthyTangleSpooks)
         {
             if (spook != SelfAddress)
             {
-                SendMessage(spook, message);
+                SendMessage(spook, _message);
             }
         }
     }
 
-    private void SendMessage(string targetAddress, string message)
+    private void SendMessage(string _targetAddress, string _message)
     {
         // Placeholder for network send (e.g., TCP/UDP)
         // In practice, this would use a network library
@@ -264,69 +264,69 @@ public class Spook
 
     private async Task ProcessMessageAsync(string _message, string _fromAddress)
     {
-        var _parts = _message.Split('|', 2);
-        if (_parts.Length < 2) return;
-        string _type = _parts[0];
-        string _payload = _parts[1];
+        var parts = _message.Split('|', 2);
+        if (parts.Length < 2) return;
+        string type = parts[0];
+        string payload = parts[1];
 
-        Task _process;
+        Task process;
 
-        switch (_type)
+        switch (type)
         {
             // this is called by new spooks joining the tangle
             //  (they are not done joining until the announce)
             case "JOIN":
-                _process = Task.Run(() => HandleJoinAsync(_fromAddress));
+                process = Task.Run(() => HandleJoinAsync(_fromAddress));
                 break;
 
             // this is the reply to joiners, with health status
             case "WELCOME":
-                _process = Task.Run(() => HandleWelcomeAsync(_payload));
+                process = Task.Run(() => HandleWelcomeAsync(payload));
                 break;
 
             // this is called by a spook that has completed joining
             case "ANNOUNCE":
-                _process = Task.Run(() => HandleAnnounceAsync(_payload).ConfigureAwait(false));
+                process = Task.Run(() => HandleAnnounceAsync(payload).ConfigureAwait(false));
                 break;
 
             // distribution of data payload
             case "DATA":
-                HandleData(_payload);
+                HandleData(payload);
                 break;
 
             // if a single integration fails while the top spook is healthy it
             //  will try to offload that process to another spook.
             case "OFFLOAD":
-                HandleOffload(_payload);
+                HandleOffload(payload);
                 break;
 
             // heartbeat to let the other spooks know everything is good
             case "HEALTH":
-                await HandleHealthAsync(_payload).ConfigureAwait(false);
+                await HandleHealthAsync(payload).ConfigureAwait(false);
                 break;
 
             // this is called when a spook notices something wrong with the
             //  top spook - or by top spook when going down expectedly
             case "BALLOT":
-                HandleBallot(_payload);
+                HandleBallot(payload);
                 break;
 
             // called when a spook receives ballots from all healthy spooks in
             //  the tangle, on their consensus
             case "TUNE":
-                HandleTune(_payload);
+                HandleTune(payload);
                 break;
 
             // called when a spook shuts down expectedly
             //  (regardless of it's tangled state)
             case "DIMMING":
-                HandleDimming(_payload);
+                HandleDimming(payload);
                 break;
         }
 
         using (await MessageProcessingLock.LockAsync().ConfigureAwait(false))
         {
-            MessageProcessing.Add(_process);
+            MessageProcessing.Add(process);
         }
     }
 
@@ -337,28 +337,28 @@ public class Spook
             return;
         }
 
-        string _welcomePayload = (await BuildSelfHealthStatusAsync().ConfigureAwait(false)).ToJsonString() ?? "";
-        SendMessage(_newSpookAddress, $"WELCOME|{_welcomePayload}");
+        string welcomePayload = (await BuildSelfHealthStatusAsync().ConfigureAwait(false)).ToJsonString() ?? "";
+        SendMessage(_newSpookAddress, $"WELCOME|{welcomePayload}");
     }
 
     private async Task HandleWelcomeAsync(string _payload)
     {
-        HealthStatusJson? _theirHealthStatus = HealthStatusJson.Parse(_payload);
+        HealthStatusJson? theirHealthStatus = HealthStatusJson.Parse(_payload);
 
-        if (_theirHealthStatus == null || _theirHealthStatus.TangleHealth == null)
+        if (theirHealthStatus == null || theirHealthStatus.TangleHealth == null)
         {
             return;
         }
 
         using (await HealthyTangleSpookLock.LockAsync().ConfigureAwait(false))
         {
-            foreach (var _deltaStatus in _theirHealthStatus.TangleHealth)
+            foreach (var deltaStatus in theirHealthStatus.TangleHealth)
             {
-                if (_deltaStatus.CurrentTangledState == SpookTangledState.Entangled)
+                if (deltaStatus.CurrentTangledState == SpookTangledState.Entangled)
                 {
-                    if (!HealthyTangleSpooks.Contains(_deltaStatus.Address))
+                    if (!HealthyTangleSpooks.Contains(deltaStatus.Address))
                     {
-                        HealthyTangleSpooks.Add(_deltaStatus.Address);
+                        HealthyTangleSpooks.Add(deltaStatus.Address);
                     }
                 }
             }
@@ -389,16 +389,16 @@ public class Spook
 
     private async Task HandleHealthAsync(string _healthStatusJson)
     {
-        HealthStatusJson? _healthStatus = HealthStatusJson.Parse(_healthStatusJson);
+        HealthStatusJson? healthStatus = HealthStatusJson.Parse(_healthStatusJson);
 
-        if (_healthStatus == null)
+        if (healthStatus == null)
         {
             return;
         }
 
-        if (ExpectedTangleSpooks.Contains(_healthStatus.Address))
+        if (ExpectedTangleSpooks.Contains(healthStatus.Address))
         {
-            HealthUpdate? _previousHealthUpdate;
+            HealthUpdate? previousHealthUpdate;
 
             using (await HealthyTangleSpookLock.LockAsync().ConfigureAwait(false))
             {
@@ -406,27 +406,27 @@ public class Spook
                 //
                 //  note that healthy doesn't mean entangled.
                 //
-                if (UnhealthyTangleSpooks.Contains(_healthStatus.Address))
+                if (UnhealthyTangleSpooks.Contains(healthStatus.Address))
                 {
-                    UnhealthyTangleSpooks.Remove(_healthStatus.Address);
+                    UnhealthyTangleSpooks.Remove(healthStatus.Address);
                 }
 
                 // try to capture the last update, if there was one
-                TangleHealthUpdates.TryGetValue(_healthStatus.Address, out _previousHealthUpdate);
+                TangleHealthUpdates.TryGetValue(healthStatus.Address, out previousHealthUpdate);
 
-                TangleHealthUpdates[_healthStatus.Address] = new HealthUpdate(
-                    _healthStatus,
+                TangleHealthUpdates[healthStatus.Address] = new HealthUpdate(
+                    healthStatus,
                     DateTime.UtcNow
                 );
             }
 
             // if the precedence (configured or current) changed, double check precedence is correct.
-            if (_previousHealthUpdate != null)
+            if (previousHealthUpdate != null)
             {
                 if (
-                        _previousHealthUpdate.Status.CurrentPrecedence != _healthStatus.CurrentPrecedence
+                        previousHealthUpdate.Status.CurrentPrecedence != healthStatus.CurrentPrecedence
                     ||
-                        _previousHealthUpdate.Status.ConfiguredPrecedence != _healthStatus.ConfiguredPrecedence
+                        previousHealthUpdate.Status.ConfiguredPrecedence != healthStatus.ConfiguredPrecedence
                 )
                 {
                     await UpdatePrecedenceAsync().ConfigureAwait(false);
@@ -446,10 +446,10 @@ public class Spook
         //// collect the scores for all spooks that are healthy in our tangle
         //
         // collects the statuses into a single list
-        List<HealthStatusJson> _tangledSpookStatuses;
+        List<HealthStatusJson> tangledSpookStatuses;
         using (await HealthyTangleSpookLock.LockAsync().ConfigureAwait(false))
         {
-            _tangledSpookStatuses = [..
+            tangledSpookStatuses = [..
                 (
                     from
                         _item in TangleHealthUpdates.Values
@@ -461,34 +461,34 @@ public class Spook
         }
         //
         // scores each spook based on it's configured precedence
-        Dictionary<string, int> _entangledSpookScores = [];
-        int _spookCount = 0;
-        int _topScore = -10;
-        foreach (var _deltaStatus in _tangledSpookStatuses)
+        Dictionary<string, int> entangledSpookScores = [];
+        int spookCount = 0;
+        int topScore = -10;
+        foreach (var deltaStatus in tangledSpookStatuses)
         {
             // only score spooks that are entangled
-            if (_deltaStatus.CurrentTangledState == SpookTangledState.Entangled)
+            if (deltaStatus.CurrentTangledState == SpookTangledState.Entangled)
             {
                 // increment how many spooks are entangled
-                _spookCount += 1;
+                spookCount += 1;
 
                 //// gather scores
                 //
-                int _score = (int)_deltaStatus.ConfiguredPrecedence;
+                int score = (int)deltaStatus.ConfiguredPrecedence;
                 //
-                if (_score > _topScore)
+                if (score > topScore)
                 {
-                    _topScore = _score;
+                    topScore = score;
                 }
                 //
-                _entangledSpookScores.Add(_deltaStatus.Address, _score);
+                entangledSpookScores.Add(deltaStatus.Address, score);
                 //
                 ////
             }
         }
         ////// verifies we have a quorum
         ////
-        if (_spookCount == 1 || (((double)_spookCount) / ((double)ExpectedTangleSpooks.Count) <= 0.5d))
+        if (spookCount == 1 || (((double)spookCount) / ((double)ExpectedTangleSpooks.Count) <= 0.5d))
         {
             // if there is only one spook in our tangle, or less or equal to half reachable, we assume the other spooks are handling things.
             todo("we have to dim until we have a quorum");
@@ -499,19 +499,19 @@ public class Spook
         // collects the list of addresses for the top scorers
         //  (typically one, but could temporarily be multiple)
         //
-        List<string> _topScorers = [..
+        List<string> topScorers = [..
             (
                 from
-                    _item in _entangledSpookScores
+                    _item in entangledSpookScores
                 where
-                    _item.Value == _topScore
+                    _item.Value == topScore
                 select
                     _item.Key
             )
         ];
         //
         // basic check if we are alone
-        if (_entangledSpookScores.Count < 2 || _topScorers.Count == 0)
+        if (entangledSpookScores.Count < 2 || topScorers.Count == 0)
         {
             //
             // for clarity: A spook that is alone cannot form a quorum so it
@@ -539,15 +539,15 @@ public class Spook
         // if the top spook is already the top, we don't need to do anything
         using (await HealthyTangleSpookLock.LockAsync().ConfigureAwait(false))
         {
-            int _topPrecendenceCount = 0;
-            foreach (var _deltaScorer in _topScorers)
+            int topPrecendenceCount = 0;
+            foreach (var deltaScorer in topScorers)
             {
-                if (TangleHealthUpdates[_deltaScorer].Status.CurrentPrecedence == SpookPrecedence.Top)
+                if (TangleHealthUpdates[deltaScorer].Status.CurrentPrecedence == SpookPrecedence.Top)
                 {
-                    _topPrecendenceCount += 1;
+                    topPrecendenceCount += 1;
 
                     // once we have more than one, we exit the loop as that is all we need to know.
-                    if (_topPrecendenceCount > 1)
+                    if (topPrecendenceCount > 1)
                     {
                         break;
                     }
@@ -555,7 +555,7 @@ public class Spook
             }
 
             // the top spook is already the correct one so we can exit
-            if (_topPrecendenceCount == 1)
+            if (topPrecendenceCount == 1)
             {
                 return;
             }
@@ -565,7 +565,7 @@ public class Spook
         //
         //  ultimately, the top configured spook isn't the top one at this point.
         //
-        if (_topScorers.Count == 1)
+        if (topScorers.Count == 1)
         {
 
             // at this point there is a spook that should be the top but it isn't, so we need to vote it in
@@ -586,16 +586,16 @@ public class Spook
         while (!StopSpook.Task.IsCompleted)
         {
             // capture start ticks so we can deduct the duration of processing from the wait
-            long _startTicks = DateTime.Now.Ticks;
+            long startTicks = DateTime.Now.Ticks;
 
 
             // update the list of healthy and unhealthy spooks based on our last received health from each
             DateTimeOffset now = DateTime.UtcNow;
             using (await HealthyTangleSpookLock.LockAsync().ConfigureAwait(false))
             {
-                List<string> _unhealthySpooks;
+                List<string> unhealthySpooks;
 
-                _unhealthySpooks = [..
+                unhealthySpooks = [..
                     (
                         from
                             _item in TangleHealthUpdates
@@ -605,7 +605,7 @@ public class Spook
                             _item.Key
                     )
                 ];
-                foreach (var spook in _unhealthySpooks)
+                foreach (var spook in unhealthySpooks)
                 {
                     HealthyTangleSpooks.Remove(spook);
                     TangleHealthUpdates.Remove(spook);
@@ -628,8 +628,8 @@ public class Spook
 
 
             // Send health update
-            string _selfHealth = (await BuildSelfHealthStatusAsync().ConfigureAwait(false)).ToJsonString() ?? ""; ;
-            await BroadcastAsync($"HEALTH|{_selfHealth}").ConfigureAwait(false);
+            string selfHealth = (await BuildSelfHealthStatusAsync().ConfigureAwait(false)).ToJsonString() ?? ""; ;
+            await BroadcastAsync($"HEALTH|{selfHealth}").ConfigureAwait(false);
 
 
             // lastly we clean up message task list    
@@ -640,11 +640,11 @@ public class Spook
 
 
             // wait for the health interval minus how long ^ this took to run
-            long _durationTicks = DateTime.Now.Ticks - _startTicks;
-            if (_durationTicks > 0)
+            long durationTicks = DateTime.Now.Ticks - startTicks;
+            if (durationTicks > 0)
             {
                 // wait the duration or when this spook shuts down
-                await Task.WhenAny(Task.Delay(HealthInterval.Add(new TimeSpan(-_durationTicks))), StopSpook.Task).ConfigureAwait(false);
+                await Task.WhenAny(Task.Delay(HealthInterval.Add(new TimeSpan(-durationTicks))), StopSpook.Task).ConfigureAwait(false);
             }
         }
 

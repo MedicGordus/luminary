@@ -12,41 +12,44 @@ namespace luminary.util;
 ///</summary>
 public class AsyncLock
 {
-    private readonly SemaphoreSlim m_semaphore;
+    private readonly SemaphoreSlim Semaphore;
 
-    private readonly Task<Releaser> m_releaser;
+    private readonly Task<Releaser> InternalReleaser;
 
-    private AsyncLock(int allowedThreads)
+    private AsyncLock(int _allowedThreads)
     {
-        m_semaphore = new SemaphoreSlim(allowedThreads);
-        m_releaser = Task.FromResult(new Releaser(this));
+        Semaphore = new SemaphoreSlim(_allowedThreads);
+        InternalReleaser = Task.FromResult(new Releaser(this));
     }
 
     public Task<Releaser> LockAsync()
     {
-        var wait = m_semaphore.WaitAsync();
+        var wait = Semaphore.WaitAsync();
+
+#nullable disable
         return wait.IsCompleted ?
-            m_releaser :
-            wait.ContinueWith((_, state) => new Releaser((AsyncLock)state),
+            InternalReleaser :
+            wait.ContinueWith((_, _state) => new Releaser((AsyncLock)_state),
                 this, CancellationToken.None,
                 TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
+#nullable enable
     }
 
     public struct Releaser : IDisposable
     {
-        private readonly AsyncLock m_toRelease;
+        private readonly AsyncLock ToRelease;
 
-        internal Releaser(AsyncLock toRelease) { m_toRelease = toRelease; }
+        internal Releaser(AsyncLock _toRelease) { ToRelease = _toRelease; }
 
         public void Dispose()
         {
-            if (m_toRelease != null)
-                m_toRelease.m_semaphore.Release();
+            if (ToRelease != null)
+                ToRelease.Semaphore.Release();
         }
     }
 
-    ///<param name="allowedThreads">
+    ///<param name="_allowedThreads">
     /// The amount of threads allowed through the lock at a time.
     ///</param>
-    public static AsyncLock Create(int allowedThreads = 1) => new AsyncLock(allowedThreads);
+    public static AsyncLock Create(int _allowedThreads = 1) => new AsyncLock(_allowedThreads);
 }

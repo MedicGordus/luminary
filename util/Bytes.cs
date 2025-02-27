@@ -5,21 +5,21 @@ namespace luminary.util;
 
 public static class Bytes
 {
-    public static byte[]? ToUtf8Bytes(this string? input)
+    public static byte[]? ToUtf8Bytes(this string? _input)
     {
-        if (input == null)
+        if (_input == null)
         {
             return null;
         }
-        return Encoding.UTF8.GetBytes(input);
+        return Encoding.UTF8.GetBytes(_input);
     }
 
-    public static string? FromUtf8Bytes(this byte[]? input)
+    public static string? FromUtf8Bytes(this byte[]? _input)
     {
-        if (input == null)
+        if (_input == null)
         {
             return null;
         }
-        return Encoding.UTF8.GetString(input);
+        return Encoding.UTF8.GetString(_input);
     }
 }

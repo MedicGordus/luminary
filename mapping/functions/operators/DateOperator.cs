@@ -16,48 +16,48 @@ public class DateOperator : OperatorValue
         NullableValue = _nullableValue;
     }
 
-    public override OperatorValue? BooleanAnd(OperatorValue[]? parameters)
+    public override OperatorValue? BooleanAnd(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? BitwiseLeftShift(OperatorValue[]? parameters)
+    public override OperatorValue? BitwiseLeftShift(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? BitwiseMod(OperatorValue[]? parameters)
+    public override OperatorValue? BitwiseMod(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? BitwiseRightShift(OperatorValue[]? parameters)
+    public override OperatorValue? BitwiseRightShift(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? BitwiseXor(OperatorValue[]? parameters)
+    public override OperatorValue? BitwiseXor(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? Concatenate(OperatorValue[]? parameters)
+    public override OperatorValue? Concatenate(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? ConvertToBigInteger(OperatorValue[]? parameters)
+    public override OperatorValue? ConvertToBigInteger(OperatorValue[]? _parameters)
     {
-        long? _epoch = DateTimeHelper.GetValueMillisecondsSinceEpoch(NullableValue);
+        long? epoch = DateTimeHelper.GetValueMillisecondsSinceEpoch(NullableValue);
 
-        if (_epoch == null)
+        if (epoch == null)
         {
             return new BigIntegerOperator(null);
         }
 
-        if (BigInteger.TryParse(_epoch.ToString(), out var _converted))
+        if (BigInteger.TryParse(epoch.ToString(), out var converted))
         {
-            return new BigIntegerOperator(_converted);
+            return new BigIntegerOperator(converted);
         }
         else
         {
@@ -65,313 +65,313 @@ public class DateOperator : OperatorValue
         }
     }
 
-    public override OperatorValue? ConvertToBigIntegerUnits(OperatorValue[]? parameters)
+    public override OperatorValue? ConvertToBigIntegerUnits(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? ConvertToDecimal(OperatorValue[]? parameters)
+    public override OperatorValue? ConvertToDecimal(OperatorValue[]? _parameters)
     {
-        long? _epoch = DateTimeHelper.GetValueMillisecondsSinceEpoch(NullableValue);
+        long? epoch = DateTimeHelper.GetValueMillisecondsSinceEpoch(NullableValue);
 
-        if (_epoch == null)
+        if (epoch == null)
         {
             return new DecimalOperator(null);
         }
 
-        return new DecimalOperator((decimal)_epoch);
+        return new DecimalOperator((decimal)epoch);
     }
 
-    public override OperatorValue? ConvertToDecimalUnits(OperatorValue[]? parameters)
+    public override OperatorValue? ConvertToDecimalUnits(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? ConvertToDouble(OperatorValue[]? parameters)
+    public override OperatorValue? ConvertToDouble(OperatorValue[]? _parameters)
     {
-        long? _epoch = DateTimeHelper.GetValueMillisecondsSinceEpoch(NullableValue);
+        long? epoch = DateTimeHelper.GetValueMillisecondsSinceEpoch(NullableValue);
 
-        if (_epoch == null)
+        if (epoch == null)
         {
             return new DecimalOperator(null);
         }
 
-        return new DoubleOperator((double)_epoch);
+        return new DoubleOperator((double)epoch);
     }
 
-    public override OperatorValue? ConvertToDoubleUnits(OperatorValue[]? parameters)
+    public override OperatorValue? ConvertToDoubleUnits(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? ConvertToInteger(OperatorValue[]? parameters)
+    public override OperatorValue? ConvertToInteger(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? ConvertToIntegerUnits(OperatorValue[]? parameters)
+    public override OperatorValue? ConvertToIntegerUnits(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? ConvertToString(OperatorValue[]? parameters)
+    public override OperatorValue? ConvertToString(OperatorValue[]? _parameters)
     {
         return new StringOperator(NullableValue?.ToString());
     }
 
-    public override OperatorValue? EndsWith(OperatorValue[]? parameters)
+    public override OperatorValue? EndsWith(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? ValueEqual(OperatorValue[]? parameters)
+    public override OperatorValue? ValueEqual(OperatorValue[]? _parameters)
     {
-        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || _parameters == null || _parameters.Length == 0 || _parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute valueequal.");
         }
 
-        if (parameters[0] is not DateOperator)
+        if (_parameters[0] is not DateOperator)
         {
             throw new ArgumentException("Cannot valueequal when the parameter is not a dateonly.");
         }
 
-        DateOnly? _paramValue = ((DateOperator)parameters[0]).GetValue();
+        DateOnly? paramValue = ((DateOperator)_parameters[0]).GetValue();
 
-        if (_paramValue == null)
+        if (paramValue == null)
         {
             throw new ArgumentException("Cannot valueequal when the parameter is null.");
         }
 
-        return new BooleanOperator(NullableValue.Value == _paramValue.Value);
+        return new BooleanOperator(NullableValue.Value == paramValue.Value);
     }
 
-    public override OperatorValue? Filled(OperatorValue[]? parameters)
+    public override OperatorValue? Filled(OperatorValue[]? _parameters)
     {
         return new BooleanOperator(NullableValue != null);
     }
 
-    public override OperatorValue? GreaterOrEqual(OperatorValue[]? parameters)
+    public override OperatorValue? GreaterOrEqual(OperatorValue[]? _parameters)
     {
-        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || _parameters == null || _parameters.Length == 0 || _parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute greaterorequal.");
         }
 
-        if (parameters[0] is not DateOperator)
+        if (_parameters[0] is not DateOperator)
         {
             throw new ArgumentException("Cannot greaterorequal when the parameter is not a dateonly.");
         }
 
-        DateOnly? _paramValue = ((DateOperator)parameters[0]).GetValue();
+        DateOnly? paramValue = ((DateOperator)_parameters[0]).GetValue();
 
-        if (_paramValue == null)
+        if (paramValue == null)
         {
             throw new ArgumentException("Cannot greaterorequal when the parameter is null.");
         }
 
-        return new BooleanOperator(NullableValue.Value >= _paramValue.Value);
+        return new BooleanOperator(NullableValue.Value >= paramValue.Value);
     }
 
-    public override OperatorValue? GreatherThan(OperatorValue[]? parameters)
+    public override OperatorValue? GreatherThan(OperatorValue[]? _parameters)
     {
-        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || _parameters == null || _parameters.Length == 0 || _parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute greaterthan.");
         }
 
-        if (parameters[0] is not DateOperator)
+        if (_parameters[0] is not DateOperator)
         {
             throw new ArgumentException("Cannot greaterthan when the parameter is not a dateonly.");
         }
 
-        DateOnly? _paramValue = ((DateOperator)parameters[0]).GetValue();
+        DateOnly? paramValue = ((DateOperator)_parameters[0]).GetValue();
 
-        if (_paramValue == null)
+        if (paramValue == null)
         {
             throw new ArgumentException("Cannot greaterthan when the parameter is null.");
         }
 
-        return new BooleanOperator(NullableValue.Value > _paramValue.Value);
+        return new BooleanOperator(NullableValue.Value > paramValue.Value);
     }
 
-    public override OperatorValue? IfNotFilled(OperatorValue[]? parameters)
+    public override OperatorValue? IfNotFilled(OperatorValue[]? _parameters)
     {
         if (NullableValue == null)
         {
-            if (parameters == null || parameters.Length == 0 || parameters[0] == null)
+            if (_parameters == null || _parameters.Length == 0 || _parameters[0] == null)
             {
                 throw new ArgumentException("Parameters null or parameter missing. Cannot execute ifnotfilled.");
             }
 
-            if (parameters[0] is not DateOperator)
+            if (_parameters[0] is not DateOperator)
             {
                 throw new ArgumentException("Cannot ifnotfilled when the parameter is not a dateonly.");
             }
 
-            return new DateOperator(((DateOperator)parameters[0]).GetValue());
+            return new DateOperator(((DateOperator)_parameters[0]).GetValue());
         }
 
         return new DateOperator(NullableValue.Value);
     }
 
-    public override OperatorValue? Includes(OperatorValue[]? parameters)
+    public override OperatorValue? Includes(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? IndexOf(OperatorValue[]? parameters)
+    public override OperatorValue? IndexOf(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? EqualsIgnoreCase(OperatorValue[]? parameters)
+    public override OperatorValue? EqualsIgnoreCase(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? Join(OperatorValue[]? parameters)
+    public override OperatorValue? Join(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? Length(OperatorValue[]? parameters)
+    public override OperatorValue? Length(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? LessOrEqual(OperatorValue[]? parameters)
+    public override OperatorValue? LessOrEqual(OperatorValue[]? _parameters)
     {
-        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || _parameters == null || _parameters.Length == 0 || _parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute lessorequal.");
         }
 
-        if (parameters[0] is not DateOperator)
+        if (_parameters[0] is not DateOperator)
         {
             throw new ArgumentException("Cannot lessorequal when the parameter is not a dateonly.");
         }
 
-        DateOnly? _paramValue = ((DateOperator)parameters[0]).GetValue();
+        DateOnly? paramValue = ((DateOperator)_parameters[0]).GetValue();
 
-        if (_paramValue == null)
+        if (paramValue == null)
         {
             throw new ArgumentException("Cannot lessorequal when the parameter is null.");
         }
 
-        return new BooleanOperator(NullableValue.Value <= _paramValue.Value);
+        return new BooleanOperator(NullableValue.Value <= paramValue.Value);
     }
 
-    public override OperatorValue? LessThan(OperatorValue[]? parameters)
+    public override OperatorValue? LessThan(OperatorValue[]? _parameters)
     {
-        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || _parameters == null || _parameters.Length == 0 || _parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute lessthan.");
         }
 
-        if (parameters[0] is not DateOperator)
+        if (_parameters[0] is not DateOperator)
         {
             throw new ArgumentException("Cannot lessthan when the parameter is not a dateonly.");
         }
 
-        DateOnly? _paramValue = ((DateOperator)parameters[0]).GetValue();
+        DateOnly? paramValue = ((DateOperator)_parameters[0]).GetValue();
 
-        if (_paramValue == null)
+        if (paramValue == null)
         {
             throw new ArgumentException("Cannot lessthan when the parameter is null.");
         }
 
-        return new BooleanOperator(NullableValue.Value < _paramValue.Value);
+        return new BooleanOperator(NullableValue.Value < paramValue.Value);
     }
 
-    public override OperatorValue? MathAdd(OperatorValue[]? parameters)
+    public override OperatorValue? MathAdd(OperatorValue[]? _parameters)
     {
-        return MathAddOrSubtract(parameters, true);
+        return MathAddOrSubtract(_parameters, true);
     }
 
-    public override OperatorValue? MathAverage(OperatorValue[]? parameters)
-    {
-        throw new InvalidOperationException();
-    }
-
-    public override OperatorValue? MathCeiling(OperatorValue[]? parameters)
+    public override OperatorValue? MathAverage(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? MathDivide(OperatorValue[]? parameters)
+    public override OperatorValue? MathCeiling(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? MathFloor(OperatorValue[]? parameters)
+    public override OperatorValue? MathDivide(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? MathMultiply(OperatorValue[]? parameters)
+    public override OperatorValue? MathFloor(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? MathPower(OperatorValue[]? parameters)
+    public override OperatorValue? MathMultiply(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? MathRound(OperatorValue[]? parameters)
+    public override OperatorValue? MathPower(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? MathSubtract(OperatorValue[]? parameters)
+    public override OperatorValue? MathRound(OperatorValue[]? _parameters)
     {
-        return MathAddOrSubtract(parameters, false);
+        throw new InvalidOperationException();
     }
 
-    public override OperatorValue? NotEqual(OperatorValue[]? parameters)
+    public override OperatorValue? MathSubtract(OperatorValue[]? _parameters)
     {
-        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        return MathAddOrSubtract(_parameters, false);
+    }
+
+    public override OperatorValue? NotEqual(OperatorValue[]? _parameters)
+    {
+        if (NullableValue == null || _parameters == null || _parameters.Length == 0 || _parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute notequal.");
         }
 
-        if (parameters[0] is not DateOperator)
+        if (_parameters[0] is not DateOperator)
         {
             throw new ArgumentException("Cannot notequal when the parameter is not a dateonly.");
         }
 
-        DateOnly? _paramValue = ((DateOperator)parameters[0]).GetValue();
+        DateOnly? paramValue = ((DateOperator)_parameters[0]).GetValue();
 
-        if (_paramValue == null)
+        if (paramValue == null)
         {
             throw new ArgumentException("Cannot notequal when the parameter is null.");
         }
 
-        return new BooleanOperator(NullableValue.Value != _paramValue.Value);
+        return new BooleanOperator(NullableValue.Value != paramValue.Value);
     }
 
-    public override OperatorValue? BooleanOr(OperatorValue[]? parameters)
+    public override OperatorValue? BooleanOr(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? Replace(OperatorValue[]? parameters)
+    public override OperatorValue? Replace(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? Split(OperatorValue[]? parameters)
+    public override OperatorValue? Split(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? StartsWith(OperatorValue[]? parameters)
+    public override OperatorValue? StartsWith(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? Substring(OperatorValue[]? parameters)
+    public override OperatorValue? Substring(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
@@ -389,22 +389,22 @@ public class DateOperator : OperatorValue
         );
     }
 
-    public override OperatorValue? ToLower(OperatorValue[]? parameters)
+    public override OperatorValue? ToLower(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? ToUpper(OperatorValue[]? parameters)
+    public override OperatorValue? ToUpper(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? Trim(OperatorValue[]? parameters)
+    public override OperatorValue? Trim(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? BooleanNot(OperatorValue[]? parameters)
+    public override OperatorValue? BooleanNot(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
@@ -419,24 +419,24 @@ public class DateOperator : OperatorValue
         return NullableValue.Value.ToString();
     }
 
-    public override void SetValue(OperatorValue value)
+    public override void SetValue(OperatorValue _value)
     {
-        if (value is not DateOperator)
+        if (_value is not DateOperator)
         {
             throw new ArgumentException("Cannot setvalue when the parameter is not a dateonly.");
         }
 
-        NullableValue = ((DateOperator)value).GetValue();
+        NullableValue = ((DateOperator)_value).GetValue();
     }
 
-    public static OperatorValue BuildFromParameters(string[] parameters)
+    public static OperatorValue BuildFromParameters(string[] _parameters)
     {
-        if (parameters == null || parameters.Length == 0)
+        if (_parameters == null || _parameters.Length == 0)
         {
             throw new ArgumentException("Cannot create a DateOperator, null or missing parameter.");
         }
 
-        return BuildFromString(parameters[0]);
+        return BuildFromString(_parameters[0]);
     }
 
     public static OperatorValue BuildFromString(string? _input)
@@ -446,9 +446,9 @@ public class DateOperator : OperatorValue
             return new DateOperator(null);
         }
 
-        if (DateOnly.TryParse(_input, out DateOnly _value))
+        if (DateOnly.TryParse(_input, out DateOnly value))
         {
-            return new DateOperator(_value);
+            return new DateOperator(value);
         }
         else
         {
@@ -461,54 +461,54 @@ public class DateOperator : OperatorValue
         }
     }
 
-    protected OperatorValue? MathAddOrSubtract(OperatorValue[]? parameters, bool _adding)
+    protected OperatorValue? MathAddOrSubtract(OperatorValue[]? _parameters, bool _adding)
     {
-        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || _parameters == null || _parameters.Length == 0 || _parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute mathadd.");
         }
 
-        if (parameters[0] is not DurationOperator)
+        if (_parameters[0] is not DurationOperator)
         {
             throw new ArgumentException("Cannot mathadd when the parameter is not a duration.");
         }
 
-        Duration? _paramValue = ((DurationOperator)parameters[0]).GetValue();
+        Duration? paramValue = ((DurationOperator)_parameters[0]).GetValue();
 
-        if (_paramValue == null)
+        if (paramValue == null)
         {
             throw new ArgumentException("Cannot mathadd when the parameter is null.");
         }
 
-        Duration.DurationParts _parts = _paramValue.GetParts();
-        if (_parts.HasFlag(Duration.DurationParts.ContainstTimePortion))
+        Duration.DurationParts parts = paramValue.GetParts();
+        if (parts.HasFlag(Duration.DurationParts.ContainstTimePortion))
         {
             // this is a dateonly, but we are adding a duration with time.
             //  because time parts differ in size that are minute or longer
             //  due to leap seconds, leap years, etc, we need a fixed date
             //  to accurately calculate the addition.
 
-            if (parameters.Length < 2 || parameters[1] == null)
+            if (_parameters.Length < 2 || _parameters[1] == null)
             {
                 throw new ArgumentException("Parameter null or parameter missing. Cannot execute mathaddorsubtract.");
             }
 
-            if (parameters[1] is not DurationOperator)
+            if (_parameters[1] is not DurationOperator)
             {
                 throw new ArgumentException("Cannot mathaddorsubtract when the second parameter is not a duration.");
             }
 
             // collect the timezone offset
-            Duration? _param2Value = ((DurationOperator)parameters[1]).GetValue();
-            if (_param2Value == null)
+            Duration? param2Value = ((DurationOperator)_parameters[1]).GetValue();
+            if (param2Value == null)
             {
                 throw new ArgumentException("Cannot mathaddorsubtract when the duration parameter is null.");
             }
 
-            DateTimeOffset _dto;
+            DateTimeOffset dto;
             if (_adding)
             {
-                _dto = _paramValue.AddToDateTimeOffset(
+                dto = paramValue.AddToDateTimeOffset(
                     new DateTimeOffset(
                         NullableValue.Value.Year,
                         NullableValue.Value.Month,
@@ -516,13 +516,13 @@ public class DateOperator : OperatorValue
                         0,
                         0,
                         0,
-                        _param2Value.ConvertToTimeSpan()
+                        param2Value.ConvertToTimeSpan()
                     )
                 );
             }
             else
             {
-                _dto = _paramValue.SubtractFromDateTimeOffset(
+                dto = paramValue.SubtractFromDateTimeOffset(
                     new DateTimeOffset(
                         NullableValue.Value.Year,
                         NullableValue.Value.Month,
@@ -530,32 +530,32 @@ public class DateOperator : OperatorValue
                         0,
                         0,
                         0,
-                        _param2Value.ConvertToTimeSpan()
+                        param2Value.ConvertToTimeSpan()
                     )
                 );
             }
 
             return new DateTimeOffsetOperator(
-                _dto
+                dto
             );
         }
-        else if (_parts.HasFlag(Duration.DurationParts.ContainsDatePortion))
+        else if (parts.HasFlag(Duration.DurationParts.ContainsDatePortion))
         {
-            DateOnly _do;
+            DateOnly dateOnly;
             if (_adding)
             {
-                _do = _paramValue.AddToDateOnly(
+                dateOnly = paramValue.AddToDateOnly(
                     NullableValue.Value
                 );
             }
             else
             {
-                _do = _paramValue.SubtractFromDateOnly(
+                dateOnly = paramValue.SubtractFromDateOnly(
                     NullableValue.Value
                 );
             }
             return new DateOperator(
-                _do
+                dateOnly
             );
         }
 

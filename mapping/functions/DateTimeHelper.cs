@@ -33,24 +33,24 @@ public static class DateTimeHelper
     /// </summary>
     public const string DATE_TIME_OFFSET_TO_STRING_FORMAT = @"yyyy-MM-dd'T'HH:mm:ss.fffffffzzz";
 
-    public static long? GetValueMillisecondsSinceEpoch(DateOnly? NullableValue)
+    public static long? GetValueMillisecondsSinceEpoch(DateOnly? _nullableValue)
     {
-        if (NullableValue == null)
+        if (_nullableValue == null)
         {
             return null;
         }
 
-        return GetValueMillisecondsSinceEpoch(new DateTimeOffset(NullableValue.Value, new TimeOnly(), new TimeSpan()));
+        return GetValueMillisecondsSinceEpoch(new DateTimeOffset(_nullableValue.Value, new TimeOnly(), new TimeSpan()));
     }
 
-    public static long? GetValueMillisecondsSinceEpoch(DateTimeOffset? NullableValue)
+    public static long? GetValueMillisecondsSinceEpoch(DateTimeOffset? _nullableValue)
     {
-        if (NullableValue == null)
+        if (_nullableValue == null)
         {
             return null;
         }
 
-        return Epoch.GetMillisecondsSinceUnixEpoch(NullableValue.Value);
+        return Epoch.GetMillisecondsSinceUnixEpoch(_nullableValue.Value);
     }
 
     public static bool TrySpecialParseExactDateTimeOffset(string _input, out DateTimeOffset _output)
@@ -58,29 +58,29 @@ public static class DateTimeHelper
 
         //// special code to separate out the fractional seconds
         //
-        var _match = Regex.Match(_input, DATE_TIME_OFFSET_FRACTIONAL_SECONDS_HELPER);
-        if (_match.Success)
+        var match = Regex.Match(_input, DATE_TIME_OFFSET_FRACTIONAL_SECONDS_HELPER);
+        if (match.Success)
         {
             // Group 1 will be everything before the fractional part or the whole string if no fractional part exists
             // Group 3 captures the timezone information
-            string _dateTimeZonePortion = _match.Groups[1].Value + (_match.Groups[3].Success ? _match.Groups[3].Value : "");
+            string dateTimeZonePortion = match.Groups[1].Value + (match.Groups[3].Success ? match.Groups[3].Value : "");
 
 
             // Group 2 will be the fractional part if it exists, otherwise it's an empty string
-            string _fractionalSeconds = _match.Groups[2].Success ? _match.Groups[2].Value.PadRight(7, '0') : "";
+            string fractionalSeconds = match.Groups[2].Success ? match.Groups[2].Value.PadRight(7, '0') : "";
 
             // DateTimeZone deals with ticks (100 nanoseconds), so we can only parse 7 digits
-            if (_fractionalSeconds.Length > 7)
+            if (fractionalSeconds.Length > 7)
             {
-                _fractionalSeconds = _fractionalSeconds[..7];
+                fractionalSeconds = fractionalSeconds[..7];
             }
 
-            if (DateTimeOffset.TryParseExact(_dateTimeZonePortion, DateTimeHelper.DATE_TIME_OFFSET_FORMAT, null, System.Globalization.DateTimeStyles.None, out _output))
+            if (DateTimeOffset.TryParseExact(dateTimeZonePortion, DateTimeHelper.DATE_TIME_OFFSET_FORMAT, null, System.Globalization.DateTimeStyles.None, out _output))
             {
-                if (_fractionalSeconds != "")
+                if (fractionalSeconds != "")
                 {
                     // add the ticks, we already made sure it is 7 digits by this time to be exactly ticks
-                    _output = _output.AddTicks(int.Parse(_fractionalSeconds));
+                    _output = _output.AddTicks(int.Parse(fractionalSeconds));
                 }
 
                 return true;

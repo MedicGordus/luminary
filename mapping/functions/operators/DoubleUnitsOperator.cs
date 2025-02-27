@@ -9,489 +9,519 @@ public class DoubleUnitsOperator : DoubleOperator
 
     public string? GetUnits() => NullableUnits;
 
-    public DoubleUnitsOperator(double? nullableValue, string? nullableUnits) : base(nullableValue, OperatorValueType.DoubleUnits)
+    public DoubleUnitsOperator(double? _nullableValue, string? _nullableUnits) : base(_nullableValue, OperatorValueType.DoubleUnits)
     {
-        NullableUnits = nullableUnits;
+        NullableUnits = _nullableUnits;
     }
 
 
 
     #region "overloaded functions with unit checks"
 
-    public override OperatorValue? ValueEqual(OperatorValue[]? parameters)
+    public override OperatorValue? ValueEqual(OperatorValue[]? _parameters)
     {
         // this does the nullable checks, etc. for us, on top of retrieving the value
-        bool _parameterValue = base.InheritableValueEqual(parameters);
+        bool parameterValue = base.InheritableValueEqual(_parameters);
 
-        if (parameters[0] is not DoubleUnitsOperator)
+#nullable disable
+        if (_parameters[0] is not DoubleUnitsOperator)
+#nullable enable
         {
             throw new ArgumentException("Cannot valueequal when the parameter is not a doubleunits.");
         }
 
-        var _paramUnit = ((DoubleUnitsOperator)parameters[0]).NullableUnits;
+        var paramUnit = ((DoubleUnitsOperator)_parameters[0]).NullableUnits;
 
-        if (_paramUnit != NullableUnits)
+        if (paramUnit != NullableUnits)
         {
             throw new ArgumentException(
                 string.Format(
                     "Units mismatch, left '{0}', right '{1}'.",
                     NullableUnits,
-                    _paramUnit
+                    paramUnit
                 )
             );
         }
 
         return new BooleanOperator(
-            _parameterValue
+            parameterValue
         );
     }
 
-    public override OperatorValue? GreaterOrEqual(OperatorValue[]? parameters)
+    public override OperatorValue? GreaterOrEqual(OperatorValue[]? _parameters)
     {
         // this does the nullable checks, etc. for us, on top of retrieving the value
-        bool _parameterValue = base.InheritableGreaterOrEqual(parameters);
-
-        if (parameters[0] is not DoubleUnitsOperator)
+        bool parameterValue = base.InheritableGreaterOrEqual(_parameters);
+        
+#nullable disable
+        if (_parameters[0] is not DoubleUnitsOperator)
+#nullable enable
         {
             throw new ArgumentException("Cannot greaterorequal when the parameter is not a doubleunits.");
         }
 
-        var _paramUnit = ((DoubleUnitsOperator)parameters[0]).NullableUnits;
+        var paramUnit = ((DoubleUnitsOperator)_parameters[0]).NullableUnits;
 
-        if (_paramUnit != NullableUnits)
+        if (paramUnit != NullableUnits)
         {
             throw new ArgumentException(
                 string.Format(
                     "Units mismatch, left '{0}', right '{1}'.",
                     NullableUnits,
-                    _paramUnit
+                    paramUnit
                 )
             );
         }
 
         return new BooleanOperator(
-            _parameterValue
+            parameterValue
         );
     }
 
-    public override OperatorValue? GreatherThan(OperatorValue[]? parameters)
+    public override OperatorValue? GreatherThan(OperatorValue[]? _parameters)
     {
         // this does the nullable checks, etc. for us, on top of retrieving the value
-        bool _parameterValue = base.InheritableGreatherThan(parameters);
+        bool parameterValue = base.InheritableGreatherThan(_parameters);
 
-        if (parameters[0] is not DoubleUnitsOperator)
+#nullable disable
+        if (_parameters[0] is not DoubleUnitsOperator)
+#nullable enable
         {
             throw new ArgumentException("Cannot greaterthan when the parameter is not a doubleunits.");
         }
 
-        var _paramUnit = ((DoubleUnitsOperator)parameters[0]).NullableUnits;
+        var paramUnit = ((DoubleUnitsOperator)_parameters[0]).NullableUnits;
 
-        if (_paramUnit != NullableUnits)
+        if (paramUnit != NullableUnits)
         {
             throw new ArgumentException(
                 string.Format(
                     "Units mismatch, left '{0}', right '{1}'.",
                     NullableUnits,
-                    _paramUnit
+                    paramUnit
                 )
             );
         }
 
         return new BooleanOperator(
-            _parameterValue
+            parameterValue
         );
     }
 
-    public override OperatorValue? LessOrEqual(OperatorValue[]? parameters)
+    public override OperatorValue? LessOrEqual(OperatorValue[]? _parameters)
     {
         // this does the nullable checks, etc. for us, on top of retrieving the value
-        bool _parameterValue = base.InheritableLessOrEqual(parameters);
+        bool parameterValue = base.InheritableLessOrEqual(_parameters);
 
-        if (parameters[0] is not DoubleUnitsOperator)
+#nullable disable
+        if (_parameters[0] is not DoubleUnitsOperator)
+#nullable enable
         {
             throw new ArgumentException("Cannot lessorequal when the parameter is not a doubleunits.");
         }
 
-        var _paramUnit = ((DoubleUnitsOperator)parameters[0]).NullableUnits;
+        var paramUnit = ((DoubleUnitsOperator)_parameters[0]).NullableUnits;
 
-        if (_paramUnit != NullableUnits)
+        if (paramUnit != NullableUnits)
         {
             throw new ArgumentException(
                 string.Format(
                     "Units mismatch, left '{0}', right '{1}'.",
                     NullableUnits,
-                    _paramUnit
+                    paramUnit
                 )
             );
         }
 
         return new BooleanOperator(
-            _parameterValue
+            parameterValue
         );
     }
 
-    public override OperatorValue? LessThan(OperatorValue[]? parameters)
+    public override OperatorValue? LessThan(OperatorValue[]? _parameters)
     {
         // this does the nullable checks, etc. for us, on top of retrieving the value
-        bool _parameterValue = base.InheritableLessThan(parameters);
+        bool parameterValue = base.InheritableLessThan(_parameters);
 
-        if (parameters[0] is not DoubleUnitsOperator)
+#nullable disable
+        if (_parameters[0] is not DoubleUnitsOperator)
+#nullable enable
         {
             throw new ArgumentException("Cannot lessthan when the parameter is not a doubleunits.");
         }
 
-        var _paramUnit = ((DoubleUnitsOperator)parameters[0]).NullableUnits;
+        var paramUnit = ((DoubleUnitsOperator)_parameters[0]).NullableUnits;
 
-        if (_paramUnit != NullableUnits)
+        if (paramUnit != NullableUnits)
         {
             throw new ArgumentException(
                 string.Format(
                     "Units mismatch, left '{0}', right '{1}'.",
                     NullableUnits,
-                    _paramUnit
+                    paramUnit
                 )
             );
         }
 
         return new BooleanOperator(
-            _parameterValue
+            parameterValue
         );
     }
 
-    public override OperatorValue? MathAdd(OperatorValue[]? parameters)
+    public override OperatorValue? MathAdd(OperatorValue[]? _parameters)
     {
         // this does the nullable checks, etc. for us, on top of retrieving the value
-        double _parameterValue = base.InheritableMathAdd(parameters);
+        double parameterValue = base.InheritableMathAdd(_parameters);
 
-        if (parameters[0] is not DoubleUnitsOperator)
+#nullable disable
+        if (_parameters[0] is not DoubleUnitsOperator)
+#nullable enable
         {
             throw new ArgumentException("Cannot mathadd when the parameter is not a doubleunits.");
         }
 
-        var _paramUnit = ((DoubleUnitsOperator)parameters[0]).NullableUnits;
+        var paramUnit = ((DoubleUnitsOperator)_parameters[0]).NullableUnits;
 
-        if (_paramUnit != NullableUnits)
+        if (paramUnit != NullableUnits)
         {
             throw new ArgumentException(
                 string.Format(
                     "Units mismatch, left '{0}', right '{1}'.",
                     NullableUnits,
-                    _paramUnit
+                    paramUnit
                 )
             );
         }
 
         return new DoubleUnitsOperator(
-            _parameterValue,
+            parameterValue,
             NullableUnits
         );
     }
 
-    public override OperatorValue? MathAverage(OperatorValue[]? parameters)
+    public override OperatorValue? MathAverage(OperatorValue[]? _parameters)
     {
         // this does the nullable checks, etc. for us, on top of retrieving the value
-        double _parameterValue = base.InheritableMathAverage(parameters);
+        double parameterValue = base.InheritableMathAverage(_parameters);
 
-        if (parameters[0] is not DoubleUnitsOperator)
+#nullable disable
+        if (_parameters[0] is not DoubleUnitsOperator)
+#nullable enable
         {
             throw new ArgumentException("Cannot mathaverage when the parameter is not a doubleunits.");
         }
 
-        var _paramUnit = ((DoubleUnitsOperator)parameters[0]).NullableUnits;
+        var paramUnit = ((DoubleUnitsOperator)_parameters[0]).NullableUnits;
 
-        if (_paramUnit != NullableUnits)
+        if (paramUnit != NullableUnits)
         {
             throw new ArgumentException(
                 string.Format(
                     "Units mismatch, left '{0}', right '{1}'.",
                     NullableUnits,
-                    _paramUnit
+                    paramUnit
                 )
             );
         }
 
         return new DoubleUnitsOperator(
-            _parameterValue,
+            parameterValue,
             NullableUnits
         );
     }
 
-    public override OperatorValue? MathDivide(OperatorValue[]? parameters)
+    public override OperatorValue? MathDivide(OperatorValue[]? _parameters)
     {
         // this does the nullable checks, etc. for us, on top of retrieving the value
-        double _parameterValue = base.InheritableMathDivide(parameters);
+        double parameterValue = base.InheritableMathDivide(_parameters);
 
-        if (parameters[0] is not DoubleUnitsOperator)
+#nullable disable
+        if (_parameters[0] is not DoubleUnitsOperator)
+#nullable enable
         {
             throw new ArgumentException("Cannot mathdivide when the parameter is not a doubleunits.");
         }
 
-        var _paramUnit = ((DoubleUnitsOperator)parameters[0]).NullableUnits;
+        var paramUnit = ((DoubleUnitsOperator)_parameters[0]).NullableUnits;
 
-        if (_paramUnit != NullableUnits)
+        if (paramUnit != NullableUnits)
         {
             throw new ArgumentException(
                 string.Format(
                     "Units mismatch, left '{0}', right '{1}'.",
                     NullableUnits,
-                    _paramUnit
+                    paramUnit
                 )
             );
         }
 
         return new DoubleUnitsOperator(
-            _parameterValue,
+            parameterValue,
             NullableUnits
         );
     }
 
-    public override OperatorValue? MathMultiply(OperatorValue[]? parameters)
+    public override OperatorValue? MathMultiply(OperatorValue[]? _parameters)
     {
         // this does the nullable checks, etc. for us, on top of retrieving the value
-        double _parameterValue = base.InheritableMathMultiply(parameters);
+        double parameterValue = base.InheritableMathMultiply(_parameters);
 
-        if (parameters[0] is not DoubleUnitsOperator)
+#nullable disable
+        if (_parameters[0] is not DoubleUnitsOperator)
+#nullable enable
         {
             throw new ArgumentException("Cannot mathmultiply when the parameter is not a doubleunits.");
         }
 
-        var _paramUnit = ((DoubleUnitsOperator)parameters[0]).NullableUnits;
+        var paramUnit = ((DoubleUnitsOperator)_parameters[0]).NullableUnits;
 
-        if (_paramUnit != NullableUnits)
+        if (paramUnit != NullableUnits)
         {
             throw new ArgumentException(
                 string.Format(
                     "Units mismatch, left '{0}', right '{1}'.",
                     NullableUnits,
-                    _paramUnit
+                    paramUnit
                 )
             );
         }
 
         return new DoubleUnitsOperator(
-            _parameterValue,
+            parameterValue,
             NullableUnits
         );
     }
 
-    public override OperatorValue? MathPower(OperatorValue[]? parameters)
+    public override OperatorValue? MathPower(OperatorValue[]? _parameters)
     {
         // this does the nullable checks, etc. for us, on top of retrieving the value
-        double _parameterValue = base.InheritableMathPower(parameters);
+        double parameterValue = base.InheritableMathPower(_parameters);
 
-        if (parameters[0] is not DoubleUnitsOperator)
+#nullable disable
+        if (_parameters[0] is not DoubleUnitsOperator)
+#nullable enable
         {
             throw new ArgumentException("Cannot mathpower when the parameter is not a doubleunits.");
         }
 
-        var _paramUnit = ((DoubleUnitsOperator)parameters[0]).NullableUnits;
+        var paramUnit = ((DoubleUnitsOperator)_parameters[0]).NullableUnits;
 
-        if (_paramUnit != NullableUnits)
+        if (paramUnit != NullableUnits)
         {
             throw new ArgumentException(
                 string.Format(
                     "Units mismatch, left '{0}', right '{1}'.",
                     NullableUnits,
-                    _paramUnit
+                    paramUnit
                 )
             );
         }
 
         return new DoubleUnitsOperator(
-            _parameterValue,
+            parameterValue,
             NullableUnits
         );
     }
 
-    public override OperatorValue? MathSubtract(OperatorValue[]? parameters)
+    public override OperatorValue? MathSubtract(OperatorValue[]? _parameters)
     {
         // this does the nullable checks, etc. for us, on top of retrieving the value
-        double _parameterValue = base.InheritableMathSubtract(parameters);
+        double parameterValue = base.InheritableMathSubtract(_parameters);
 
-        if (parameters[0] is not DoubleUnitsOperator)
+#nullable disable
+        if (_parameters[0] is not DoubleUnitsOperator)
+#nullable enable
         {
             throw new ArgumentException("Cannot mathsubtract when the parameter is not a doubleunits.");
         }
 
-        var _paramUnit = ((DoubleUnitsOperator)parameters[0]).NullableUnits;
+        var paramUnit = ((DoubleUnitsOperator)_parameters[0]).NullableUnits;
 
-        if (_paramUnit != NullableUnits)
+        if (paramUnit != NullableUnits)
         {
             throw new ArgumentException(
                 string.Format(
                     "Units mismatch, left '{0}', right '{1}'.",
                     NullableUnits,
-                    _paramUnit
+                    paramUnit
                 )
             );
         }
 
         return new DoubleUnitsOperator(
-            _parameterValue,
+            parameterValue,
             NullableUnits
         );
     }
 
-    public override OperatorValue? MathCeiling(OperatorValue[]? parameters)
+    public override OperatorValue? MathCeiling(OperatorValue[]? _parameters)
     {
         // this does the nullable checks, etc. for us, on top of retrieving the value
-        double _parameterValue = base.InheritableMathCeiling(parameters);
+        double parameterValue = base.InheritableMathCeiling(_parameters);
 
-        if (parameters[0] is not DoubleUnitsOperator)
+#nullable disable
+        if (_parameters[0] is not DoubleUnitsOperator)
+#nullable enable
         {
             throw new ArgumentException("Cannot mathceiling when the parameter is not a doubleunits.");
         }
 
-        var _paramUnit = ((DoubleUnitsOperator)parameters[0]).NullableUnits;
+        var paramUnit = ((DoubleUnitsOperator)_parameters[0]).NullableUnits;
 
-        if (_paramUnit != NullableUnits)
+        if (paramUnit != NullableUnits)
         {
             throw new ArgumentException(
                 string.Format(
                     "Units mismatch, left '{0}', right '{1}'.",
                     NullableUnits,
-                    _paramUnit
+                    paramUnit
                 )
             );
         }
 
         return new DoubleUnitsOperator(
-            _parameterValue,
+            parameterValue,
             NullableUnits
         );
     }
 
-    public override OperatorValue? MathFloor(OperatorValue[]? parameters)
+    public override OperatorValue? MathFloor(OperatorValue[]? _parameters)
     {
         // this does the nullable checks, etc. for us, on top of retrieving the value
-        double _parameterValue = base.InheritableMathFloor(parameters);
+        double parameterValue = base.InheritableMathFloor(_parameters);
 
-        if (parameters[0] is not DoubleUnitsOperator)
+#nullable disable
+        if (_parameters[0] is not DoubleUnitsOperator)
+#nullable enable
         {
             throw new ArgumentException("Cannot mathfloor when the parameter is not a doubleunits.");
         }
 
-        var _paramUnit = ((DoubleUnitsOperator)parameters[0]).NullableUnits;
+        var paramUnit = ((DoubleUnitsOperator)_parameters[0]).NullableUnits;
 
-        if (_paramUnit != NullableUnits)
+        if (paramUnit != NullableUnits)
         {
             throw new ArgumentException(
                 string.Format(
                     "Units mismatch, left '{0}', right '{1}'.",
                     NullableUnits,
-                    _paramUnit
+                    paramUnit
                 )
             );
         }
 
         return new DoubleUnitsOperator(
-            _parameterValue,
+            parameterValue,
             NullableUnits
         );
     }
 
-    public override OperatorValue? MathRound(OperatorValue[]? parameters)
+    public override OperatorValue? MathRound(OperatorValue[]? _parameters)
     {
         // this does the nullable checks, etc. for us, on top of retrieving the value
-        double _parameterValue = base.InheritableMathRound(parameters);
+        double parameterValue = base.InheritableMathRound(_parameters);
 
-        if (parameters[0] is not DoubleUnitsOperator)
+#nullable disable
+        if (_parameters[0] is not DoubleUnitsOperator)
+#nullable enable
         {
             throw new ArgumentException("Cannot mathround when the parameter is not a doubleunits.");
         }
 
-        var _paramUnit = ((DoubleUnitsOperator)parameters[0]).NullableUnits;
+        var paramUnit = ((DoubleUnitsOperator)_parameters[0]).NullableUnits;
 
-        if (_paramUnit != NullableUnits)
+        if (paramUnit != NullableUnits)
         {
             throw new ArgumentException(
                 string.Format(
                     "Units mismatch, left '{0}', right '{1}'.",
                     NullableUnits,
-                    _paramUnit
+                    paramUnit
                 )
             );
         }
 
         return new DoubleUnitsOperator(
-            _parameterValue,
+            parameterValue,
             NullableUnits
         );
     }
 
-    public override OperatorValue? NotEqual(OperatorValue[]? parameters)
+    public override OperatorValue? NotEqual(OperatorValue[]? _parameters)
     {
         // this does the nullable checks, etc. for us, on top of retrieving the value
-        bool _parameterValue = base.InheritableNotEqual(parameters);
+        bool parameterValue = base.InheritableNotEqual(_parameters);
 
-        if (parameters[0] is not DoubleUnitsOperator)
+#nullable disable
+        if (_parameters[0] is not DoubleUnitsOperator)
+#nullable enable
         {
             throw new ArgumentException("Cannot notequal when the parameter is not a doubleunits.");
         }
 
-        var _paramUnit = ((DoubleUnitsOperator)parameters[0]).NullableUnits;
+        var paramUnit = ((DoubleUnitsOperator)_parameters[0]).NullableUnits;
 
-        return new BooleanOperator(_parameterValue | (_paramUnit != NullableUnits));
+        return new BooleanOperator(parameterValue | (paramUnit != NullableUnits));
     }
 
     #endregion
 
-    public override OperatorValue? Filled(OperatorValue[]? parameters)
+    public override OperatorValue? Filled(OperatorValue[]? _parameters)
     {
         return new BooleanOperator(NullableValue != null & NullableUnits != null);
     }
 
-    public override OperatorValue? ConvertToBigIntegerUnits(OperatorValue[]? parameters)
+    public override OperatorValue? ConvertToBigIntegerUnits(OperatorValue[]? _parameters)
     {
         if (NullableValue == null)
         {
             throw new ArgumentException("Value null. Cannot execute the numeric conversion.");
         }
 
-        if (BigInteger.TryParse(NullableValue.Value.ToString(), out var _value))
+        if (BigInteger.TryParse(NullableValue.Value.ToString(), out var value))
         {
-            return new BigIntegerUnitsOperator(_value, NullableUnits);
+            return new BigIntegerUnitsOperator(value, NullableUnits);
         }
 
         throw new Exception("Number conversion via parse failed.");
     }
 
-    public override OperatorValue? ConvertToDecimalUnits(OperatorValue[]? parameters)
+    public override OperatorValue? ConvertToDecimalUnits(OperatorValue[]? _parameters)
     {
         if (NullableValue == null)
         {
             throw new ArgumentException("Value null. Cannot execute the numeric conversion.");
         }
 
-        if (decimal.TryParse(NullableValue.Value.ToString(), out var _value))
+        if (decimal.TryParse(NullableValue.Value.ToString(), out var value))
         {
-            return new DecimalUnitsOperator(_value, NullableUnits);
+            return new DecimalUnitsOperator(value, NullableUnits);
         }
 
         throw new Exception("Number conversion via parse failed.");
     }
 
-    public override OperatorValue? ConvertToDoubleUnits(OperatorValue[]? parameters)
+    public override OperatorValue? ConvertToDoubleUnits(OperatorValue[]? _parameters)
     {
         return new DoubleUnitsOperator(NullableValue, NullableUnits);
     }
 
-    public override OperatorValue? ConvertToIntegerUnits(OperatorValue[]? parameters)
+    public override OperatorValue? ConvertToIntegerUnits(OperatorValue[]? _parameters)
     {
         if (NullableValue == null)
         {
             throw new ArgumentException("Value null. Cannot execute the numeric conversion.");
         }
 
-        if (int.TryParse(NullableValue.Value.ToString(), out var _value))
+        if (int.TryParse(NullableValue.Value.ToString(), out var value))
         {
-            return new IntegerUnitsOperator(_value, NullableUnits);
+            return new IntegerUnitsOperator(value, NullableUnits);
         }
 
         throw new Exception("Number conversion via parse failed.");
     }
 
-    public override OperatorValue? ConvertToString(OperatorValue[]? parameters)
+    public override OperatorValue? ConvertToString(OperatorValue[]? _parameters)
     {
         return StringOperator.BuildFromString(
             string.Format(
@@ -502,29 +532,29 @@ public class DoubleUnitsOperator : DoubleOperator
         );
     }
 
-    public override OperatorValue? IfNotFilled(OperatorValue[]? parameters)
+    public override OperatorValue? IfNotFilled(OperatorValue[]? _parameters)
     {
         if (NullableValue != null && NullableUnits != null)
         {
             return new DoubleUnitsOperator(NullableValue, NullableUnits);
         }
 
-        if (parameters == null || parameters.Length == 0)
+        if (_parameters == null || _parameters.Length == 0)
         {
             throw new ArgumentException("parameters null or parameter missing. Cannot execute ifnotfilled.");
         }
 
-        return parameters[0];
+        return _parameters[0];
     }
 
-    public new static OperatorValue BuildFromParameters(string[] parameters)
+    public new static OperatorValue BuildFromParameters(string[] _parameters)
     {
-        if (parameters == null || parameters.Length == 0)
+        if (_parameters == null || _parameters.Length == 0)
         {
             throw new ArgumentException("Cannot create a DoubleUnitsOperator, null or missing parameter.");
         }
 
-        return BuildFromString(parameters[0]);
+        return BuildFromString(_parameters[0]);
     }
 
     public new static OperatorValue BuildFromString(string? _input)
@@ -534,8 +564,8 @@ public class DoubleUnitsOperator : DoubleOperator
             return new DoubleUnitsOperator(null, null);
         }
 
-        (double _doubleValue, string _doubleUnits) = UnitHelper.ParseStringToDoubleUnits(_input);
-        return new DoubleUnitsOperator(_doubleValue, _doubleUnits);
+        (double doubleValue, string doubleUnits) = UnitHelper.ParseStringToDoubleUnits(_input);
+        return new DoubleUnitsOperator(doubleValue, doubleUnits);
     }
 
     public override void SetValue(OperatorValue _source)

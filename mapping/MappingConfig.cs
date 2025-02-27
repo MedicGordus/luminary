@@ -9,22 +9,22 @@ public class MappingConfig
 
     public readonly JsonDocument ExpectedInputPrismSchema;
 
-    public MappingConfig(JsonDocument expectedInputPrismSchema, Dictionary<ulong, MappingStepConfig>? steps)
+    public MappingConfig(JsonDocument _expectedInputPrismSchema, Dictionary<ulong, MappingStepConfig>? _steps)
     {
-        ExpectedInputPrismSchema = expectedInputPrismSchema;
+        ExpectedInputPrismSchema = _expectedInputPrismSchema;
 
         // make sure the steps are zero thru length-1 so later during execution, the steps perform as expected
-        if (steps != null && steps.Count != 0)
+        if (_steps != null && _steps.Count != 0)
         {
-            for (ulong _delta = 1; _delta < (ulong)steps.Count; _delta++)
+            for (ulong delta = 1; delta < (ulong)_steps.Count; delta++)
             {
-                if (!steps.ContainsKey(_delta))
+                if (!_steps.ContainsKey(delta))
                 {
                     throw new ArgumentException(
                         string.Format(
                             "Invalid steps, must start at 1 and have no gaps (issue at position {0}, step count is {1}).",
-                            _delta,
-                            steps.Count
+                            delta,
+                            _steps.Count
                         )
                     );
                 }
@@ -35,65 +35,65 @@ public class MappingConfig
             throw new ArgumentException("Steps cannot be empty.");
         }
 
-        Steps = steps;
+        Steps = _steps;
     }
 
-    public Prism Execute(JsonDocument inputPayload)
+    public Prism Execute(JsonDocument _inputPayload)
     {
         //// build empty prism operator from expected input
         //
-        SchemaJson _schema = JsonSerializer.Deserialize<SchemaJson>(ExpectedInputPrismSchema) ?? throw new ArgumentException("Could not parse json element into json schema.");
-        var _inputPayloadPrismDictionary = new Dictionary<string, OperatorValue>();
-        Helper.BuildPrismOperatorDictionaryFromJsonSchema(_schema, _inputPayloadPrismDictionary);
+        SchemaJson schema = JsonSerializer.Deserialize<SchemaJson>(ExpectedInputPrismSchema) ?? throw new ArgumentException("Could not parse json element into json schema.");
+        var inputPayloadPrismDictionary = new Dictionary<string, OperatorValue>();
+        Helper.BuildPrismOperatorDictionaryFromJsonSchema(schema, inputPayloadPrismDictionary);
         //
         ////
 
         //// map data from the payload (this way the entire input isn't "wastefully" mapped, only what is defined in the schema)
         //
-        Helper.MapDataPerSchema(_inputPayloadPrismDictionary, inputPayload.RootElement);
+        Helper.MapDataPerSchema(inputPayloadPrismDictionary, _inputPayload.RootElement);
         //
         ////
 
         // at this point, an empty prism dictionary was structured, and then input data was parsed across from the payload
 
         return Execute(
-            new PrismOperator(_inputPayloadPrismDictionary),
-            _schema
+            new PrismOperator(inputPayloadPrismDictionary),
+            schema
         );
     }
 
-    public Prism Execute(PrismOperator inputPrismPayload, SchemaJson _inputSchema)
+    public Prism Execute(PrismOperator _inputPrismPayload, SchemaJson _inputSchema)
     {
         // build filled prism as it is used as input for each step below
-        var _outputPrism = new Prism(
-            inputPrismPayload,
+        var outputPrism = new Prism(
+            _inputPrismPayload,
             _inputSchema
         );
 
         //// progress thru mapping steps, update output each time
         //
-        var _context = new MappingContext();
-        ulong _stepCounter = 0;
+        var context = new MappingContext();
+        ulong stepCounter = 0;
         //
         // add the input into slot 0
-        _context.Add(_outputPrism, _stepCounter);
+        context.Add(outputPrism, stepCounter);
         //
         // increment to collect step 1
-        _stepCounter += 1;
+        stepCounter += 1;
         //
         // loop thru steps (validation in constructor)
-        while (Steps.TryGetValue(_stepCounter, out var _deltaStep))
+        while (Steps.TryGetValue(stepCounter, out var deltaStep))
         {
-            _outputPrism = new Prism(
-                _deltaStep.ProcessMappingActions(_context.GetAll()),
-                _deltaStep.PrismSchema
+            outputPrism = new Prism(
+                deltaStep.ProcessMappingActions(context.GetAll()),
+                deltaStep.PrismSchema
             );
-            _context.Add(_outputPrism);
-            _stepCounter += 1;
+            context.Add(outputPrism);
+            stepCounter += 1;
         }
         //
         ////
 
-        return _outputPrism;
+        return outputPrism;
     }
 }

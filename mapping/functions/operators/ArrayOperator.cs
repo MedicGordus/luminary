@@ -20,40 +20,40 @@ public class ArrayOperator : OperatorValue
         ArrayType = _arrayType;
     }
 
-    public override OperatorValue? BooleanAnd(OperatorValue[]? parameters)
+    public override OperatorValue? BooleanAnd(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? BitwiseLeftShift(OperatorValue[]? parameters)
+    public override OperatorValue? BitwiseLeftShift(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? BitwiseMod(OperatorValue[]? parameters)
+    public override OperatorValue? BitwiseMod(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? BitwiseRightShift(OperatorValue[]? parameters)
+    public override OperatorValue? BitwiseRightShift(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? BitwiseXor(OperatorValue[]? parameters)
+    public override OperatorValue? BitwiseXor(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? Concatenate(OperatorValue[]? parameters)
+    public override OperatorValue? Concatenate(OperatorValue[]? _parameters)
     {
-        if (NullableValue == null || parameters == null)
+        if (NullableValue == null || _parameters == null)
         {
             throw new ArgumentException("Value null or parameters null. Cannot execute concatenate.");
         }
 
         List<OperatorValue> newArray = new List<OperatorValue>();
-        foreach (OperatorValue deltaValue in parameters)
+        foreach (OperatorValue deltaValue in _parameters)
         {
             if (deltaValue is ArrayOperator)
             {
@@ -68,13 +68,13 @@ public class ArrayOperator : OperatorValue
         return new ArrayOperator(ArrayType, newArray);
     }
 
-    protected List<OperatorValue> AppendArrayList(ArrayOperator array)
+    protected List<OperatorValue> AppendArrayList(ArrayOperator _array)
     {
         List<OperatorValue> subList = new List<OperatorValue>();
 
-        if (array != null && array.NullableValue != null)
+        if (_array != null && _array.NullableValue != null)
         {
-            foreach (OperatorValue deltaValue in array.NullableValue)
+            foreach (OperatorValue deltaValue in _array.NullableValue)
             {
                 if (deltaValue is ArrayOperator)
                 {
@@ -95,116 +95,121 @@ public class ArrayOperator : OperatorValue
         return subList;
     }
 
-    public override OperatorValue? ConvertToBigInteger(OperatorValue[]? parameters)
+    public override OperatorValue? ConvertToBigInteger(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? ConvertToBigIntegerUnits(OperatorValue[]? parameters)
+    public override OperatorValue? ConvertToBigIntegerUnits(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? ConvertToDecimal(OperatorValue[]? parameters)
+    public override OperatorValue? ConvertToDecimal(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? ConvertToDecimalUnits(OperatorValue[]? parameters)
+    public override OperatorValue? ConvertToDecimalUnits(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? ConvertToDouble(OperatorValue[]? parameters)
+    public override OperatorValue? ConvertToDouble(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? ConvertToDoubleUnits(OperatorValue[]? parameters)
+    public override OperatorValue? ConvertToDoubleUnits(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? ConvertToInteger(OperatorValue[]? parameters)
+    public override OperatorValue? ConvertToInteger(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? ConvertToIntegerUnits(OperatorValue[]? parameters)
+    public override OperatorValue? ConvertToIntegerUnits(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? ConvertToString(OperatorValue[]? parameters)
+    public override OperatorValue? ConvertToString(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? EndsWith(OperatorValue[]? parameters)
+    public override OperatorValue? EndsWith(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? ValueEqual(OperatorValue[]? parameters)
+    public override OperatorValue? ValueEqual(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? Filled(OperatorValue[]? parameters)
+    public override OperatorValue? Filled(OperatorValue[]? _parameters)
     {
         return new BooleanOperator(NullableValue != null && NullableValue.Count != 0);
     }
 
-    public override OperatorValue? GreaterOrEqual(OperatorValue[]? parameters)
+    public override OperatorValue? GreaterOrEqual(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? GreatherThan(OperatorValue[]? parameters)
+    public override OperatorValue? GreatherThan(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? IfNotFilled(OperatorValue[]? parameters)
+    public override OperatorValue? IfNotFilled(OperatorValue[]? _parameters)
     {
         if (NullableValue != null)
         {
             return new ArrayOperator(ArrayType, NullableValue);
         }
 
-        if (parameters == null || parameters.Length == 0)
+        if (_parameters == null || _parameters.Length == 0)
         {
             throw new ArgumentException("parameters null or parameter missing. Cannot execute ifnotfilled.");
         }
 
-        return parameters[0];
+        return _parameters[0];
     }
 
-    public override OperatorValue? Includes(OperatorValue[]? parameters)
+    public override OperatorValue? Includes(OperatorValue[]? _parameters)
     {
-        if (NullableValue == null || parameters == null || parameters.Length == 0)
+        if (NullableValue == null || _parameters == null || _parameters.Length == 0)
         {
             throw new ArgumentException("value null, parameters null or parameter missing. Cannot execute includes.");
         }
 
         // pass thru of parameters to ValueEqual to all elements in array and returns
-        return new BooleanOperator(NullableValue.Any(_item => ((BooleanOperator?)_item.ValueEqual(parameters))?.GetValue() ?? false));
+        return new BooleanOperator(NullableValue.Any(_item => ((BooleanOperator?)_item.ValueEqual(_parameters))?.GetValue() ?? false));
     }
 
-    public override OperatorValue? IndexOf(OperatorValue[]? parameters)
+    public override OperatorValue? IndexOf(OperatorValue[]? _parameters)
     {
+        if (NullableValue == null || _parameters == null || _parameters.Length == 0)
+        {
+            throw new ArgumentException("value null, parameters null or parameter missing. Cannot execute indexof.");
+        }
+
         // pass thru of parameters to ValueEqual and returns the first match, or if none, null
-        return NullableValue.FirstOrDefault(_item => ((BooleanOperator?)_item.ValueEqual(parameters))?.GetValue() ?? false);
+        return NullableValue.FirstOrDefault(_item => ((BooleanOperator?)_item.ValueEqual(_parameters))?.GetValue() ?? false);
     }
 
-    public override OperatorValue? EqualsIgnoreCase(OperatorValue[]? parameters)
+    public override OperatorValue? EqualsIgnoreCase(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? Join(OperatorValue[]? parameters)
+    public override OperatorValue? Join(OperatorValue[]? _parameters)
     {
-        if (NullableValue == null || parameters == null || parameters.Length == 0)
+        if (NullableValue == null || _parameters == null || _parameters.Length == 0)
         {
             throw new ArgumentException("value null, parameters null or parameter missing. Cannot execute join.");
         }
@@ -215,12 +220,12 @@ public class ArrayOperator : OperatorValue
             stringList.Add(deltaValue.ToStringValue());
         }
 
-        string? separator = parameters[0].ToStringValue();
+        string? separator = _parameters[0].ToStringValue();
 
         return new StringOperator(string.Join(separator, stringList));
     }
 
-    public override OperatorValue? Length(OperatorValue[]? parameters)
+    public override OperatorValue? Length(OperatorValue[]? _parameters)
     {
         if (NullableValue == null)
         {
@@ -230,109 +235,109 @@ public class ArrayOperator : OperatorValue
         return new IntegerOperator(NullableValue.Count);
     }
 
-    public override OperatorValue? LessOrEqual(OperatorValue[]? parameters)
+    public override OperatorValue? LessOrEqual(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? LessThan(OperatorValue[]? parameters)
+    public override OperatorValue? LessThan(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? MathAdd(OperatorValue[]? parameters)
+    public override OperatorValue? MathAdd(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? MathAverage(OperatorValue[]? parameters)
+    public override OperatorValue? MathAverage(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? MathCeiling(OperatorValue[]? parameters)
+    public override OperatorValue? MathCeiling(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? MathDivide(OperatorValue[]? parameters)
+    public override OperatorValue? MathDivide(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? MathFloor(OperatorValue[]? parameters)
+    public override OperatorValue? MathFloor(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? MathMultiply(OperatorValue[]? parameters)
+    public override OperatorValue? MathMultiply(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? MathPower(OperatorValue[]? parameters)
+    public override OperatorValue? MathPower(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? MathRound(OperatorValue[]? parameters)
+    public override OperatorValue? MathRound(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? MathSubtract(OperatorValue[]? parameters)
+    public override OperatorValue? MathSubtract(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? NotEqual(OperatorValue[]? parameters)
+    public override OperatorValue? NotEqual(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? BooleanOr(OperatorValue[]? parameters)
+    public override OperatorValue? BooleanOr(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? Replace(OperatorValue[]? parameters)
+    public override OperatorValue? Replace(OperatorValue[]? _parameters)
     {
-        if (NullableValue == null || parameters == null || parameters.Length < 2)
+        if (NullableValue == null || _parameters == null || _parameters.Length < 2)
         {
             throw new ArgumentException("value null, parameters null or parameter missing. Cannot execute replace.");
         }
 
-        List<OperatorValue> _outputContents = [];
-        OperatorValue _toRemove = parameters[0];
-        OperatorValue _toAdd = parameters[1];
+        List<OperatorValue> outputContents = [];
+        OperatorValue toRemove = _parameters[0];
+        OperatorValue toAdd = _parameters[1];
 
         // check which match and replace those that do (be aware: THESE ARE BYREF, NOT COPIES)
-        foreach (OperatorValue _deltaValue in NullableValue)
+        foreach (OperatorValue deltaValue in NullableValue)
         {
-            if (((BooleanOperator?)_deltaValue.ValueEqual([_toRemove]))?.GetValue() ?? false)
+            if (((BooleanOperator?)deltaValue.ValueEqual([toRemove]))?.GetValue() ?? false)
             {
-                _outputContents.Add(_toAdd);
+                outputContents.Add(toAdd);
             }
             else
             {
-                _outputContents.Add(_deltaValue);
+                outputContents.Add(deltaValue);
             }
         }
 
-        return new ArrayOperator(ArrayType, _outputContents);
+        return new ArrayOperator(ArrayType, outputContents);
     }
 
-    public override OperatorValue? Split(OperatorValue[]? parameters)
+    public override OperatorValue? Split(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? StartsWith(OperatorValue[]? parameters)
+    public override OperatorValue? StartsWith(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? Substring(OperatorValue[]? parameters)
+    public override OperatorValue? Substring(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
@@ -344,41 +349,41 @@ public class ArrayOperator : OperatorValue
             return "null";
         }
 
-        StringBuilder _output = new StringBuilder();
-        _output.Append('[');
+        StringBuilder output = new StringBuilder();
+        output.Append('[');
 
         if (NullableValue.Count != 0)
         {
-            foreach (var _deltaValue in NullableValue)
+            foreach (var deltaValue in NullableValue)
             {
-                _output.Append(_deltaValue.ToJsonStringValue());
-                _output.Append(',');
+                output.Append(deltaValue.ToJsonStringValue());
+                output.Append(',');
             }
 
             // remove trailing comma
-            _output.Length -= 1;
+            output.Length -= 1;
         }
 
-        _output.Append(']');
-        return _output.ToString();
+        output.Append(']');
+        return output.ToString();
     }
 
-    public override OperatorValue? ToLower(OperatorValue[]? parameters)
+    public override OperatorValue? ToLower(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? ToUpper(OperatorValue[]? parameters)
+    public override OperatorValue? ToUpper(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? Trim(OperatorValue[]? parameters)
+    public override OperatorValue? Trim(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? BooleanNot(OperatorValue[]? parameters)
+    public override OperatorValue? BooleanNot(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
@@ -399,15 +404,15 @@ public class ArrayOperator : OperatorValue
         return string.Join(',', stringList);
     }
 
-    public override void SetValue(OperatorValue value)
+    public override void SetValue(OperatorValue _value)
     {
-        if (value is not ArrayOperator)
+        if (_value is not ArrayOperator)
         {
             throw new ArgumentException("Cannot setvalue when the parameter is not an array.");
         }
 
-        ArrayType = ((ArrayOperator)value).ArrayType;
-        NullableValue = ((ArrayOperator)value).NullableValue;
+        ArrayType = ((ArrayOperator)_value).ArrayType;
+        NullableValue = ((ArrayOperator)_value).NullableValue;
     }
 
 
@@ -415,18 +420,18 @@ public class ArrayOperator : OperatorValue
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="parameters"></param>
+    /// <param name="_parameters"></param>
     /// <returns>EMPTY ARRAY - caller is expected to fill it</returns>
-    public static OperatorValue BuildFromParameters(string[] parameters)
+    public static OperatorValue BuildFromParameters(string[] _parameters)
     {
         // this is a special case where the ArrayOperator is created blank and the caller fills it
 
-        if (parameters == null || parameters.Length == 0)
+        if (_parameters == null || _parameters.Length == 0)
         {
             throw new ArgumentException("Cannot create a ArrayOperator, null or missing parameter.");
         }
 
-        return BuildFromString(parameters[0]);
+        return BuildFromString(_parameters[0]);
     }
 
     /// <summary>
@@ -441,9 +446,9 @@ public class ArrayOperator : OperatorValue
             throw new ArgumentException("Cannot create an array without a designated OperatorValueType.");
         }
 
-        if (OperatorValue.OperatorValueTypeLookup.TryGetValue(_input, out var _arrayType))
+        if (OperatorValue.OperatorValueTypeLookup.TryGetValue(_input, out var arrayType))
         {
-            return new ArrayOperator(_arrayType, []);
+            return new ArrayOperator(arrayType, []);
         }
         else
         {

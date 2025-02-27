@@ -5,15 +5,15 @@ public static class Epoch
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="dateTime"></param>
+    /// <param name="_dateTime"></param>
     /// <returns></returns>
     /// <remarks>
     /// WARNING: Glancing at the formula used in DateTime, I don't think the epoch is accurate.
     ///     There are other leap factors in play other than days in a year~
     /// </remarks
-    public static long GetMillisecondsSinceUnixEpoch(DateTimeOffset dateTime)
+    public static long GetMillisecondsSinceUnixEpoch(DateTimeOffset _dateTime)
     {
-        return (long)Math.Round((dateTime - DateTimeOffset.UnixEpoch).TotalMilliseconds, 0);
+        return (long)Math.Round((_dateTime - DateTimeOffset.UnixEpoch).TotalMilliseconds, 0);
     }
 
     /// <summary>

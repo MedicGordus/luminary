@@ -8,14 +8,14 @@ public class ScrubbableResult<T> : Scrubbable<T>
 {
     private List<string> Results;
 
-    public ScrubbableResult(T? t = default) : base(t)
+    public ScrubbableResult(T? _t = default) : base(_t)
     {
         Results = [];
     }
 
-    public void AddResult(string result)
+    public void AddResult(string _result)
     {
-        Results.Add(result);
+        Results.Add(_result);
     }
 
     public void AddResults(IEnumerable<string> _results)
@@ -38,9 +38,9 @@ public class ScrubbableResult : Scrubbable
         Results = [];
     }
 
-    public void AddResult(string result)
+    public void AddResult(string _result)
     {
-        Results.Add(result);
+        Results.Add(_result);
     }
 
     public IEnumerable<string> GetResults() => Results;

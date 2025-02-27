@@ -21,11 +21,11 @@ public class MappingStepJson
 
         if (_steps != null && _steps.Count != 0)
         {
-            foreach (KeyValuePair<ulong, MappingStepJson> _deltaJson in _steps)
+            foreach (KeyValuePair<ulong, MappingStepJson> deltaJson in _steps)
             {
                 output.Add(
-                    _deltaJson.Key,
-                    new MappingStepConfig(_deltaJson.Value)
+                    deltaJson.Key,
+                    new MappingStepConfig(deltaJson.Value)
                 );
             }
         }

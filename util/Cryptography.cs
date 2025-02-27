@@ -17,18 +17,18 @@ public static class Cryptography
         if (_publicKey?.KeyType == null || _publicKey.PublicKeyBase64 == null)
             throw new ArgumentNullException(nameof(_publicKey));
 
-        byte[] _publicKeyBytes = Convert.FromBase64String(_publicKey.PublicKeyBase64);
-        byte[] _signatureBytes = Convert.FromBase64String(_signatureBase64);
+        byte[] publicKeyBytes = Convert.FromBase64String(_publicKey.PublicKeyBase64);
+        byte[] signatureBytes = Convert.FromBase64String(_signatureBase64);
 
         switch (_publicKey.KeyType.ToLower())
         {
             case "secp256r1":
             case "secp384r1":
             case "secp521r1":
-                using (var _ecdsa = ECDsa.Create())
+                using (var ecdsa = ECDsa.Create())
                 {
-                    _ecdsa.ImportSubjectPublicKeyInfo(_publicKeyBytes, out _);
-                    return _ecdsa.VerifyData(_data, _signatureBytes, HashAlgorithmName.SHA256);
+                    ecdsa.ImportSubjectPublicKeyInfo(publicKeyBytes, out _);
+                    return ecdsa.VerifyData(_data, signatureBytes, HashAlgorithmName.SHA256);
                 }
 
             case "rsa2048":
@@ -36,10 +36,10 @@ public static class Cryptography
             case "rsa4096":
             case "rsa7680":
             case "rsa15360":
-                using (var _rsa = RSA.Create())
+                using (var rsa = RSA.Create())
                 {
-                    _rsa.ImportSubjectPublicKeyInfo(_publicKeyBytes, out _);
-                    return _rsa.VerifyData(_data, _signatureBytes, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
+                    rsa.ImportSubjectPublicKeyInfo(publicKeyBytes, out _);
+                    return rsa.VerifyData(_data, signatureBytes, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
                 }
 
             case "ed25519":
@@ -105,36 +105,36 @@ public static class Cryptography
             case "secp256r1":
                 using (var ecdsa256 = ECDsa.Create(ECCurve.NamedCurves.nistP256))
                 {
-                    var _privateKey = ecdsa256.ExportPkcs8PrivateKey();
-                    var _publicKey = ecdsa256.ExportSubjectPublicKeyInfo();
-                    return (_privateKey, new PublicKeyJson
+                    var privateKey = ecdsa256.ExportPkcs8PrivateKey();
+                    var publicKey = ecdsa256.ExportSubjectPublicKeyInfo();
+                    return (privateKey, new PublicKeyJson
                     {
                         KeyType = "secp256r1",
-                        PublicKeyBase64 = Convert.ToBase64String(_publicKey)
+                        PublicKeyBase64 = Convert.ToBase64String(publicKey)
                     });
                 }
 
             case "secp384r1":
                 using (var ecdsa384 = ECDsa.Create(ECCurve.NamedCurves.nistP384))
                 {
-                    var _privateKey = ecdsa384.ExportPkcs8PrivateKey();
-                    var _publicKey = ecdsa384.ExportSubjectPublicKeyInfo();
-                    return (_privateKey, new PublicKeyJson
+                    var privateKey = ecdsa384.ExportPkcs8PrivateKey();
+                    var publicKey = ecdsa384.ExportSubjectPublicKeyInfo();
+                    return (privateKey, new PublicKeyJson
                     {
                         KeyType = "secp384r1",
-                        PublicKeyBase64 = Convert.ToBase64String(_publicKey)
+                        PublicKeyBase64 = Convert.ToBase64String(publicKey)
                     });
                 }
 
             case "secp521r1":
                 using (var ecdsa521 = ECDsa.Create(ECCurve.NamedCurves.nistP521))
                 {
-                    var _privateKey = ecdsa521.ExportPkcs8PrivateKey();
-                    var _publicKey = ecdsa521.ExportSubjectPublicKeyInfo();
-                    return (_privateKey, new PublicKeyJson
+                    var privateKey = ecdsa521.ExportPkcs8PrivateKey();
+                    var publicKey = ecdsa521.ExportSubjectPublicKeyInfo();
+                    return (privateKey, new PublicKeyJson
                     {
                         KeyType = "secp521r1",
-                        PublicKeyBase64 = Convert.ToBase64String(_publicKey)
+                        PublicKeyBase64 = Convert.ToBase64String(publicKey)
                     });
                 }
 
@@ -143,15 +143,15 @@ public static class Cryptography
             case "rsa4096":
             case "rsa7680":
             case "rsa15360":
-                int _keySize = int.Parse(_keyType.Substring(3));
-                using (var _rsa = RSA.Create(_keySize))
+                int keySize = int.Parse(_keyType.Substring(3));
+                using (var rsa = RSA.Create(keySize))
                 {
-                    var _privateKey = _rsa.ExportPkcs8PrivateKey();
-                    var _publicKey = _rsa.ExportSubjectPublicKeyInfo();
-                    return (_privateKey, new PublicKeyJson
+                    var privateKey = rsa.ExportPkcs8PrivateKey();
+                    var publicKey = rsa.ExportSubjectPublicKeyInfo();
+                    return (privateKey, new PublicKeyJson
                     {
                         KeyType = _keyType,
-                        PublicKeyBase64 = Convert.ToBase64String(_publicKey)
+                        PublicKeyBase64 = Convert.ToBase64String(publicKey)
                     });
                 }
 

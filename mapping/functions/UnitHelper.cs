@@ -10,75 +10,75 @@ public static class UnitHelper
     //  Number followed by one or more spaces, then a string of characters (no spaces, etc)
     public const string UNIT_PATTERN = @"^(\d+)\s*(°?[a-zA-Z]+)$";
 
-    public static (int, string) ParseStringToIntegerUnits(string? input, string unitPattern = UNIT_PATTERN)
+    public static (int, string) ParseStringToIntegerUnits(string? _input, string _unitPattern = UNIT_PATTERN)
     {
-        var _match = UnitMatch(input, unitPattern);
+        var match = UnitMatch(_input, _unitPattern);
 
-        if (_match.Success)
+        if (match.Success)
         {
-            if (int.TryParse(_match.Groups[1].Value, out int number))
+            if (int.TryParse(match.Groups[1].Value, out int number))
             {
-                return (number, _match.Groups[2].Value);
+                return (number, match.Groups[2].Value);
             }
         }
 
-        throw new ArgumentException("Input string does not match the expected format.", nameof(input));
+        throw new ArgumentException("Input string does not match the expected format.", nameof(_input));
     }
 
-    public static (double, string) ParseStringToDoubleUnits(string? input, string unitPattern = UNIT_PATTERN)
+    public static (double, string) ParseStringToDoubleUnits(string? _input, string _unitPattern = UNIT_PATTERN)
     {
-        var _match = UnitMatch(input, unitPattern);
+        var match = UnitMatch(_input, _unitPattern);
 
-        if (_match.Success)
+        if (match.Success)
         {
-            if (double.TryParse(_match.Groups[1].Value, out double number))
+            if (double.TryParse(match.Groups[1].Value, out double number))
             {
-                return (number, _match.Groups[2].Value);
+                return (number, match.Groups[2].Value);
             }
         }
 
-        throw new ArgumentException("Input string does not match the expected format.", nameof(input));
+        throw new ArgumentException("Input string does not match the expected format.", nameof(_input));
     }
 
-    public static (decimal, string) ParseStringToDecimalUnits(string? input, string unitPattern = UNIT_PATTERN)
+    public static (decimal, string) ParseStringToDecimalUnits(string? _input, string _unitPattern = UNIT_PATTERN)
     {
-        var _match = UnitMatch(input, unitPattern);
+        var match = UnitMatch(_input, _unitPattern);
 
-        if (_match.Success)
+        if (match.Success)
         {
-            if (decimal.TryParse(_match.Groups[1].Value, out decimal number))
+            if (decimal.TryParse(match.Groups[1].Value, out decimal number))
             {
-                return (number, _match.Groups[2].Value);
+                return (number, match.Groups[2].Value);
             }
         }
 
-        throw new ArgumentException("Input string does not match the expected format.", nameof(input));
+        throw new ArgumentException("Input string does not match the expected format.", nameof(_input));
     }
 
-    public static (BigInteger, string) ParseStringToBigIntegerUnits(string? input, string unitPattern = UNIT_PATTERN)
+    public static (BigInteger, string) ParseStringToBigIntegerUnits(string? _input, string _unitPattern = UNIT_PATTERN)
     {
-        var _match = UnitMatch(input, unitPattern);
+        var match = UnitMatch(_input, _unitPattern);
 
-        if (_match.Success)
+        if (match.Success)
         {
-            if (BigInteger.TryParse(_match.Groups[1].Value, out BigInteger number))
+            if (BigInteger.TryParse(match.Groups[1].Value, out BigInteger number))
             {
-                return (number, _match.Groups[2].Value);
+                return (number, match.Groups[2].Value);
             }
         }
 
-        throw new ArgumentException("Input string does not match the expected format.", nameof(input));
+        throw new ArgumentException("Input string does not match the expected format.", nameof(_input));
     }
 
-    private static Match UnitMatch(string? input, string unitPattern)
+    private static Match UnitMatch(string? _input, string _unitPattern)
     {
-        if (input == null)
+        if (_input == null)
         {
             throw new ArgumentNullException("Cannot parse null to value with units.");
         }
 
 
         // Regular expression to match one or more digits followed by (optional) spaces, then any non-digit characters
-        return Regex.Match(input, unitPattern);
+        return Regex.Match(_input, _unitPattern);
     }
 }

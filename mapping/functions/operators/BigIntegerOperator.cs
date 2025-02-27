@@ -14,544 +14,544 @@ public class BigIntegerOperator : OperatorValue
         NullableValue = _nullableValue;
     }
 
-    protected BigInteger InheritableBooleanAnd(OperatorValue[]? parameters)
+    protected BigInteger InheritableBooleanAnd(OperatorValue[]? _parameters)
     {
-        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || _parameters == null || _parameters.Length == 0 || _parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute booleanand.");
         }
 
-        if (parameters[0] is not BigIntegerOperator)
+        if (_parameters[0] is not BigIntegerOperator)
         {
             throw new ArgumentException("Cannot booleanand when the parameter is not a biginteger.");
         }
 
-        (var _left, var _right) = GetArraysForDeepCalculations(
+        (var left, var right) = GetArraysForDeepCalculations(
             NullableValue.Value,
-            ((BigIntegerOperator)parameters[0]).NullableValue ?? throw new ArgumentException("Parameter null. Cannot execute booleanand.")
+            ((BigIntegerOperator)_parameters[0]).NullableValue ?? throw new ArgumentException("Parameter null. Cannot execute booleanand.")
         );
 
-        return AndArrays(_left, _right);
+        return AndArrays(left, right);
     }
 
-    public override OperatorValue? BooleanAnd(OperatorValue[]? parameters)
+    public override OperatorValue? BooleanAnd(OperatorValue[]? _parameters)
     {
-        return new BigIntegerOperator(InheritableBooleanAnd(parameters));
+        return new BigIntegerOperator(InheritableBooleanAnd(_parameters));
     }
 
-    protected BigInteger InheritableBitwiseLeftShift(OperatorValue[]? parameters)
+    protected BigInteger InheritableBitwiseLeftShift(OperatorValue[]? _parameters)
     {
-        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || _parameters == null || _parameters.Length == 0 || _parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute bitwiseleftshift.");
         }
 
-        if (parameters[0] is not IntegerOperator)
+        if (_parameters[0] is not IntegerOperator)
         {
             throw new ArgumentException("Cannot bitwiseleftshift when the parameter is not an integer.");
         }
 
-        return NullableValue << ((IntegerOperator)parameters[0]).GetValue() ?? throw new ArgumentException("Parameter not null but GetValue() unexpectedly returned null. Cannot execute bitwiseleftshift"); ;
+        return NullableValue << ((IntegerOperator)_parameters[0]).GetValue() ?? throw new ArgumentException("Parameter not null but GetValue() unexpectedly returned null. Cannot execute bitwiseleftshift"); ;
     }
 
-    public override OperatorValue? BitwiseLeftShift(OperatorValue[]? parameters)
+    public override OperatorValue? BitwiseLeftShift(OperatorValue[]? _parameters)
     {
-        return new BigIntegerOperator(InheritableBitwiseLeftShift(parameters));
+        return new BigIntegerOperator(InheritableBitwiseLeftShift(_parameters));
     }
 
-    protected BigInteger InheritableBitwiseMod(OperatorValue[]? parameters)
+    protected BigInteger InheritableBitwiseMod(OperatorValue[]? _parameters)
     {
-        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || _parameters == null || _parameters.Length == 0 || _parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute bitwisemod.");
         }
 
-        if (parameters[0] is not BigIntegerOperator)
+        if (_parameters[0] is not BigIntegerOperator)
         {
             throw new ArgumentException("Cannot bitwisemod when the parameter is not a biginteger.");
         }
 
-        BigInteger _toMod = ((BigIntegerOperator)parameters[0]).GetValue() ?? throw new ArgumentException("Parameter was not null but the GetValue unexpectedly returned null.");
+        BigInteger toMod = ((BigIntegerOperator)_parameters[0]).GetValue() ?? throw new ArgumentException("Parameter was not null but the GetValue unexpectedly returned null.");
 
-        return BigInteger.ModPow(NullableValue.Value, BigInteger.One, _toMod);
+        return BigInteger.ModPow(NullableValue.Value, BigInteger.One, toMod);
     }
 
-    public override OperatorValue? BitwiseMod(OperatorValue[]? parameters)
+    public override OperatorValue? BitwiseMod(OperatorValue[]? _parameters)
     {
-        return new BigIntegerOperator(InheritableBitwiseMod(parameters));
+        return new BigIntegerOperator(InheritableBitwiseMod(_parameters));
     }
 
-    protected BigInteger InheritableBitwiseRightShift(OperatorValue[]? parameters)
+    protected BigInteger InheritableBitwiseRightShift(OperatorValue[]? _parameters)
     {
-        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || _parameters == null || _parameters.Length == 0 || _parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute bitwiserightshift.");
         }
 
-        if (parameters[0] is not IntegerOperator)
+        if (_parameters[0] is not IntegerOperator)
         {
             throw new ArgumentException("Cannot rightshift when the parameter is not an integer.");
         }
 
-        return NullableValue >> ((IntegerOperator)parameters[0]).GetValue() ?? throw new ArgumentException("Parameter was not null but the GetValue unexpectedly returned null."); ;
+        return NullableValue >> ((IntegerOperator)_parameters[0]).GetValue() ?? throw new ArgumentException("Parameter was not null but the GetValue unexpectedly returned null."); ;
     }
 
-    public override OperatorValue? BitwiseRightShift(OperatorValue[]? parameters)
+    public override OperatorValue? BitwiseRightShift(OperatorValue[]? _parameters)
     {
-        return new BigIntegerOperator(InheritableBitwiseRightShift(parameters));
+        return new BigIntegerOperator(InheritableBitwiseRightShift(_parameters));
     }
 
-    protected BigInteger InheritableBitwiseXor(OperatorValue[]? parameters)
+    protected BigInteger InheritableBitwiseXor(OperatorValue[]? _parameters)
     {
-        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || _parameters == null || _parameters.Length == 0 || _parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute bitwisexor.");
         }
 
-        if (parameters[0] is not BigIntegerOperator)
+        if (_parameters[0] is not BigIntegerOperator)
         {
             throw new ArgumentException("Cannot rightshift when the parameter is not a biginteger.");
         }
 
-        (var _left, var _right) = GetArraysForDeepCalculations(
+        (var left, var right) = GetArraysForDeepCalculations(
             NullableValue.Value,
-            ((BigIntegerOperator)parameters[0]).NullableValue ?? throw new ArgumentException("Parameter null. Cannot execute bitwisexor.")
+            ((BigIntegerOperator)_parameters[0]).NullableValue ?? throw new ArgumentException("Parameter null. Cannot execute bitwisexor.")
         );
 
-        return XorArrays(_left, _right);
+        return XorArrays(left, right);
     }
 
-    public override OperatorValue? BitwiseXor(OperatorValue[]? parameters)
+    public override OperatorValue? BitwiseXor(OperatorValue[]? _parameters)
     {
-        return new BigIntegerOperator(InheritableBitwiseXor(parameters));
+        return new BigIntegerOperator(InheritableBitwiseXor(_parameters));
     }
 
-    public override OperatorValue? Concatenate(OperatorValue[]? parameters)
+    public override OperatorValue? Concatenate(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? ConvertToBigInteger(OperatorValue[]? parameters)
+    public override OperatorValue? ConvertToBigInteger(OperatorValue[]? _parameters)
     {
         return new BigIntegerOperator(NullableValue);
     }
 
-    public override OperatorValue? ConvertToBigIntegerUnits(OperatorValue[]? parameters)
+    public override OperatorValue? ConvertToBigIntegerUnits(OperatorValue[]? _parameters)
     {
-        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || _parameters == null || _parameters.Length == 0 || _parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute converttobigintegerunits.");
         }
 
-        if (parameters[0] is not StringOperator)
+        if (_parameters[0] is not StringOperator)
         {
             throw new ArgumentException("Cannot converttobigintegerunits when the unit parameter is not a string.");
         }
 
-        return new BigIntegerUnitsOperator(NullableValue, ((StringOperator)parameters[0]).GetValue());
+        return new BigIntegerUnitsOperator(NullableValue, ((StringOperator)_parameters[0]).GetValue());
     }
 
-    public override OperatorValue? ConvertToDecimal(OperatorValue[]? parameters)
+    public override OperatorValue? ConvertToDecimal(OperatorValue[]? _parameters)
     {
         return DecimalOperator.BuildFromString(NullableValue?.ToString());
     }
 
-    public override OperatorValue? ConvertToDecimalUnits(OperatorValue[]? parameters)
+    public override OperatorValue? ConvertToDecimalUnits(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? ConvertToDouble(OperatorValue[]? parameters)
+    public override OperatorValue? ConvertToDouble(OperatorValue[]? _parameters)
     {
         return DoubleOperator.BuildFromString(NullableValue?.ToString());
     }
 
-    public override OperatorValue? ConvertToDoubleUnits(OperatorValue[]? parameters)
+    public override OperatorValue? ConvertToDoubleUnits(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? ConvertToInteger(OperatorValue[]? parameters)
+    public override OperatorValue? ConvertToInteger(OperatorValue[]? _parameters)
     {
         return IntegerOperator.BuildFromString(NullableValue?.ToString());
     }
 
-    public override OperatorValue? ConvertToIntegerUnits(OperatorValue[]? parameters)
+    public override OperatorValue? ConvertToIntegerUnits(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? ConvertToString(OperatorValue[]? parameters)
+    public override OperatorValue? ConvertToString(OperatorValue[]? _parameters)
     {
         return StringOperator.BuildFromString(NullableValue?.ToString());
     }
 
-    public override OperatorValue? EndsWith(OperatorValue[]? parameters)
+    public override OperatorValue? EndsWith(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    protected bool InheritableValueEqual(OperatorValue[]? parameters)
+    protected bool InheritableValueEqual(OperatorValue[]? _parameters)
     {
-        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || _parameters == null || _parameters.Length == 0 || _parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute valueequal.");
         }
 
-        if (parameters[0] is not BigIntegerOperator)
+        if (_parameters[0] is not BigIntegerOperator)
         {
             throw new ArgumentException("Cannot valueequal when the parameter is not a biginteger.");
         }
 
-        return NullableValue.Value == ((BigIntegerOperator)parameters[0]).NullableValue;
+        return NullableValue.Value == ((BigIntegerOperator)_parameters[0]).NullableValue;
     }
 
-    public override OperatorValue? ValueEqual(OperatorValue[]? parameters)
+    public override OperatorValue? ValueEqual(OperatorValue[]? _parameters)
     {
-        return new BooleanOperator(InheritableValueEqual(parameters));
+        return new BooleanOperator(InheritableValueEqual(_parameters));
     }
 
-    public override OperatorValue? Filled(OperatorValue[]? parameters)
+    public override OperatorValue? Filled(OperatorValue[]? _parameters)
     {
         return new BooleanOperator(NullableValue != null);
     }
 
-    protected bool InheritableGreaterOrEqual(OperatorValue[]? parameters)
+    protected bool InheritableGreaterOrEqual(OperatorValue[]? _parameters)
     {
-        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || _parameters == null || _parameters.Length == 0 || _parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute greaterorequal.");
         }
 
-        if (parameters[0] is not BigIntegerOperator)
+        if (_parameters[0] is not BigIntegerOperator)
         {
             throw new ArgumentException("Cannot greaterorequal when the parameter is not a biginteger.");
         }
 
-        BigInteger _check = ((BigIntegerOperator)parameters[0]).NullableValue ?? throw new ArgumentException("Parameter null. Cannot execute greaterorequal.");
+        BigInteger check = ((BigIntegerOperator)_parameters[0]).NullableValue ?? throw new ArgumentException("Parameter null. Cannot execute greaterorequal.");
 
-        return NullableValue >= _check;
+        return NullableValue >= check;
     }
 
-    public override OperatorValue? GreaterOrEqual(OperatorValue[]? parameters)
+    public override OperatorValue? GreaterOrEqual(OperatorValue[]? _parameters)
     {
-        return new BooleanOperator(InheritableGreaterOrEqual(parameters));
+        return new BooleanOperator(InheritableGreaterOrEqual(_parameters));
     }
 
-    protected bool InheritableGreatherThan(OperatorValue[]? parameters)
+    protected bool InheritableGreatherThan(OperatorValue[]? _parameters)
     {
-        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || _parameters == null || _parameters.Length == 0 || _parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute greaterthan.");
         }
 
-        if (parameters[0] is not BigIntegerOperator)
+        if (_parameters[0] is not BigIntegerOperator)
         {
             throw new ArgumentException("Cannot greaterthan when the parameter is not a biginteger.");
         }
 
-        BigInteger _check = ((BigIntegerOperator)parameters[0]).NullableValue ?? throw new ArgumentException("Parameter null. Cannot execute greaterthan.");
+        BigInteger check = ((BigIntegerOperator)_parameters[0]).NullableValue ?? throw new ArgumentException("Parameter null. Cannot execute greaterthan.");
 
-        return NullableValue > _check;
+        return NullableValue > check;
     }
 
-    public override OperatorValue? GreatherThan(OperatorValue[]? parameters)
+    public override OperatorValue? GreatherThan(OperatorValue[]? _parameters)
     {
-        return new BooleanOperator(InheritableGreatherThan(parameters));
+        return new BooleanOperator(InheritableGreatherThan(_parameters));
     }
 
-    public override OperatorValue? IfNotFilled(OperatorValue[]? parameters)
+    public override OperatorValue? IfNotFilled(OperatorValue[]? _parameters)
     {
         if (NullableValue != null)
         {
             return new BigIntegerOperator(NullableValue);
         }
 
-        if (parameters == null || parameters.Length == 0)
+        if (_parameters == null || _parameters.Length == 0)
         {
             throw new ArgumentException("parameters null or parameter missing. Cannot execute ifnotfilled.");
         }
 
-        return parameters[0];
+        return _parameters[0];
     }
 
-    public override OperatorValue? Includes(OperatorValue[]? parameters)
+    public override OperatorValue? Includes(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? IndexOf(OperatorValue[]? parameters)
+    public override OperatorValue? IndexOf(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? EqualsIgnoreCase(OperatorValue[]? parameters)
+    public override OperatorValue? EqualsIgnoreCase(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? Join(OperatorValue[]? parameters)
+    public override OperatorValue? Join(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? Length(OperatorValue[]? parameters)
+    public override OperatorValue? Length(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    protected bool InheritableLessOrEqual(OperatorValue[]? parameters)
+    protected bool InheritableLessOrEqual(OperatorValue[]? _parameters)
     {
-        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || _parameters == null || _parameters.Length == 0 || _parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute lessorequal.");
         }
 
-        if (parameters[0] is not BigIntegerOperator)
+        if (_parameters[0] is not BigIntegerOperator)
         {
             throw new ArgumentException("Cannot lessorequal when the parameter is not a biginteger.");
         }
 
-        BigInteger _check = ((BigIntegerOperator)parameters[0]).NullableValue ?? throw new ArgumentException("Parameter null. Cannot execute lessorequal.");
+        BigInteger check = ((BigIntegerOperator)_parameters[0]).NullableValue ?? throw new ArgumentException("Parameter null. Cannot execute lessorequal.");
 
-        return NullableValue <= _check;
+        return NullableValue <= check;
     }
 
-    public override OperatorValue? LessOrEqual(OperatorValue[]? parameters)
+    public override OperatorValue? LessOrEqual(OperatorValue[]? _parameters)
     {
-        return new BooleanOperator(InheritableLessOrEqual(parameters));
+        return new BooleanOperator(InheritableLessOrEqual(_parameters));
     }
 
-    protected bool InheritableLessThan(OperatorValue[]? parameters)
+    protected bool InheritableLessThan(OperatorValue[]? _parameters)
     {
-        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || _parameters == null || _parameters.Length == 0 || _parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute lessthan.");
         }
 
-        if (parameters[0] is not BigIntegerOperator)
+        if (_parameters[0] is not BigIntegerOperator)
         {
             throw new ArgumentException("Cannot lessorequal when the parameter is not a biginteger.");
         }
 
-        BigInteger _check = ((BigIntegerOperator)parameters[0]).NullableValue ?? throw new ArgumentException("Parameter null. Cannot execute lessthan.");
+        BigInteger check = ((BigIntegerOperator)_parameters[0]).NullableValue ?? throw new ArgumentException("Parameter null. Cannot execute lessthan.");
 
-        return NullableValue < _check;
+        return NullableValue < check;
     }
 
-    public override OperatorValue? LessThan(OperatorValue[]? parameters)
+    public override OperatorValue? LessThan(OperatorValue[]? _parameters)
     {
-        return new BooleanOperator(InheritableLessThan(parameters));
+        return new BooleanOperator(InheritableLessThan(_parameters));
     }
 
-    protected BigInteger InheritableMathAdd(OperatorValue[]? parameters)
+    protected BigInteger InheritableMathAdd(OperatorValue[]? _parameters)
     {
-        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || _parameters == null || _parameters.Length == 0 || _parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute mathadd.");
         }
 
-        if (parameters[0] is not BigIntegerOperator)
+        if (_parameters[0] is not BigIntegerOperator)
         {
             throw new ArgumentException("Cannot mathadd when the parameter is not a biginteger.");
         }
 
-        BigInteger _toAdd = ((BigIntegerOperator)parameters[0]).GetValue() ?? throw new ArgumentException("Add value was not null but the GetValue unexpectedly returned null.");
+        BigInteger toAdd = ((BigIntegerOperator)_parameters[0]).GetValue() ?? throw new ArgumentException("Add value was not null but the GetValue unexpectedly returned null.");
 
-        return NullableValue.Value + _toAdd;
+        return NullableValue.Value + toAdd;
     }
 
-    public override OperatorValue? MathAdd(OperatorValue[]? parameters)
+    public override OperatorValue? MathAdd(OperatorValue[]? _parameters)
     {
-        return new BigIntegerOperator(InheritableMathAdd(parameters));
+        return new BigIntegerOperator(InheritableMathAdd(_parameters));
     }
 
-    protected BigInteger InheritableMathAverage(OperatorValue[]? parameters)
+    protected BigInteger InheritableMathAverage(OperatorValue[]? _parameters)
     {
-        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || _parameters == null || _parameters.Length == 0 || _parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute mathaverage.");
         }
 
-        if (parameters[0] is not BigIntegerOperator)
+        if (_parameters[0] is not BigIntegerOperator)
         {
             throw new ArgumentException("Cannot mathaverage when the parameter is not a biginteger.");
         }
 
-        BigInteger _toAverage = ((BigIntegerOperator)parameters[0]).GetValue() ?? throw new ArgumentException("Average value was not null but the GetValue unexpectedly returned null.");
+        BigInteger toAverage = ((BigIntegerOperator)_parameters[0]).GetValue() ?? throw new ArgumentException("Average value was not null but the GetValue unexpectedly returned null.");
 
-        return (NullableValue.Value + _toAverage) >> 1;
+        return (NullableValue.Value + toAverage) >> 1;
     }
 
-    public override OperatorValue? MathAverage(OperatorValue[]? parameters)
+    public override OperatorValue? MathAverage(OperatorValue[]? _parameters)
     {
-        return new BigIntegerOperator(InheritableMathAverage(parameters));
+        return new BigIntegerOperator(InheritableMathAverage(_parameters));
     }
 
-    public override OperatorValue? MathCeiling(OperatorValue[]? parameters)
+    public override OperatorValue? MathCeiling(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    protected BigInteger InheritableMathDivide(OperatorValue[]? parameters)
+    protected BigInteger InheritableMathDivide(OperatorValue[]? _parameters)
     {
-        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || _parameters == null || _parameters.Length == 0 || _parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute mathdivide.");
         }
 
-        if (parameters[0] is not BigIntegerOperator)
+        if (_parameters[0] is not BigIntegerOperator)
         {
             throw new ArgumentException("Cannot mathdivide when the parameter is not a biginteger.");
         }
 
-        BigInteger _toDivide = ((BigIntegerOperator)parameters[0]).GetValue() ?? throw new ArgumentException("Divide value was not null but the GetValue unexpectedly returned null.");
+        BigInteger toDivide = ((BigIntegerOperator)_parameters[0]).GetValue() ?? throw new ArgumentException("Divide value was not null but the GetValue unexpectedly returned null.");
 
-        return NullableValue.Value / _toDivide;
+        return NullableValue.Value / toDivide;
     }
 
-    public override OperatorValue? MathDivide(OperatorValue[]? parameters)
+    public override OperatorValue? MathDivide(OperatorValue[]? _parameters)
     {
-        return new BigIntegerOperator(InheritableMathDivide(parameters));
+        return new BigIntegerOperator(InheritableMathDivide(_parameters));
     }
 
-    public override OperatorValue? MathFloor(OperatorValue[]? parameters)
+    public override OperatorValue? MathFloor(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    protected BigInteger InheritableMathMultiply(OperatorValue[]? parameters)
+    protected BigInteger InheritableMathMultiply(OperatorValue[]? _parameters)
     {
-        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || _parameters == null || _parameters.Length == 0 || _parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute mathmultiply.");
         }
 
-        if (parameters[0] is not BigIntegerOperator)
+        if (_parameters[0] is not BigIntegerOperator)
         {
             throw new ArgumentException("Cannot mathmultiply when the parameter is not a biginteger.");
         }
 
-        BigInteger _toMultiply = ((BigIntegerOperator)parameters[0]).GetValue() ?? throw new ArgumentException("Multiply value was not null but the GetValue unexpectedly returned null.");
+        BigInteger toMultiply = ((BigIntegerOperator)_parameters[0]).GetValue() ?? throw new ArgumentException("Multiply value was not null but the GetValue unexpectedly returned null.");
 
-        return NullableValue.Value * _toMultiply;
+        return NullableValue.Value * toMultiply;
     }
 
-    public override OperatorValue? MathMultiply(OperatorValue[]? parameters)
+    public override OperatorValue? MathMultiply(OperatorValue[]? _parameters)
     {
-        return new BigIntegerOperator(InheritableMathMultiply(parameters));
+        return new BigIntegerOperator(InheritableMathMultiply(_parameters));
     }
 
-    protected BigInteger InheritableMathPower(OperatorValue[]? parameters)
+    protected BigInteger InheritableMathPower(OperatorValue[]? _parameters)
     {
-        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || _parameters == null || _parameters.Length == 0 || _parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute mathpower.");
         }
 
-        if (parameters[0] is not IntegerOperator)
+        if (_parameters[0] is not IntegerOperator)
         {
             throw new ArgumentException("Cannot mathpower when the parameter is not an integer.");
         }
 
-        int _toPow = ((IntegerOperator)parameters[0]).GetValue() ?? throw new ArgumentException("Power value was not null but the GetValue unexpectedly returned null.");
+        int toPow = ((IntegerOperator)_parameters[0]).GetValue() ?? throw new ArgumentException("Power value was not null but the GetValue unexpectedly returned null.");
 
-        return BigInteger.Pow(NullableValue.Value, _toPow);
+        return BigInteger.Pow(NullableValue.Value, toPow);
     }
 
-    public override OperatorValue? MathPower(OperatorValue[]? parameters)
+    public override OperatorValue? MathPower(OperatorValue[]? _parameters)
     {
-        return new BigIntegerOperator(InheritableMathPower(parameters));
+        return new BigIntegerOperator(InheritableMathPower(_parameters));
     }
 
-    public override OperatorValue? MathRound(OperatorValue[]? parameters)
+    public override OperatorValue? MathRound(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    protected BigInteger InheritableMathSubtract(OperatorValue[]? parameters)
+    protected BigInteger InheritableMathSubtract(OperatorValue[]? _parameters)
     {
-        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || _parameters == null || _parameters.Length == 0 || _parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute mathsubtract.");
         }
 
-        if (parameters[0] is not BigIntegerOperator)
+        if (_parameters[0] is not BigIntegerOperator)
         {
             throw new ArgumentException("Cannot mathsubtract when the parameter is not a biginteger.");
         }
 
-        BigInteger _toSubtract = ((BigIntegerOperator)parameters[0]).GetValue() ?? throw new ArgumentException("Subtract value was not null but the GetValue unexpectedly returned null.");
+        BigInteger toSubtract = ((BigIntegerOperator)_parameters[0]).GetValue() ?? throw new ArgumentException("Subtract value was not null but the GetValue unexpectedly returned null.");
 
-        return NullableValue.Value - _toSubtract;
+        return NullableValue.Value - toSubtract;
     }
 
-    public override OperatorValue? MathSubtract(OperatorValue[]? parameters)
+    public override OperatorValue? MathSubtract(OperatorValue[]? _parameters)
     {
-        return new BigIntegerOperator(InheritableMathSubtract(parameters));
+        return new BigIntegerOperator(InheritableMathSubtract(_parameters));
     }
 
-    protected bool InheritableNotEqual(OperatorValue[]? parameters)
+    protected bool InheritableNotEqual(OperatorValue[]? _parameters)
     {
-        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || _parameters == null || _parameters.Length == 0 || _parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute notequal.");
         }
 
-        if (parameters[0] is not BigIntegerOperator)
+        if (_parameters[0] is not BigIntegerOperator)
         {
             throw new ArgumentException("Cannot notequal when the parameter is not a biginteger.");
         }
 
-        return NullableValue.Value != ((BigIntegerOperator)parameters[0]).NullableValue;
+        return NullableValue.Value != ((BigIntegerOperator)_parameters[0]).NullableValue;
     }
 
-    public override OperatorValue? NotEqual(OperatorValue[]? parameters)
+    public override OperatorValue? NotEqual(OperatorValue[]? _parameters)
     {
-        return new BooleanOperator(InheritableNotEqual(parameters));
+        return new BooleanOperator(InheritableNotEqual(_parameters));
     }
 
-    protected BigInteger InheritableBooleanOr(OperatorValue[]? parameters)
+    protected BigInteger InheritableBooleanOr(OperatorValue[]? _parameters)
     {
-        if (NullableValue == null || parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (NullableValue == null || _parameters == null || _parameters.Length == 0 || _parameters[0] == null)
         {
             throw new ArgumentException("Value null, parameters null or parameter missing. Cannot execute booleanor.");
         }
 
-        if (parameters[0] is not BigIntegerOperator)
+        if (_parameters[0] is not BigIntegerOperator)
         {
             throw new ArgumentException("Cannot booleanor when the parameter is not a biginteger.");
         }
 
-        (var _left, var _right) = GetArraysForDeepCalculations(
+        (var left, var right) = GetArraysForDeepCalculations(
             NullableValue.Value,
-            ((BigIntegerOperator)parameters[0]).NullableValue ?? throw new ArgumentException("Parameter null. Cannot execute booleanor.")
+            ((BigIntegerOperator)_parameters[0]).NullableValue ?? throw new ArgumentException("Parameter null. Cannot execute booleanor.")
         );
 
-        return OrArrays(_left, _right);
+        return OrArrays(left, right);
     }
 
-    public override OperatorValue? BooleanOr(OperatorValue[]? parameters)
+    public override OperatorValue? BooleanOr(OperatorValue[]? _parameters)
     {
-        return new BigIntegerOperator(InheritableBooleanOr(parameters));
+        return new BigIntegerOperator(InheritableBooleanOr(_parameters));
     }
 
-    public override OperatorValue? Replace(OperatorValue[]? parameters)
-    {
-        throw new InvalidOperationException();
-    }
-
-    public override OperatorValue? Split(OperatorValue[]? parameters)
+    public override OperatorValue? Replace(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? StartsWith(OperatorValue[]? parameters)
+    public override OperatorValue? Split(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? Substring(OperatorValue[]? parameters)
+    public override OperatorValue? StartsWith(OperatorValue[]? _parameters)
+    {
+        throw new InvalidOperationException();
+    }
+
+    public override OperatorValue? Substring(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
@@ -561,38 +561,38 @@ public class BigIntegerOperator : OperatorValue
         return NullableValue?.ToString() ?? "null";
     }
 
-    public override OperatorValue? ToLower(OperatorValue[]? parameters)
+    public override OperatorValue? ToLower(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? ToUpper(OperatorValue[]? parameters)
+    public override OperatorValue? ToUpper(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? Trim(OperatorValue[]? parameters)
+    public override OperatorValue? Trim(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    protected BigInteger InheritableBooleanNot(OperatorValue[]? parameters)
+    protected BigInteger InheritableBooleanNot(OperatorValue[]? _parameters)
     {
         if (NullableValue == null)
         {
             throw new ArgumentException("Value null. Cannot execute booleannot.");
         }
 
-        byte[] _bytes = NullableValue.Value.ToByteArray();
+        byte[] bytes = NullableValue.Value.ToByteArray();
 
         return new BigInteger(
-            _bytes.Select(_deltaByte => (byte)~_deltaByte).ToArray()
+            bytes.Select(_deltaByte => (byte)~_deltaByte).ToArray()
         );
     }
 
-    public override OperatorValue? BooleanNot(OperatorValue[]? parameters)
+    public override OperatorValue? BooleanNot(OperatorValue[]? _parameters)
     {
-        return new BigIntegerOperator(InheritableBooleanNot(parameters));
+        return new BigIntegerOperator(InheritableBooleanNot(_parameters));
     }
 
     public override string ToStringValue()
@@ -615,14 +615,14 @@ public class BigIntegerOperator : OperatorValue
         NullableValue = ((BigIntegerOperator)_source).NullableValue;
     }
 
-    public static OperatorValue BuildFromParameters(string[] parameters)
+    public static OperatorValue BuildFromParameters(string[] _parameters)
     {
-        if (parameters == null || parameters.Length == 0)
+        if (_parameters == null || _parameters.Length == 0)
         {
             throw new ArgumentException("Cannot create a BigIntegerOperator, null or missing parameter.");
         }
 
-        return BuildFromString(parameters[0]);
+        return BuildFromString(_parameters[0]);
     }
 
     public static OperatorValue BuildFromString(string? _input)
@@ -632,9 +632,9 @@ public class BigIntegerOperator : OperatorValue
             return new BigIntegerOperator(null);
         }
 
-        if (BigInteger.TryParse(_input, out BigInteger _value))
+        if (BigInteger.TryParse(_input, out BigInteger value))
         {
-            return new BigIntegerOperator(_value);
+            return new BigIntegerOperator(value);
         }
         else
         {

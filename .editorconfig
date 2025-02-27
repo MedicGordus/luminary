@@ -21,3 +21,42 @@ dotnet_naming_symbols.local_variable_symbols.applicable_kinds = local
 dotnet_naming_symbols.local_variable_symbols.applicable_accessibilities = *
 
 dotnet_naming_style.lower_camel_case.capitalization = camel_case
+
+# Naming style for class scope variables: UpperCamelCase
+dotnet_naming_rule.class_scope_upper_camel.severity = warning
+dotnet_naming_rule.class_scope_upper_camel.symbols = class_scope_symbols
+dotnet_naming_rule.class_scope_upper_camel.style = upper_camel_case
+
+dotnet_naming_symbols.class_scope_symbols.applicable_kinds = field
+dotnet_naming_symbols.class_scope_symbols.applicable_accessibilities = private, protected, internal, protected_internal
+
+dotnet_naming_style.upper_camel_case.capitalization = pascal_case
+
+# Naming style for constants: CAPS_WITH_UNDERSCORES
+dotnet_naming_rule.constants_all_caps.severity = warning
+dotnet_naming_rule.constants_all_caps.symbols = constant_symbols
+dotnet_naming_rule.constants_all_caps.style = all_caps_with_underscores
+
+dotnet_naming_symbols.constant_symbols.applicable_kinds = field
+dotnet_naming_symbols.constant_symbols.applicable_accessibilities = *
+dotnet_naming_symbols.constant_symbols.required_modifiers = const
+
+dotnet_naming_style.all_caps_with_underscores.capitalization = all_upper
+dotnet_naming_style.all_caps_with_underscores.word_separator = _
+
+
+# Naming style for classes: UpperCamelCase
+dotnet_naming_rule.classes_upper_camel.severity = warning
+dotnet_naming_rule.classes_upper_camel.symbols = class_symbols
+dotnet_naming_rule.classes_upper_camel.style = upper_camel_case
+
+dotnet_naming_symbols.class_symbols.applicable_kinds = class
+dotnet_naming_symbols.class_symbols.applicable_accessibilities = *
+
+# Naming style for methods: UpperCamelCase
+dotnet_naming_rule.methods_upper_camel.severity = warning
+dotnet_naming_rule.methods_upper_camel.style = upper_camel_case
+dotnet_naming_rule.methods_upper_camel.symbols = method_symbols
+
+dotnet_naming_symbols.method_symbols.applicable_kinds = method
+dotnet_naming_symbols.method_symbols.applicable_accessibilities = *

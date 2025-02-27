@@ -9,22 +9,22 @@ public static class ConstantMethods
     public struct MethodNames
     {
         #region "build constant operator"
-        public const string String = "string";
-        public const string Integer = "integer";
-        public const string BigInteger = "biginteger";
-        public const string Double = "double";
-        public const string Decimal = "decimal";
-        public const string Date = "date";
-        public const string Time = "time";
-        public const string DateTimeOffset = "datetimeoffset";
-        public const string Array = "array";
-        public const string Duration = "duration";
-        public const string DateTimeOffsetWithDuration = "datetimeoffsetwithduration";
-        public const string IntegerUnits = "integerunits";
-        public const string BigIntegerUnits = "bigintegerunits";
-        public const string DoubleUnits = "doubleunits";
-        public const string DecimalUnits = "decimalunits";
-        public const string Boolean = "boolean";
+        public const string STRING = "string";
+        public const string INTEGER = "integer";
+        public const string BIG_INTEGER = "biginteger";
+        public const string DOUBLE = "double";
+        public const string DECIMAL = "decimal";
+        public const string DATE = "date";
+        public const string TIME = "time";
+        public const string DATE_TIME_OFFSET = "datetimeoffset";
+        public const string ARRAY = "array";
+        public const string DURATION = "duration";
+        public const string DATE_TIME_OFFSET_WITH_DURATION = "datetimeoffsetwithduration";
+        public const string INTEGER_UNITS = "integerunits";
+        public const string BIG_INTEGER_UNITS = "bigintegerunits";
+        public const string DOUBLE_UNITS = "doubleunits";
+        public const string DECIMAL_UNITS = "decimalunits";
+        public const string BOOLEAN = "boolean";
         #endregion
 
         #region "custom methods"
@@ -33,22 +33,22 @@ public static class ConstantMethods
 
     public static Dictionary<string, Func<string[], OperatorValue>> MethodCall = new()
     {
-        { MethodNames.String, StringOperator.BuildFromParameters },
-        { MethodNames.Integer, IntegerOperator.BuildFromParameters },
-        { MethodNames.BigInteger, BigIntegerOperator.BuildFromParameters },
-        { MethodNames.Double, DoubleOperator.BuildFromParameters },
-        { MethodNames.Decimal, DecimalOperator.BuildFromParameters },
-        { MethodNames.Date, DateOperator.BuildFromParameters },
-        { MethodNames.Time, TimeOperator.BuildFromParameters },
-        { MethodNames.DateTimeOffset, DateTimeOffsetOperator.BuildFromParameters },
-        { MethodNames.Array, ArrayOperator.BuildFromParameters },
-        { MethodNames.Duration, DurationOperator.BuildFromParameters },
-        { MethodNames.DateTimeOffsetWithDuration, DateTimeOffsetWithDurationOperator.BuildFromParameters },
-        { MethodNames.IntegerUnits, IntegerUnitsOperator.BuildFromParameters },
-        { MethodNames.BigIntegerUnits, BigIntegerUnitsOperator.BuildFromParameters },
-        { MethodNames.DoubleUnits, DoubleUnitsOperator.BuildFromParameters },
-        { MethodNames.DecimalUnits, DecimalUnitsOperator.BuildFromParameters },
-        { MethodNames.Boolean, BooleanOperator.BuildFromParameters }
+        { MethodNames.STRING, StringOperator.BuildFromParameters },
+        { MethodNames.INTEGER, IntegerOperator.BuildFromParameters },
+        { MethodNames.BIG_INTEGER, BigIntegerOperator.BuildFromParameters },
+        { MethodNames.DOUBLE, DoubleOperator.BuildFromParameters },
+        { MethodNames.DECIMAL, DecimalOperator.BuildFromParameters },
+        { MethodNames.DATE, DateOperator.BuildFromParameters },
+        { MethodNames.TIME, TimeOperator.BuildFromParameters },
+        { MethodNames.DATE_TIME_OFFSET, DateTimeOffsetOperator.BuildFromParameters },
+        { MethodNames.ARRAY, ArrayOperator.BuildFromParameters },
+        { MethodNames.DURATION, DurationOperator.BuildFromParameters },
+        { MethodNames.DATE_TIME_OFFSET_WITH_DURATION, DateTimeOffsetWithDurationOperator.BuildFromParameters },
+        { MethodNames.INTEGER_UNITS, IntegerUnitsOperator.BuildFromParameters },
+        { MethodNames.BIG_INTEGER_UNITS, BigIntegerUnitsOperator.BuildFromParameters },
+        { MethodNames.DOUBLE_UNITS, DoubleUnitsOperator.BuildFromParameters },
+        { MethodNames.DECIMAL_UNITS, DecimalUnitsOperator.BuildFromParameters },
+        { MethodNames.BOOLEAN, BooleanOperator.BuildFromParameters }
     };
 
 }

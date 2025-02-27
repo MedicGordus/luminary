@@ -7,13 +7,13 @@ public class SchemaJson
 {
     public readonly struct JsonTypes
     {
-        public const string String = "string";
-        public const string Number = "number";
-        public const string Integer = "integer";
-        public const string Object = "object";
-        public const string Array = "array";
-        public const string Boolean = "boolean";
-        public const string Null = "null";
+        public const string STRING = "string";
+        public const string NUMBER = "number";
+        public const string INTEGER = "integer";
+        public const string OBJECT = "object";
+        public const string ARRAY = "array";
+        public const string BOOLEAN = "boolean";
+        public const string NULL = "null";
     }
 
     [JsonPropertyName("title")]

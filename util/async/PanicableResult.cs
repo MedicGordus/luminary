@@ -8,14 +8,14 @@ public class PanicableResult<T> : Panicable<T>
 {
     private List<string> Results;
 
-    public PanicableResult(T? t = default) : base(t)
+    public PanicableResult(T? _t = default) : base(_t)
     {
         Results = [];
     }
 
-    public void AddResult(string result)
+    public void AddResult(string _result)
     {
-        Results.Add(result);
+        Results.Add(_result);
     }
 
     public IEnumerable<string> GetResults() => Results;
@@ -33,9 +33,9 @@ public class PanicableResult : Panicable
         Results = [];
     }
 
-    public void AddResult(string result)
+    public void AddResult(string _result)
     {
-        Results.Add(result);
+        Results.Add(_result);
     }
 
     public void AddResults(IEnumerable<string> _results)

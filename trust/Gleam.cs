@@ -74,38 +74,38 @@ public class Gleam
         {
             if (_update != null && _update.Url != null && _update.PublicKey != null && _update.SignatureBase64 != null)
             {
-                var _message = _update.GetSignableData();
+                var messageBytes = _update.GetSignableData()?.ToUtf8Bytes();
 
-                if (_message != null)
+                if (messageBytes != null)
                 {
-                    string _lowercaseUrl = _update.Url.ToLower();
+                    string lowercaseUrl = _update.Url.ToLower();
 
                     // make sure this org is trusted
-                    Organization? _trustedOrganizationMatch = null;
+                    Organization? trustedOrganizationMatch = null;
                     //
                     // note that we cannot access TrustedOrganizations without an asynclock:
                     using (await AuthUpdateLock.LockAsync())
                     {
-                        _trustedOrganizationMatch = TrustedOrganizations.FirstOrDefault(_item => _item.BaseUrl == _lowercaseUrl);
+                        trustedOrganizationMatch = TrustedOrganizations.FirstOrDefault(_item => _item.BaseUrl == lowercaseUrl);
                     }
-                    if (_trustedOrganizationMatch == null)
+                    if (trustedOrganizationMatch == null)
                     {
                         return;
                     }
-                    if (!_trustedOrganizationMatch.SelfContainsPublicKey(_update.PublicKey))
+                    if (!trustedOrganizationMatch.SelfContainsPublicKey(_update.PublicKey))
                     {
                         return;
                     }
 
                     // make sure the signature is good
-                    if (!Cryptography.VerifySignature(_update.PublicKey, _message.ToUtf8Bytes(), _update.SignatureBase64))
+                    if (!Cryptography.VerifySignature(_update.PublicKey, messageBytes, _update.SignatureBase64))
                     {
                         return;
                     }
 
                     // collect the new information
-                    ScrubbableResult<Organization> _org = await BuildOrganizationFromUrlAsync(_lowercaseUrl);
-                    if (!_org.Scrub && _org.ReturnValue != null)
+                    ScrubbableResult<Organization> org = await BuildOrganizationFromUrlAsync(lowercaseUrl);
+                    if (!org.Scrub && org.ReturnValue != null)
                     {
                         using (await AuthUpdateLock.LockAsync())
                         {
@@ -113,7 +113,7 @@ public class Gleam
                                 _item => _item.BaseUrl == _update.Url
                             );
 
-                            TrustedOrganizations.Add(_org.ReturnValue);
+                            TrustedOrganizations.Add(org.ReturnValue);
                         }
                     }
                 }
@@ -124,36 +124,36 @@ public class Gleam
 
     public static async Task<ScrubbableResult<Gleam>> CreateAsync(List<string> _trustedOrganizationUrls)
     {
-        ScrubbableResult<Gleam> _output = new();
+        ScrubbableResult<Gleam> output = new();
 
         try
         {
-            List<Organization> _trustedOrganizations = [];
+            List<Organization> trustedOrganizations = [];
 
-            foreach (string _deltaUrl in _trustedOrganizationUrls)
+            foreach (string deltaUrl in _trustedOrganizationUrls)
             {
-                ScrubbableResult<Organization> _org = await BuildOrganizationFromUrlAsync(_deltaUrl);
+                ScrubbableResult<Organization> org = await BuildOrganizationFromUrlAsync(deltaUrl);
 
-                if (_org.Scrub)
+                if (org.Scrub)
                 {
-                    _output.AddResults(_org.GetResults());
+                    output.AddResults(org.GetResults());
                     break;
                 }
 
-                if (_org.ReturnValue != null)
+                if (org.ReturnValue != null)
                 {
-                    _trustedOrganizations.Add(_org.ReturnValue);
+                    trustedOrganizations.Add(org.ReturnValue);
                 }
             }
 
-            _output.ReturnValue = new Gleam(_trustedOrganizations);
+            output.ReturnValue = new Gleam(trustedOrganizations);
         }
-        catch (Exception _e)
+        catch (Exception e)
         {
-            _output.ActivateScrub(_e);
+            output.ActivateScrub(e);
         }
 
-        return _output;
+        return output;
     }
 
 
@@ -164,13 +164,13 @@ public class Gleam
     /// <returns></returns>
     public static async Task<ScrubbableResult<Organization>> BuildOrganizationFromUrlAsync(string _url)
     {
-        ScrubbableResult<Organization> _output = new();
+        ScrubbableResult<Organization> output = new();
 
         try
         {
             //// get self creds for the organization
             //
-            Scrubbable<CredsSelfJson?> _selfCreds = await JsonRetriever.GetJsonAsync<CredsSelfJson>(
+            Scrubbable<CredsSelfJson?> selfCreds = await JsonRetriever.GetJsonAsync<CredsSelfJson>(
                 string.Format(
                     "{0}{1}",
                     _url,
@@ -178,23 +178,23 @@ public class Gleam
                 )
             );
             //
-            if (_selfCreds.Scrub)
+            if (selfCreds.Scrub)
             {
-                _output.AddResult(
+                output.AddResult(
                     string.Format(
                         "Attempt to retrieve self creds for '{0}' failed, the message was: '{1}'.",
                         _url,
-                        _selfCreds.GetException().Message
+                        selfCreds.GetException().Message
                     )
                 );
-                return _output;
+                return output;
             }
             //
             ////
 
             //// get self creds for the organization
             //
-            Scrubbable<CredsOpsJson?> _opsCreds = await JsonRetriever.GetJsonAsync<CredsOpsJson>(
+            Scrubbable<CredsOpsJson?> opsCreds = await JsonRetriever.GetJsonAsync<CredsOpsJson>(
                 string.Format(
                     "{0}{1}",
                     _url,
@@ -202,34 +202,34 @@ public class Gleam
                 )
             );
             //
-            if (_opsCreds.Scrub)
+            if (opsCreds.Scrub)
             {
-                _output.AddResult(
+                output.AddResult(
                     string.Format(
                         "Attempt to retrieve ops creds for '{0}' failed, the message was: '{1}'.",
                         _url,
-                        _opsCreds.GetException().Message
+                        opsCreds.GetException().Message
                     )
                 );
-                return _output;
+                return output;
             }
             //
             ////
 
 
             // build organization
-            _output.ReturnValue = new Organization(
+            output.ReturnValue = new Organization(
                 _url.ToLower(),
-                _selfCreds.ReturnValue?.PublicKeysByGroup ?? [],
-                _opsCreds.ReturnValue?.PublicKeysByGroup ?? []
+                selfCreds.ReturnValue?.PublicKeysByGroup ?? [],
+                opsCreds.ReturnValue?.PublicKeysByGroup ?? []
             );
         }
-        catch (Exception _e)
+        catch (Exception e)
         {
-            _output.ActivateScrub(_e);
+            output.ActivateScrub(e);
         }
 
-        return _output;
+        return output;
     }
 
     public static async Task<ScrubbableResult<ApiSecretJson>> RetrieveSecretForOrganizationAsync(string _organizationUrl, string _organizationGroup)

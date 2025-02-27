@@ -9,282 +9,282 @@ public class PrismOperator : OperatorValue
 
     public Dictionary<string, OperatorValue>? GetValue() => NullableValue;
 
-    public PrismOperator(Dictionary<string, OperatorValue>? value) : base(OperatorValueType.Prism)
+    public PrismOperator(Dictionary<string, OperatorValue>? _value) : base(OperatorValueType.Prism)
     {
-        NullableValue = value;
+        NullableValue = _value;
     }
 
-    public override OperatorValue? BitwiseLeftShift(OperatorValue[]? parameters)
+    public override OperatorValue? BitwiseLeftShift(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? BitwiseMod(OperatorValue[]? parameters)
+    public override OperatorValue? BitwiseMod(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? BitwiseRightShift(OperatorValue[]? parameters)
+    public override OperatorValue? BitwiseRightShift(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? BitwiseXor(OperatorValue[]? parameters)
+    public override OperatorValue? BitwiseXor(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? BooleanAnd(OperatorValue[]? parameters)
+    public override OperatorValue? BooleanAnd(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? BooleanNot(OperatorValue[]? parameters)
+    public override OperatorValue? BooleanNot(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? BooleanOr(OperatorValue[]? parameters)
+    public override OperatorValue? BooleanOr(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? Concatenate(OperatorValue[]? parameters)
+    public override OperatorValue? Concatenate(OperatorValue[]? _parameters)
     {
-        if (parameters == null || parameters.Length == 0 || parameters[0] == null)
+        if (_parameters == null || _parameters.Length == 0 || _parameters[0] == null)
         {
             throw new ArgumentException("Parameter null or parameter missing. Cannot execute concatenate.");
         }
 
-        if (parameters[0] is not PrismOperator)
+        if (_parameters[0] is not PrismOperator)
         {
             throw new ArgumentException("Cannot concatenate when the parameter is not a prism.");
         }
 
-        var _param = ((PrismOperator)parameters[0]).NullableValue;
+        var param = ((PrismOperator)_parameters[0]).NullableValue;
 
-        Dictionary<string, OperatorValue> _output = [];
+        Dictionary<string, OperatorValue> output = [];
 
         if (NullableValue != null)
         {
-            foreach (KeyValuePair<string, OperatorValue> _deltaProperty in NullableValue)
+            foreach (KeyValuePair<string, OperatorValue> deltaProperty in NullableValue)
             {
-                _output.Add(_deltaProperty.Key, _deltaProperty.Value);
+                output.Add(deltaProperty.Key, deltaProperty.Value);
             }
         }
 
-        if (_param != null)
+        if (param != null)
         {
-            foreach (KeyValuePair<string, OperatorValue> _deltaProperty in _param)
+            foreach (KeyValuePair<string, OperatorValue> deltaProperty in param)
             {
-                _output.Add(_deltaProperty.Key, _deltaProperty.Value);
+                output.Add(deltaProperty.Key, deltaProperty.Value);
             }
         }
 
-        return new PrismOperator(_output);
+        return new PrismOperator(output);
     }
 
-    public override OperatorValue? ConvertToBigInteger(OperatorValue[]? parameters)
+    public override OperatorValue? ConvertToBigInteger(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? ConvertToBigIntegerUnits(OperatorValue[]? parameters)
+    public override OperatorValue? ConvertToBigIntegerUnits(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? ConvertToDecimal(OperatorValue[]? parameters)
+    public override OperatorValue? ConvertToDecimal(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? ConvertToDecimalUnits(OperatorValue[]? parameters)
+    public override OperatorValue? ConvertToDecimalUnits(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? ConvertToDouble(OperatorValue[]? parameters)
+    public override OperatorValue? ConvertToDouble(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? ConvertToDoubleUnits(OperatorValue[]? parameters)
+    public override OperatorValue? ConvertToDoubleUnits(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? ConvertToInteger(OperatorValue[]? parameters)
+    public override OperatorValue? ConvertToInteger(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? ConvertToIntegerUnits(OperatorValue[]? parameters)
+    public override OperatorValue? ConvertToIntegerUnits(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? ConvertToString(OperatorValue[]? parameters)
+    public override OperatorValue? ConvertToString(OperatorValue[]? _parameters)
     {
         return new StringOperator(ToStringValue());
     }
 
-    public override OperatorValue? EndsWith(OperatorValue[]? parameters)
+    public override OperatorValue? EndsWith(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? EqualsIgnoreCase(OperatorValue[]? parameters)
+    public override OperatorValue? EqualsIgnoreCase(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? Filled(OperatorValue[]? parameters)
+    public override OperatorValue? Filled(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? GreaterOrEqual(OperatorValue[]? parameters)
+    public override OperatorValue? GreaterOrEqual(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? GreatherThan(OperatorValue[]? parameters)
+    public override OperatorValue? GreatherThan(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? IfNotFilled(OperatorValue[]? parameters)
+    public override OperatorValue? IfNotFilled(OperatorValue[]? _parameters)
     {
         if (NullableValue == null || NullableValue.Count == 0)
         {
-            if (parameters == null || parameters.Length == 0 || parameters[0] is not OperatorValue)
+            if (_parameters == null || _parameters.Length == 0 || _parameters[0] is not OperatorValue)
             {
                 throw new ArgumentException("Parameters null, parameter missing, or wrong parameter type. Cannot execute ifnotfilled.");
             }
 
-            return parameters[0];
+            return _parameters[0];
         }
 
         return new PrismOperator(NullableValue);
     }
 
-    public override OperatorValue? Includes(OperatorValue[]? parameters)
+    public override OperatorValue? Includes(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? IndexOf(OperatorValue[]? parameters)
+    public override OperatorValue? IndexOf(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? Join(OperatorValue[]? parameters)
+    public override OperatorValue? Join(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? Length(OperatorValue[]? parameters)
+    public override OperatorValue? Length(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? LessOrEqual(OperatorValue[]? parameters)
+    public override OperatorValue? LessOrEqual(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? LessThan(OperatorValue[]? parameters)
+    public override OperatorValue? LessThan(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? MathAdd(OperatorValue[]? parameters)
+    public override OperatorValue? MathAdd(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? MathAverage(OperatorValue[]? parameters)
+    public override OperatorValue? MathAverage(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? MathCeiling(OperatorValue[]? parameters)
+    public override OperatorValue? MathCeiling(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? MathDivide(OperatorValue[]? parameters)
+    public override OperatorValue? MathDivide(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? MathFloor(OperatorValue[]? parameters)
+    public override OperatorValue? MathFloor(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? MathMultiply(OperatorValue[]? parameters)
+    public override OperatorValue? MathMultiply(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? MathPower(OperatorValue[]? parameters)
+    public override OperatorValue? MathPower(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? MathRound(OperatorValue[]? parameters)
+    public override OperatorValue? MathRound(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? MathSubtract(OperatorValue[]? parameters)
+    public override OperatorValue? MathSubtract(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? NotEqual(OperatorValue[]? parameters)
+    public override OperatorValue? NotEqual(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? Replace(OperatorValue[]? parameters)
+    public override OperatorValue? Replace(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? Split(OperatorValue[]? parameters)
+    public override OperatorValue? Split(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? StartsWith(OperatorValue[]? parameters)
+    public override OperatorValue? StartsWith(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? Substring(OperatorValue[]? parameters)
+    public override OperatorValue? Substring(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? ToLower(OperatorValue[]? parameters)
+    public override OperatorValue? ToLower(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? ToUpper(OperatorValue[]? parameters)
+    public override OperatorValue? ToUpper(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? Trim(OperatorValue[]? parameters)
+    public override OperatorValue? Trim(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
 
-    public override OperatorValue? ValueEqual(OperatorValue[]? parameters)
+    public override OperatorValue? ValueEqual(OperatorValue[]? _parameters)
     {
         throw new InvalidOperationException();
     }
@@ -296,17 +296,17 @@ public class PrismOperator : OperatorValue
             throw new ArgumentException("Value null. Cannot execute tostringvalue.");
         }
 
-        StringBuilder _output = new();
+        StringBuilder output = new();
 
-        foreach (KeyValuePair<string, OperatorValue> _deltaKeyValuePair in NullableValue)
+        foreach (KeyValuePair<string, OperatorValue> deltaKeyValuePair in NullableValue)
         {
-            _output.Append(_deltaKeyValuePair.Key);
-            _output.Append('|');
-            _output.Append(_deltaKeyValuePair.Value.ToStringValue());
-            _output.Append(',');
+            output.Append(deltaKeyValuePair.Key);
+            output.Append('|');
+            output.Append(deltaKeyValuePair.Value.ToStringValue());
+            output.Append(',');
         }
 
-        return _output.ToString();
+        return output.ToString();
     }
 
     public override string ToJsonStringValue()
@@ -316,58 +316,58 @@ public class PrismOperator : OperatorValue
             return "null";
         }
 
-        StringBuilder _output = new StringBuilder();
+        StringBuilder output = new StringBuilder();
 
-        _output.Append('{');
+        output.Append('{');
 
         if (NullableValue.Count != 0)
         {
-            foreach (KeyValuePair<string, OperatorValue> _deltaKeyValuePair in NullableValue)
+            foreach (KeyValuePair<string, OperatorValue> deltaKeyValuePair in NullableValue)
             {
-                _output.Append(
+                output.Append(
                     string.Format(
                         "\"{0}\":",
-                        _deltaKeyValuePair.Key
+                        deltaKeyValuePair.Key
                     )
                 );
 
-                _output.Append(
-                    _deltaKeyValuePair.Value.ToJsonStringValue()
+                output.Append(
+                    deltaKeyValuePair.Value.ToJsonStringValue()
                 );
 
-                _output.Append(',');
+                output.Append(',');
             }
 
             // remove the last comma
-            _output.Length -= 1;
+            output.Length -= 1;
         }
 
-        _output.Append('}');
+        output.Append('}');
 
-        return _output.ToString();
+        return output.ToString();
     }
 
-    public override void SetValue(OperatorValue value)
+    public override void SetValue(OperatorValue _value)
     {
-        if (value is not PrismOperator)
+        if (_value is not PrismOperator)
         {
             throw new ArgumentException("Cannot setvalue when the parameter is not a prism.");
         }
 
-        NullableValue = ((PrismOperator)value).NullableValue;
+        NullableValue = ((PrismOperator)_value).NullableValue;
     }
 
-    public OperatorValue? GetOperatorByName(string name)
+    public OperatorValue? GetOperatorByName(string _name)
     {
         if (NullableValue == null)
         {
             throw new ArgumentException("Value null. Cannot execute getoperatorbyname.");
         }
 
-        return NullableValue.TryGetValue(name, out var _value) ? _value : null;
+        return NullableValue.TryGetValue(_name, out var value) ? value : null;
     }
 
-    public static OperatorValue BuildFromParameters(string[] parameters)
+    public static OperatorValue BuildFromParameters(string[] _parameters)
     {
         throw new InvalidOperationException();
     }

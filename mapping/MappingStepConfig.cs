@@ -134,7 +134,7 @@ public class MappingStepConfig
                 {
                     // constantvalue method
 
-                    if (methodToRun == ConstantMethods.MethodNames.Array)
+                    if (methodToRun == ConstantMethods.MethodNames.ARRAY)
                     {
                         // special case for array where operatorvalues and constants are allowed
 

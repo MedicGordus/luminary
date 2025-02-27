@@ -80,27 +80,27 @@ public static class Helper
     {
         OperatorValue.OperatorValueType _output;
 
-        if (_schema.Type == SchemaJson.JsonTypes.Object)
+        if (_schema.Type == SchemaJson.JsonTypes.OBJECT)
         {
             _output = OperatorValue.OperatorValueType.Prism;
         }
-        else if (_schema.Type == SchemaJson.JsonTypes.Array)
+        else if (_schema.Type == SchemaJson.JsonTypes.ARRAY)
         {
             _output = OperatorValue.OperatorValueType.Array;
         }
-        else if (_schema.Type == SchemaJson.JsonTypes.Boolean)
+        else if (_schema.Type == SchemaJson.JsonTypes.BOOLEAN)
         {
             _output = OperatorValue.OperatorValueType.Boolean;
         }
-        else if (_schema.Type == SchemaJson.JsonTypes.Integer)
+        else if (_schema.Type == SchemaJson.JsonTypes.INTEGER)
         {
             _output = OperatorValue.OperatorValueType.Integer;
         }
-        else if (_schema.Type == SchemaJson.JsonTypes.String)
+        else if (_schema.Type == SchemaJson.JsonTypes.STRING)
         {
             _output = OperatorValue.OperatorValueType.String;
         }
-        else if (_schema.Type == SchemaJson.JsonTypes.Null)
+        else if (_schema.Type == SchemaJson.JsonTypes.NULL)
         {
             // wtf is a null type lol
             _output = OperatorValue.OperatorValueType.z_error;
@@ -121,8 +121,8 @@ public static class Helper
 
     public static OperatorValue? GetTarget(string targetIdentifier, PrismOperator prismContainingTarget)
     {
-        (var _deltaJsonName, var _remainder) = RetrieveNextJsonName(targetIdentifier);
-        if (_deltaJsonName == null)
+        (var deltaJsonName, var remainder) = RetrieveNextJsonName(targetIdentifier);
+        if (deltaJsonName == null)
         {
             throw new ArgumentException(
                 string.Format(
@@ -131,10 +131,10 @@ public static class Helper
                 )
             );
         }
-        OperatorValue? deltaOperator = prismContainingTarget.GetOperatorByName(_deltaJsonName);
+        OperatorValue? deltaOperator = prismContainingTarget.GetOperatorByName(deltaJsonName);
         if (deltaOperator != null)
         {
-            while (_deltaJsonName != null && _remainder.Length != 0)
+            while (deltaJsonName != null && remainder.Length != 0)
             {
                 if (deltaOperator is not PrismOperator)
                 {
@@ -145,8 +145,8 @@ public static class Helper
                         )
                     );
                 }
-                deltaOperator = ((PrismOperator)deltaOperator).GetOperatorByName(_deltaJsonName);
-                (_deltaJsonName, _remainder) = RetrieveNextJsonName(_remainder);
+                deltaOperator = ((PrismOperator)deltaOperator).GetOperatorByName(deltaJsonName);
+                (deltaJsonName, remainder) = RetrieveNextJsonName(remainder);
             }
         }
 
@@ -156,24 +156,24 @@ public static class Helper
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="input">Json parameter name, such as "object"."string"</param>
+    /// <param name="_input">Json parameter name, such as "object"."string"</param>
     /// <returns>
     /// First tuple: The first matching json name or null if there are none.
     /// Second tuple: The remainder of the string, or empty if there is nothing else left.
     /// </returns>
-    public static (string?, string) RetrieveNextJsonName(string input)
+    public static (string?, string) RetrieveNextJsonName(string _input)
     {
-        MatchCollection matches = Regex.Matches(input, JSON_NAME_PATTERN);
+        MatchCollection matches = Regex.Matches(_input, JSON_NAME_PATTERN);
 
         foreach (Match match in matches)
         {
             if (match.Success)
             {
-                return (match.Groups[1].Value, input.Substring(match.Groups[0].Value.Length));
+                return (match.Groups[1].Value, _input.Substring(match.Groups[0].Value.Length));
             }
         }
 
-        return (null, input);
+        return (null, _input);
     }
 
     /// <summary>
@@ -183,11 +183,11 @@ public static class Helper
     /// <param name="_payload">Payload of data.</param>
     public static void MapDataPerSchema(Dictionary<string, OperatorValue> _prismData, JsonElement _payload)
     {
-        foreach (KeyValuePair<string, OperatorValue> _deltaKeyValue in _prismData)
+        foreach (KeyValuePair<string, OperatorValue> deltaKeyValue in _prismData)
         {
-            JsonElement _childElement = _payload.GetProperty(_deltaKeyValue.Key);
+            JsonElement childElement = _payload.GetProperty(deltaKeyValue.Key);
 
-            MapPropertyPerSchema(_deltaKeyValue.Value, _childElement);
+            MapPropertyPerSchema(deltaKeyValue.Value, childElement);
         }
     }
 
@@ -320,29 +320,25 @@ public static class Helper
             //// special types
             //
             case OperatorValue.OperatorValueType.Array:
-                List<OperatorValue> _arrayData = [];
-                OperatorValue.OperatorValueType _arrayType = ((ArrayOperator)_data).ArrayType;
-                foreach (var _deltaArrayElement in _element.EnumerateArray())
+                List<OperatorValue> arrayData = [];
+                OperatorValue.OperatorValueType arrayType = ((ArrayOperator)_data).ArrayType;
+                foreach (var deltaArrayElement in _element.EnumerateArray())
                 {
                     // create blank ov
-                    var _deltaData = OperatorValue.CreateByType(_arrayType);
-                    if (_deltaData == null)
-                    {
-                        throw new Exception("Null operator value returned, array type must be bad.");
-                    }
+                    var deltaData = OperatorValue.CreateByType(arrayType) ?? throw new Exception("Null operator value returned, array type must be bad.");
 
                     // fill with data
-                    MapPropertyPerSchema(_deltaData, _deltaArrayElement);
+                    MapPropertyPerSchema(deltaData, deltaArrayElement);
 
                     // add to list
-                    _arrayData.Add(_deltaData);
+                    arrayData.Add(deltaData);
                 }
-                _data.SetValue(new ArrayOperator(_arrayType, _arrayData));
+                _data.SetValue(new ArrayOperator(arrayType, arrayData));
 
                 break;
             //
             case OperatorValue.OperatorValueType.Prism:
-                MapDataPerSchema(((PrismOperator)_data).GetValue(), _element);
+                MapDataPerSchema(((PrismOperator)_data).GetValue() ?? throw new Exception("Null operator value returned, prism must be corrupt."), _element);
                 break;
             //
             default:
@@ -364,45 +360,45 @@ public static class Helper
             return "null";
         }
 
-        StringBuilder _output = new StringBuilder();
+        StringBuilder output = new StringBuilder();
 
-        _output.Append('{');
+        output.Append('{');
 
         if (_keyValuePairs.Count != 0)
         {
-            foreach (KeyValuePair<string, OperatorValue> _deltaKeyValuePair in _keyValuePairs)
+            foreach (KeyValuePair<string, OperatorValue> deltaKeyValuePair in _keyValuePairs)
             {
-                _output.Append(
+                output.Append(
                     string.Format(
                         "\"{0}\":",
-                        _deltaKeyValuePair.Key
+                        deltaKeyValuePair.Key
                     )
                 );
 
-                switch (_deltaKeyValuePair.Value.Type)
+                switch (deltaKeyValuePair.Value.Type)
                 {
                     case OperatorValue.OperatorValueType.Prism:
-                        _output.Append(
-                            ConvertPrismOperatorToJsonString(((PrismOperator)_deltaKeyValuePair.Value).GetValue())
+                        output.Append(
+                            ConvertPrismOperatorToJsonString(((PrismOperator)deltaKeyValuePair.Value).GetValue())
                         );
                         break;
 
                     default:
-                        _output.Append(
-                            _deltaKeyValuePair.Value.ToJsonStringValue()
+                        output.Append(
+                            deltaKeyValuePair.Value.ToJsonStringValue()
                         );
                         break;
                 }
-                _output.Append(',');
+                output.Append(',');
             }
 
             // remove the last comma
-            _output.Length -= 1;
+            output.Length -= 1;
         }
 
-        _output.Append('}');
+        output.Append('}');
 
-        return _output.ToString();
+        return output.ToString();
     }
 
     /* this code is now in the array operator code

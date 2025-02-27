@@ -8,25 +8,25 @@ public class MappingContext
 
     protected ulong StepCounter = 0;
 
-    public void Add(Prism data, ulong? step = null)
+    public void Add(Prism _data, ulong? _step = null)
     {
-        if (step == null)
+        if (_step == null)
         {
-            step = Interlocked.Increment(ref StepCounter);
+            _step = Interlocked.Increment(ref StepCounter);
 
             // make sure we increment past any used keys
             while (DataStore.ContainsKey(StepCounter))
             {
-                step = Interlocked.Increment(ref StepCounter);
+                _step = Interlocked.Increment(ref StepCounter);
             }
         }
 
-        DataStore[step.Value] = data;
+        DataStore[_step.Value] = _data;
     }
 
-    public Prism? Get(ulong step)
+    public Prism? Get(ulong _step)
     {
-        return DataStore.TryGetValue(step, out var _dataStore) ? _dataStore : null;
+        return DataStore.TryGetValue(_step, out var dataStore) ? dataStore : null;
     }
 
     public Dictionary<ulong, Prism> GetAll()
