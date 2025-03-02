@@ -52,7 +52,7 @@ public class DoubleUnitsOperator : DoubleOperator
     {
         // this does the nullable checks, etc. for us, on top of retrieving the value
         bool parameterValue = base.InheritableGreaterOrEqual(_parameters);
-        
+
 #nullable disable
         if (_parameters[0] is not DoubleUnitsOperator)
 #nullable enable

@@ -233,5 +233,7 @@ public class Gleam
     }
 
     public static async Task<ScrubbableResult<ApiSecretJson>> RetrieveSecretForOrganizationAsync(string _organizationUrl, string _organizationGroup)
-    { }
+    {
+        throw new NotImplementedException();
+    }
 }

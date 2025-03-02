@@ -129,7 +129,7 @@ public class StringOperator : OperatorValue
     protected string AppendArrayAsString(ArrayOperator _array)
     {
         StringBuilder sb = new StringBuilder();
-        if(_array.NullableValue != null)
+        if (_array.NullableValue != null)
         {
             foreach (OperatorValue deltaValue in _array.NullableValue)
             {

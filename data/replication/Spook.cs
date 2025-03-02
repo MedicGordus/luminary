@@ -41,7 +41,7 @@ public enum SpookTangledState : int
 ///     
 ///     - Top + (0+) Bottom
 ///     
-///     - Top + (0+) TopPeer + (0+) BottomPeer
+///     - Top + (0+) TopPeer + (0+) BottomPeer + (0+) Bottom
 ///     
 ///     Other combinations may temporarily be valid while the Tangle adjusts.
 /// </remarks>
@@ -78,6 +78,8 @@ public enum SpookPrecedence : int
 public class Spook
 {
     protected SpookTangledState CurrentTangledState;
+
+    protected readonly AsyncLock CurrentTangledStateLock;
 
     /// <summary>
     /// What this Spook is configured for (not necessarily what is actual).
@@ -186,6 +188,7 @@ public class Spook
 
         StopSpook = new();
         CurrentTangledState = SpookTangledState.Dim;
+        CurrentTangledStateLock = AsyncLock.Create();
         TopSpookAddress = null;
         OffloadSpookAddress = null;
         HealthyTangleSpooks = [_selfAddress];
@@ -286,42 +289,45 @@ public class Spook
 
             // this is called by a spook that has completed joining
             case "ANNOUNCE":
-                process = Task.Run(() => HandleAnnounceAsync(payload).ConfigureAwait(false));
+                process = Task.Run(() => HandleAnnounceAsync(payload));
                 break;
 
             // distribution of data payload
             case "DATA":
-                HandleData(payload);
+                process = Task.Run(() => HandleDataAsync(payload));
                 break;
 
             // if a single integration fails while the top spook is healthy it
             //  will try to offload that process to another spook.
             case "OFFLOAD":
-                HandleOffload(payload);
+                process = Task.Run(() => HandleOffloadAsync(payload));
                 break;
 
             // heartbeat to let the other spooks know everything is good
             case "HEALTH":
-                await HandleHealthAsync(payload).ConfigureAwait(false);
+                process = Task.Run(() => HandleHealthAsync(payload));
                 break;
 
             // this is called when a spook notices something wrong with the
             //  top spook - or by top spook when going down expectedly
             case "BALLOT":
-                HandleBallot(payload);
+                process = Task.Run(() => HandleBallotAsync(payload));
                 break;
 
             // called when a spook receives ballots from all healthy spooks in
             //  the tangle, on their consensus
             case "TUNE":
-                HandleTune(payload);
+                process = Task.Run(() => HandleTuneAsync(payload));
                 break;
 
             // called when a spook shuts down expectedly
             //  (regardless of it's tangled state)
             case "DIMMING":
-                HandleDimming(payload);
+                process = Task.Run(() => HandleDimmingAsync(payload));
                 break;
+
+            default:
+                return;
         }
 
         using (await MessageProcessingLock.LockAsync().ConfigureAwait(false))
@@ -380,11 +386,6 @@ public class Spook
         }
 
         await UpdatePrecedenceAsync().ConfigureAwait(false);
-    }
-
-    private void HandleData(string _data)
-    {
-        // placeholder
     }
 
     private async Task HandleHealthAsync(string _healthStatusJson)
@@ -521,14 +522,17 @@ public class Spook
             //
 
 
-            // if we knew we were alone already, do nothing
-            if (CurrentTangledState == SpookTangledState.Drifting)
+            // if we are already not entangled we can exit here
+            if (CurrentTangledState != SpookTangledState.Entangled)
             {
                 return;
             }
 
-            CurrentTangledState = SpookTangledState.Drifting;
-            todo("whatever should be done once we are alone");
+            // this call handles the steps to change into drifting mode
+            await UpdateSpookTangleStateAsync(SpookTangledState.Drifting, "Spook is alone and unable to form a quorum.");
+
+            // nothing else to do here
+            return;
         }
         //
         ////
@@ -622,8 +626,6 @@ public class Spook
 
             // Update state
             todo("this is wrong, need a more rigorous mechanism for this lol");
-            CurrentTangledState = HealthyTangleSpooks.Count > 1 ? SpookTangledState.Entangled : SpookTangledState.Alone;
-
             ///////////////////////////////////////////////
 
 
@@ -678,10 +680,180 @@ public class Spook
                     select
                         _item.Value.Status
                     into _itemWithoutDeeperHealth
-                    let _ = _itemWithoutDeeperHealth.TangleHealth = null
+                        let _ = _itemWithoutDeeperHealth.TangleHealth = null
                     select _itemWithoutDeeperHealth
                 )
             ]
         };
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="_state"></param>
+    /// <param name="_verbalReason"></param>
+    /// <returns></returns>
+    /// <remarks>
+    /// possible transitions:
+    ///
+    ///      Successful starting up == Dim -> Snapping
+    ///                Synchronized == Snapping -> Entangled
+    ///
+    ///    Shutting down expectedly == Entangled -> Dim
+    ///
+    ///  Failure within tangle/self == Entangled -> Drifting
+    ///
+    ///                    Recovery == Drifting -> Snapping
+    ///
+    ///    Shut down during failure == Drifting -> Dim
+    ///       Shut down during sync == Snapping -> Dim
+    ///
+    ///           Issue starting up == Dim -> Drifting
+    ///           
+    ///           Issue during sync == Snapping -> Drifting
+    /// 
+    /// Not possible:
+    ///     Dim -> Entangled
+    ///     Dim -> Dim
+    ///     
+    ///     Entangled -> Snapping
+    ///     Entangled -> Entangled
+    ///     
+    ///     Drifting -> Entangled
+    ///     Drifting -> Drifting
+    ///     
+    ///     Snapping -> Snapping
+    ///</remarks>
+    protected async Task UpdateSpookTangleStateAsync(SpookTangledState _state, string _verbalReason)
+    {
+        using(await CurrentTangledStateLock.LockAsync().ConfigureAwait(false))
+        {
+            switch(CurrentTangledState)
+            {
+                // was in a good state
+                case SpookTangledState.Entangled:
+                    switch (_state)
+                    {
+                        // failure within tangle/self
+                        case SpookTangledState.Drifting:
+                            todo();
+
+                            CurrentTangledState = SpookTangledState.Drifting;
+                            return;
+
+                        // expected shut down call
+                        case SpookTangledState.Dim:
+                            todo();
+
+                            CurrentTangledState = SpookTangledState.Dim;
+                            return;
+                    }
+                    break;
+
+                // was offline
+                case SpookTangledState.Dim:
+                    switch (_state)
+                    {
+                        // successful starting up
+                        case SpookTangledState.Snapping:
+                            todo();
+
+                            CurrentTangledState = SpookTangledState.Snapping;
+                            return;
+
+                        // issue starting up
+                        case SpookTangledState.Drifting:
+                            todo();
+
+                            CurrentTangledState = SpookTangledState.Drifting;
+                            return;
+                    }
+                    break;
+
+                // was synchronizing with tangle
+                case SpookTangledState.Snapping:
+                    switch (_state)
+                    {
+                        // synchronized
+                        case SpookTangledState.Entangled:
+                            todo();
+
+                            CurrentTangledState = SpookTangledState.Entangled;
+                            return;
+
+                        // expected shut down call during sync
+                        case SpookTangledState.Dim:
+
+                            CurrentTangledState = SpookTangledState.Dim;
+                            todo();
+                            return;
+
+                        // unexpected issue during sync
+                        case SpookTangledState.Drifting:
+                            todo();
+
+                            CurrentTangledState = SpookTangledState.Drifting;
+                            return;
+                    }
+                    break;
+
+                // was out of sync with tangle
+                case SpookTangledState.Drifting:
+                    switch (_state)
+                    {
+                        // recovering from a failure
+                        case SpookTangledState.Snapping:
+                            todo();
+
+                            CurrentTangledState = SpookTangledState.Snapping;
+                            return;
+
+                        // expected shut down call during failure
+                        case SpookTangledState.Dim:
+                            todo();
+
+                            CurrentTangledState = SpookTangledState.Dim;
+                            return;
+                    }
+                    break;
+            }
+        }
+
+        // at this point, an invalid state change tried to occur            
+        throw new Exception(
+            string.Format(
+                "Invalid state change from {0} -> {1}",
+                CurrentTangledState,
+                _state
+            )
+        );
+    }
+
+    private async Task HandleDataAsync(string _data)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task HandleOffloadAsync(string _payload)
+    {
+        throw new NotImplementedException();
+    }
+    public async Task HandleBallotAsync(string _payload)
+    {
+        throw new NotImplementedException();
+    }
+    public async Task HandleTuneAsync(string _payload)
+    {
+        throw new NotImplementedException();
+    }
+    public async Task HandleDimmingAsync(string _payload)
+    {
+        throw new NotImplementedException();
+    }
+
+
+    protected static void todo(string? _test = null)
+    {
+        Console.WriteLine(_test);
     }
 }

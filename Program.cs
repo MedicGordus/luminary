@@ -2,21 +2,144 @@
 using luminary.mapping;
 using luminary.util;
 
-using System;
-using System.Text.Json;
-using System.Xml.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
+using System;
+using System.CommandLine;
+using System.Text.Json;
+using System.Xml.Linq;
+using System.Net;
 
 
 namespace luminary;
 
 class Program
 {
-    static void Main(string[] args)
+    public static string? Path;
+    public static Task HttpHostTask;
+
+    public static IHost? HttpHost;
+
+
+    static async Task Main(string[] _args)
     {
+        //// handle command arguments
+        //
+        var rootCommand = new RootCommand("Luminary");
+        //
+        var pathOption = new Option<string>(
+            name: "--path",
+            description: "Path to where all files are located"
+        ) { IsRequired = true };
+        rootCommand.AddOption(pathOption);
+        //
+        rootCommand.SetHandler((_path) =>
+        {
+            Path = _path;
+        }, pathOption);
+        //
+        await rootCommand.InvokeAsync(_args);
+        //
+        if(Path == null || !Directory.Exists(Path))
+        {
+            Console.WriteLine("Path null or invalid. Exiting.");
+            return;
+        }
+        //
+        ////
+
+        RunTests();
+
+        //// https listener
+        //
+        var builder = Host.CreateDefaultBuilder()
+            .ConfigureWebHostDefaults(_webBuilder =>
+            {
+                _webBuilder.Configure(_app =>
+                {
+                    _app.UseRouting();
+
+                    _app.UseEndpoints(_endpoints =>
+                    {
+                        _endpoints.MapGet("{*path}", HandleHttpGetAsync);
+                        _endpoints.MapPost("{*path}", HandleHttpPostAsync);
+                    });
+                })
+                .UseUrls("http://localhost:80");
+            });
+        //
+        HttpHost = builder.Build();
+        HttpHostTask = HttpHost.RunAsync();
+        //
+        ////
+        
+
+        // temporary to hold the application open lol
+        await HttpHostTask.ConfigureAwait(false);
+
+        // how to stop host
+        await HttpHost.StopAsync();
+    }
+
+    private static async Task HandleHttpGetAsync(HttpContext _context)
+    {
+        var path = _context.Request.Path.Value?.TrimStart('/') ?? "(empty)";
+        var request = _context.Request;
+        var query = request.Query;
+
+        var responseData = new Dictionary<string, string>
+        {
+            {"path", path},
+            {"message", "Default Message"},
+            {"name", "Unknown"}
+        };
+
+        if (query.TryGetValue("message", out var messageValue))
+        {
+            responseData["message"] = messageValue.ToString();
+        }
+        if (query.TryGetValue("name", out var nameValue))
+        {
+            responseData["name"] = nameValue.ToString();
+        }
+
+        _context.Response.ContentType = "application/json";
+        _context.Response.StatusCode = (int)HttpStatusCode.OK;
+        await _context.Response.WriteAsync(JsonSerializer.Serialize(responseData));
+    }
+    
+    private static async Task HandleHttpPostAsync(HttpContext _context)
+    {
+        var path = _context.Request.Path.Value?.TrimStart('/') ?? "(empty)";
+        var request = _context.Request;
+        var query = request.Query;
+
+        var responseData = new Dictionary<string, string>
+        {
+            {"path", path},
+            {"message", "Default Message"},
+            {"name", "Unknown"}
+        };
+
+        if (query.TryGetValue("message", out var messageValue))
+        {
+            responseData["message"] = messageValue.ToString();
+        }
+        if (query.TryGetValue("name", out var nameValue))
+        {
+            responseData["name"] = nameValue.ToString();
+        }
+
+        _context.Response.ContentType = "application/json";
+        _context.Response.StatusCode = (int)HttpStatusCode.OK;
+        await _context.Response.WriteAsync(JsonSerializer.Serialize(responseData));
+    }
+
+    public static void RunTests()
+    {
+        
         //// test totp
         //
         Console.WriteLine(
@@ -271,59 +394,5 @@ class Program
         ).BuildJsonStringPayload();
         //
         ////
-
-        //// https listener
-        //
-        var _builder = Host.CreateDefaultBuilder(args)
-            .ConfigureWebHostDefaults(webBuilder =>
-            {
-                webBuilder.Configure(app =>
-                {
-                    app.UseRouting();
-
-                    app.UseEndpoints(endpoints =>
-                    {
-                        endpoints.MapGet("{*path}", HandlePathCallAsync);
-
-                    });
-                })
-                .UseUrls("http://localhost:80");
-            });
-        //
-        var _host = _builder.Build();
-        _host.Run();
-        //
-        ////
-    }
-
-    /// <summary>
-    /// Test function to handle https calls
-    /// </summary>
-    /// <param name="context"></param>
-    /// <returns></returns>
-    private static async Task HandlePathCallAsync(HttpContext context)
-    {
-        var _path = context.Request.Path.Value?.TrimStart('/') ?? "(empty)";
-        var _request = context.Request;
-        var _query = _request.Query;
-
-        var _responseData = new Dictionary<string, string>
-        {
-            {"path", _path},
-            {"message", "Default Message"},
-            {"name", "Unknown"}
-        };
-
-        if (_query.TryGetValue("message", out var _messageValue))
-        {
-            _responseData["message"] = _messageValue.ToString();
-        }
-        if (_query.TryGetValue("name", out var _nameValue))
-        {
-            _responseData["name"] = _nameValue.ToString();
-        }
-
-        context.Response.ContentType = "application/json";
-        await context.Response.WriteAsync(JsonSerializer.Serialize(_responseData));
     }
 }
