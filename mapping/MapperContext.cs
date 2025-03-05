@@ -2,7 +2,10 @@ using System.Threading;
 
 namespace luminary.mapping;
 
-public class MappingContext
+/// <summary>
+/// This is used to pass step outputs to future steps.
+/// </summary>
+public class MapperContext
 {
     protected Dictionary<ulong, Prism> DataStore = [];
 

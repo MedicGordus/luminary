@@ -3,17 +3,20 @@ using luminary.mapping.functions;
 
 namespace luminary.mapping;
 
-public class MappingConfig
+/// <summary>
+/// This class holds the mapping configuration for a series of steps.
+/// </summary>
+public class Mapper
 {
-    protected Dictionary<ulong, MappingStepConfig> Steps;
+    protected Dictionary<ulong, MapperStep> Steps;
 
-    public readonly JsonDocument ExpectedInputPrismSchema;
+    public readonly SchemaJson ExpectedInputPrismSchema;
 
-    public MappingConfig(JsonDocument _expectedInputPrismSchema, Dictionary<ulong, MappingStepConfig>? _steps)
+    public Mapper(SchemaJson _expectedInputPrismSchema, Dictionary<ulong, MapperStep>? _steps)
     {
         ExpectedInputPrismSchema = _expectedInputPrismSchema;
 
-        // make sure the steps are zero thru length-1 so later during execution, the steps perform as expected
+        // make sure the steps are one thru length-1 so later during execution, the steps perform as expected
         if (_steps != null && _steps.Count != 0)
         {
             for (ulong delta = 1; delta < (ulong)_steps.Count; delta++)
@@ -38,41 +41,17 @@ public class MappingConfig
         Steps = _steps;
     }
 
-    public Prism Execute(JsonDocument _inputPayload)
-    {
-        //// build empty prism operator from expected input
-        //
-        SchemaJson schema = JsonSerializer.Deserialize<SchemaJson>(ExpectedInputPrismSchema) ?? throw new ArgumentException("Could not parse json element into json schema.");
-        var inputPayloadPrismDictionary = new Dictionary<string, OperatorValue>();
-        Helper.BuildPrismOperatorDictionaryFromJsonSchema(schema, inputPayloadPrismDictionary);
-        //
-        ////
-
-        //// map data from the payload (this way the entire input isn't "wastefully" mapped, only what is defined in the schema)
-        //
-        Helper.MapDataPerSchema(inputPayloadPrismDictionary, _inputPayload.RootElement);
-        //
-        ////
-
-        // at this point, an empty prism dictionary was structured, and then input data was parsed across from the payload
-
-        return Execute(
-            new PrismOperator(inputPayloadPrismDictionary),
-            schema
-        );
-    }
-
-    public Prism Execute(PrismOperator _inputPrismPayload, SchemaJson _inputSchema)
+    public Prism Execute(PrismOperator _inputPrismPayload)
     {
         // build filled prism as it is used as input for each step below
         var outputPrism = new Prism(
             _inputPrismPayload,
-            _inputSchema
+            ExpectedInputPrismSchema
         );
 
         //// progress thru mapping steps, update output each time
         //
-        var context = new MappingContext();
+        var context = new MapperContext();
         ulong stepCounter = 0;
         //
         // add the input into slot 0
@@ -95,5 +74,19 @@ public class MappingConfig
         ////
 
         return outputPrism;
+    }
+
+    /// <summary>
+    /// Obtains the last step's schema and returns it. If there are no steps, returns null.
+    /// </summary>
+    /// <returns></returns>
+    public SchemaJson? GetOutputSchema()
+    {
+        if(Steps.Count == 0)
+        {
+            return null;
+        }
+
+        return Steps[Steps.Keys.Max()].PrismSchema;
     }
 }

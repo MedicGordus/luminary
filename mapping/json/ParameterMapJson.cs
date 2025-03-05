@@ -3,6 +3,9 @@ using System.Text.Json.Serialization;
 
 namespace luminary.mapping;
 
+/// <summary>
+/// This class represents a single action to take within a mapping step.
+/// </summary>
 public class ParameterMapJson
 {
     /// <summary>

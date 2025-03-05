@@ -1,4 +1,5 @@
-﻿using luminary.mapping.functions;
+﻿using luminary.data.flux;
+using luminary.mapping.functions;
 using luminary.mapping;
 using luminary.util;
 
@@ -11,27 +12,84 @@ using System.CommandLine;
 using System.Text.Json;
 using System.Xml.Linq;
 using System.Net;
+using System.Runtime.InteropServices;
 
 
 namespace luminary;
 
 class Program
 {
+    /// <summary>
+    /// The root path passed into the Main() arguments.
+    /// </summary>
     public static string? Path;
-    public static Task HttpHostTask;
 
+    /// <summary>
+    /// This holds reference to the host task which is running parallel.
+    /// </summary>
+    public static Task? HttpHostTask;
+
+    /// <summary>
+    /// This holds reference to the http host listener for flux.
+    /// </summary>
     public static IHost? HttpHost;
 
+    /// <summary>
+    /// This is cancelled when the app receives the command to shutdown.
+    /// </summary>
+    public static CancellationTokenSource ShutdownCts = new();
 
+    /// <summary>
+    /// This task is waiting on a parallel thread, waiting to process everything that needs to be shutdown before the app exits.
+    /// </summary>
+    public static Task? HandleShutdownTask;
+
+    /// <summary>
+    /// Program entry point.
+    /// </summary>
+    /// <param name="_args">Arguments passed into the app</param>
     static async Task Main(string[] _args)
     {
+        //// app shutdown logic
+        //
+        HandleShutdownTask = Task.Run(HandleShutdownAsync);
+        //
+        // Handle Ctrl+C (all platforms)
+        Console.CancelKeyPress += (_sender, _e) =>
+        {
+            Console.WriteLine("Ctrl+C detected. Shutting down...");
+            ShutdownCts.Cancel();
+            _e.Cancel = true; // Prevent immediate termination
+        };
+        //
+        // Handle SIGTERM (Linux/macOS)
+        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux) || RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+        {
+            PosixSignalRegistration.Create(PosixSignal.SIGTERM, _context =>
+            {
+                Console.WriteLine("Received SIGTERM. Shutting down...");
+                ShutdownCts.Cancel();
+            });
+        }
+        //
+        // Handle process exit (all platforms, but limited time on Windows)
+        AppDomain.CurrentDomain.ProcessExit += (_sender, _e) =>
+        {
+            Console.WriteLine("Process exiting. Quick cleanup...");
+
+            // Note: Limited time here (default ~2-3 seconds on Windows)
+            ShutdownCts.Cancel();
+        };
+        //
+        ////
+
         //// handle command arguments
         //
         var rootCommand = new RootCommand("Luminary");
         //
         var pathOption = new Option<string>(
             name: "--path",
-            description: "Path to where all files are located"
+            description: "Path to where core configuration files are located."
         ) { IsRequired = true };
         rootCommand.AddOption(pathOption);
         //
@@ -40,101 +98,133 @@ class Program
             Path = _path;
         }, pathOption);
         //
-        await rootCommand.InvokeAsync(_args);
+        await rootCommand.InvokeAsync(_args).ConfigureAwait(false);
         //
         if(Path == null || !Directory.Exists(Path))
         {
-            Console.WriteLine("Path null or invalid. Exiting.");
+            Console.WriteLine("Path null or invalid.");
+            Console.WriteLine("Because of the path issue: Exiting...");
+
+            await FinalShutdownAsync().ConfigureAwait(false);
+
+            return;
+        }
+        //
+        ////
+        
+        //// load config
+        //
+        Panicable configResult = await AppConfig.LoadConfigAsync(Path).ConfigureAwait(false);
+        //
+        if(configResult.Paniced)
+        {
+            Console.WriteLine($"Issue occured during config load, here is the exception message: {configResult.GetException().Message}");
+            Console.WriteLine("Because of the config load issue: Exiting...");
+
+            await FinalShutdownAsync().ConfigureAwait(false);
+
+            return;
+        }
+        else if(AppConfig.ListenAddress == null)
+        {
+            Console.WriteLine($"Config loaded null listen address ('listen-address')");
+            Console.WriteLine("Because of the config load issue: Exiting...");
+
+            await FinalShutdownAsync().ConfigureAwait(false);
+
+            return;
+        }
+        else if(AppConfig.DeploymentConfigurationPath == null || !Directory.Exists(AppConfig.DeploymentConfigurationPath))
+        {
+            Console.WriteLine($"Config loaded null deployment configuration path ('deployment-configuration-path') or path '{AppConfig.DeploymentConfigurationPath}' doesn't exist.");
+            Console.WriteLine("Because of the config load issue: Exiting...");
+
+            await FinalShutdownAsync().ConfigureAwait(false);
+
             return;
         }
         //
         ////
 
+        // temporary tests
         RunTests();
 
         //// https listener
         //
-        var builder = Host.CreateDefaultBuilder()
-            .ConfigureWebHostDefaults(_webBuilder =>
-            {
-                _webBuilder.Configure(_app =>
-                {
-                    _app.UseRouting();
+        Panicable<IHost> panicableResult = Listener.StartHost(AppConfig.ListenAddress);
+        if(panicableResult.Paniced)
+        {
+            Console.WriteLine($"Issue occured during flux host listener, here is the exception message: {configResult.GetException().Message}");
+            Console.WriteLine("Because of the flux host listener issue: Exiting...");
 
-                    _app.UseEndpoints(_endpoints =>
-                    {
-                        _endpoints.MapGet("{*path}", HandleHttpGetAsync);
-                        _endpoints.MapPost("{*path}", HandleHttpPostAsync);
-                    });
-                })
-                .UseUrls("http://localhost:80");
-            });
-        //
-        HttpHost = builder.Build();
-        HttpHostTask = HttpHost.RunAsync();
-        //
-        ////
-        
+            await FinalShutdownAsync().ConfigureAwait(false);
 
+            return;
+        }
+        //
+        HttpHost = panicableResult.ReturnValue;
+        if(HttpHost == null)
+        {
+            Console.WriteLine($"Flux host listener is unexpectedly null.");
+            Console.WriteLine("Because of the flux host listener issue: Exiting...");
+
+            await FinalShutdownAsync().ConfigureAwait(false);
+
+            return;
+        }
+        HttpHostTask = Task.Run(() => HttpHost.RunAsync());
+        //
         // temporary to hold the application open lol
         await HttpHostTask.ConfigureAwait(false);
+        //
+        ////
 
-        // how to stop host
-        await HttpHost.StopAsync();
+        // make sure everything shuts down before exiting
+        await FinalShutdownAsync().ConfigureAwait(false);
     }
 
-    private static async Task HandleHttpGetAsync(HttpContext _context)
+    /// <summary>
+    /// This ensures that the cancel is called and then returns the task to be awaited for shutdown.
+    /// </summary>
+    /// <remarks>
+    /// This may seem overly complex, but it makes sure that any amount of calls will be safely awaitable.
+    /// </remarks>
+    private static Task FinalShutdownAsync()
     {
-        var path = _context.Request.Path.Value?.TrimStart('/') ?? "(empty)";
-        var request = _context.Request;
-        var query = request.Query;
+        // forces a cancel (could already be cancelled)
+        ShutdownCts.Cancel();
 
-        var responseData = new Dictionary<string, string>
+        if(HandleShutdownTask != null)
         {
-            {"path", path},
-            {"message", "Default Message"},
-            {"name", "Unknown"}
-        };
-
-        if (query.TryGetValue("message", out var messageValue))
-        {
-            responseData["message"] = messageValue.ToString();
-        }
-        if (query.TryGetValue("name", out var nameValue))
-        {
-            responseData["name"] = nameValue.ToString();
+            // ensure everything shuts down ok
+            return HandleShutdownTask;
         }
 
-        _context.Response.ContentType = "application/json";
-        _context.Response.StatusCode = (int)HttpStatusCode.OK;
-        await _context.Response.WriteAsync(JsonSerializer.Serialize(responseData));
+        return Task.CompletedTask;
     }
-    
-    private static async Task HandleHttpPostAsync(HttpContext _context)
+
+    /// <summary>
+    /// This runs on a parallel thread, waiting for the shutdown signal.
+    /// 
+    /// Once the signal is received, all shutdown calls are made to internal processes.
+    /// </summary>
+    private static async Task HandleShutdownAsync()
     {
-        var path = _context.Request.Path.Value?.TrimStart('/') ?? "(empty)";
-        var request = _context.Request;
-        var query = request.Query;
-
-        var responseData = new Dictionary<string, string>
+        try
         {
-            {"path", path},
-            {"message", "Default Message"},
-            {"name", "Unknown"}
-        };
-
-        if (query.TryGetValue("message", out var messageValue))
-        {
-            responseData["message"] = messageValue.ToString();
+            // -1 = wait forever, so we basically are just waitinf for the cancellation token to fire
+            await Task.Delay(-1, ShutdownCts.Token).ConfigureAwait(false);
         }
-        if (query.TryGetValue("name", out var nameValue))
+        catch (OperationCanceledException)
         {
-            responseData["name"] = nameValue.ToString();
-        }
+            // stop host
+            if(HttpHost != null)
+            {
+                await HttpHost.StopAsync().ConfigureAwait(false);
+            }
 
-        _context.Response.ContentType = "application/json";
-        _context.Response.StatusCode = (int)HttpStatusCode.OK;
-        await _context.Response.WriteAsync(JsonSerializer.Serialize(responseData));
+            // stop everything else
+        }
     }
 
     public static void RunTests()
@@ -156,7 +246,7 @@ class Program
 
         //// test mapper usage
         //
-        string _jsonTest = """
+        string jsonTest = """
         {
             "input-prism-schema":"{
                 \"type\":\"object\",
@@ -249,41 +339,47 @@ class Program
             }
         }
         """;
-        _jsonTest = _jsonTest.Replace("\r\n", "");
-        var _config = MappingConfigJson.Build((MappingConfigJson)JsonSerializer.Deserialize<MappingConfigJson>(_jsonTest));
-        //
-        string? _resultingTestPayload = _config.Execute(
+        jsonTest = jsonTest.Replace("\r\n", "");
+        var config = MapperJson.Build(((MapperJson?)JsonSerializer.Deserialize<MapperJson>(jsonTest)) ?? throw new Exception());
+        var prismOperator = Helper.BuildPrismFromJsonDocument(
             JsonDocument.Parse(
                 "{" +
                     "\"Test\":\"this is a test string that is 78 characters which should result in 78 + 2 = 80\"" +
                 //          0        1         2         3         4         5         6         7         8
                 //          0        0         0         0         0         0         0         0         0
                 "}"
-            )
-        ).BuildJsonStringPayload();
+            ),
+            config.ExpectedInputPrismSchema
+        );
+        //
+        string? resultingTestPayload = config.Execute(prismOperator).BuildJsonStringPayload();
         //
         ////
 
         //// test2 mapper usage
         //
-        var _config2 = new MappingConfig(
+        SchemaJson schema2 = JsonSerializer.Deserialize<SchemaJson>(
             JsonDocument.Parse(
+                "{" +
+                    "\"type\":\"object\"," +
+                    "\"properties\":" +
                     "{" +
-                        "\"type\":\"object\"," +
-                        "\"properties\":" +
+                        "\"Test\":" +
                         "{" +
-                            "\"Test\":" +
-                            "{" +
-                                "\"type\":\"string\"" +
-                            "}" +
+                            "\"type\":\"string\"" +
                         "}" +
-                    "}"
-                ),
-                new Dictionary<ulong, MappingStepConfig> {
+                    "}" +
+                "}"
+            )
+        ) ?? throw new Exception();
+        //
+        var config2 = new Mapper(
+                schema2,
+                new Dictionary<ulong, MapperStep> {
                 {
                     1,
-                    new MappingStepConfig(
-                        new MappingStepJson() {
+                    new MapperStep(
+                        new MapperStepJson() {
                             OutputPrismSchema =
                                 "{" +
                                     "\"type\":\"object\"," +
@@ -307,8 +403,8 @@ class Program
                 },
                 {
                     2,
-                    new MappingStepConfig(
-                        new MappingStepJson() {
+                    new MapperStep(
+                        new MapperStepJson() {
                             OutputPrismSchema =
                                 "{" +
                                     "\"type\":\"object\"," +
@@ -332,8 +428,8 @@ class Program
                 },
                 {
                     3,
-                    new MappingStepConfig(
-                        new MappingStepJson() {
+                    new MapperStep(
+                        new MapperStepJson() {
                             OutputPrismSchema =
                                 "{" +
                                     "\"type\":\"object\"," +
@@ -347,7 +443,7 @@ class Program
                                 "}",
                             Step = 3,
                             StepActions = new List<ParameterMapJson> {
-                                new ParameterMapJson() {
+                                new() {
                                     Function = "length('2'.'LengthString')",
                                     OutputParameter = "'Length'"
                                 }
@@ -357,8 +453,8 @@ class Program
                 },
                 {
                     4,
-                    new MappingStepConfig(
-                        new MappingStepJson() {
+                    new MapperStep(
+                        new MapperStepJson() {
                             OutputPrismSchema =
                                 "{" +
                                     "\"type\":\"object\"," +
@@ -372,7 +468,7 @@ class Program
                                 "}",
                             Step = 4,
                             StepActions = new List<ParameterMapJson> {
-                                new ParameterMapJson() {
+                                new() {
                                     Function = "add('1'.'Length','3'.'Length')",
                                     OutputParameter = "'LengthSum'"
                                 }
@@ -383,15 +479,18 @@ class Program
             }
         );
         //
-        string? _resultingPayload = _config2.Execute(
+        prismOperator = Helper.BuildPrismFromJsonDocument(
             JsonDocument.Parse(
                 "{" +
                     "\"Test\":\"this is a test string that is 78 characters which should result in 78 + 2 = 80\"" +
                 //          0        1         2         3         4         5         6         7         8
                 //          0        0         0         0         0         0         0         0         0
                 "}"
-            )
-        ).BuildJsonStringPayload();
+            ),
+            schema2
+        );
+        //
+        string? resultingPayload = config2.Execute(prismOperator).BuildJsonStringPayload();
         //
         ////
     }

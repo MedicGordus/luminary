@@ -5,19 +5,31 @@ using luminary.mapping.functions;
 
 namespace luminary.mapping;
 
-public class MappingStepConfig
+/// <summary>
+/// This class holds the configuration for a single mapping step, intended to be bundled within a MappingConfig.
+/// </summary>
+public class MapperStep
 {
     public const string OPERATOR_VALUE_PREFIX = "ov.";
 
     public ulong Step;
 
+    /// <summary>
+    /// Reference to the output once ProcessMappingActions() is run.
+    /// </summary>
     public PrismOperator OutputData;
 
+    /// <summary>
+    /// All the steps to take during this step.
+    /// </summary>
     public List<ParameterMapJson>? StepActions;
 
+    /// <summary>
+    /// The object structure that is built and filled by this step.
+    /// </summary>
     public readonly SchemaJson? PrismSchema;
 
-    public MappingStepConfig(MappingStepJson _configuration)
+    public MapperStep(MapperStepJson _configuration)
     {
         Step = _configuration.Step;
 
@@ -39,7 +51,7 @@ public class MappingStepConfig
     }
 
     /// <summary>
-    /// 
+    /// This loops thru the mapping actions and applies them to the operators of OutputData (so it's filling OutputData).
     /// </summary>
     /// <param name="_context">All Prisms from previous steps, ulong = step, Prism = the output from that step</param>
     /// <returns></returns>
@@ -72,6 +84,9 @@ public class MappingStepConfig
         return OutputData;
     }
 
+    /// <summary>
+    /// Builds a new operator with the mapping function value (also runs the mapping function to get this value).
+    /// </summary>
     protected static OperatorValue ApplyMappingFunction(OperatorValue.OperatorValueType _type, string _functionToApply, Dictionary<ulong, Prism> _context)
     {
         //// create empty output
@@ -245,11 +260,6 @@ public class MappingStepConfig
     /// <summary>
     /// Loads buffered strings into Operator Values.
     /// </summary>
-    /// <param name="_parameterBuffer"></param>
-    /// <param name="_operatorValueBuffer"></param>
-    /// <param name="_context"></param>
-    /// <returns></returns>
-    /// <exception cref="Exception"></exception>
     protected static List<OperatorValue> ConvertParametersFromBuffer(List<string> _parameterBuffer, Dictionary<string, OperatorValue> _operatorValueBuffer, Dictionary<ulong, Prism> _context)
     {
         // collect the parameters
@@ -305,9 +315,8 @@ public class MappingStepConfig
         var regex = new Regex(pattern, RegexOptions.Compiled);
         var matches = regex.Matches(_input);
 
-        return matches.Cast<Match>()
+        return [.. matches.Cast<Match>()
                 .Select(_m => _m.Groups[0].Value)
-                .Where(_s => _s != "(" & _s != "," & _s != "")
-                .ToArray();
+                .Where(_s => _s != "(" & _s != "," & _s != "")];
     }
 }

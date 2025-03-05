@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 
 namespace luminary.mapping;
 
-public class MappingStepJson
+public class MapperStepJson
 {
     [JsonPropertyName("step")]
     public ulong Step { get; set; }
@@ -15,17 +15,17 @@ public class MappingStepJson
     [JsonPropertyName("step-actions")]
     public List<ParameterMapJson>? StepActions { get; set; }
 
-    public static Dictionary<ulong, MappingStepConfig> Build(Dictionary<ulong, MappingStepJson>? _steps)
+    public static Dictionary<ulong, MapperStep> Build(Dictionary<ulong, MapperStepJson>? _steps)
     {
-        Dictionary<ulong, MappingStepConfig> output = [];
+        Dictionary<ulong, MapperStep> output = [];
 
         if (_steps != null && _steps.Count != 0)
         {
-            foreach (KeyValuePair<ulong, MappingStepJson> deltaJson in _steps)
+            foreach (KeyValuePair<ulong, MapperStepJson> deltaJson in _steps)
             {
                 output.Add(
                     deltaJson.Key,
-                    new MappingStepConfig(deltaJson.Value)
+                    new MapperStep(deltaJson.Value)
                 );
             }
         }
