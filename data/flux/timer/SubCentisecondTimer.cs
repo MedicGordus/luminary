@@ -133,7 +133,7 @@ public class SubCentisecondTimer : FluxTimer
             // Wait using Task.Delay for the bulk of the time, leaving a small buffer
             if (_milliseconds > _buffer)
             {
-                await Task.Delay(_milliseconds - _buffer);
+                await Task.Delay(_milliseconds - _buffer).ConfigureAwait(false);
             }
 
             // Spin-wait for the remaining time to ensure precision
@@ -145,7 +145,7 @@ public class SubCentisecondTimer : FluxTimer
         }
         else
         {
-            await Task.Delay(_milliseconds);
+            await Task.Delay(_milliseconds).ConfigureAwait(false);
         }
 
         stopwatch.Stop();

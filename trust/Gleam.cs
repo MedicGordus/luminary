@@ -84,7 +84,7 @@ public class Gleam
                     Organization? trustedOrganizationMatch = null;
                     //
                     // note that we cannot access TrustedOrganizations without an asynclock:
-                    using (await AuthUpdateLock.LockAsync())
+                    using (await AuthUpdateLock.LockAsync().ConfigureAwait(false))
                     {
                         trustedOrganizationMatch = TrustedOrganizations.FirstOrDefault(_item => _item.BaseUrl == lowercaseUrl);
                     }
@@ -104,10 +104,10 @@ public class Gleam
                     }
 
                     // collect the new information
-                    ScrubbableResult<Organization> org = await BuildOrganizationFromUrlAsync(lowercaseUrl);
+                    ScrubbableResult<Organization> org = await BuildOrganizationFromUrlAsync(lowercaseUrl).ConfigureAwait(false);
                     if (!org.Scrub && org.ReturnValue != null)
                     {
-                        using (await AuthUpdateLock.LockAsync())
+                        using (await AuthUpdateLock.LockAsync().ConfigureAwait(false))
                         {
                             TrustedOrganizations.RemoveAll(
                                 _item => _item.BaseUrl == _update.Url
@@ -132,7 +132,7 @@ public class Gleam
 
             foreach (string deltaUrl in _trustedOrganizationUrls)
             {
-                ScrubbableResult<Organization> org = await BuildOrganizationFromUrlAsync(deltaUrl);
+                ScrubbableResult<Organization> org = await BuildOrganizationFromUrlAsync(deltaUrl).ConfigureAwait(false);
 
                 if (org.Scrub)
                 {
@@ -176,7 +176,7 @@ public class Gleam
                     _url,
                     URL_CREDS_SELF
                 )
-            );
+            ).ConfigureAwait(false);
             //
             if (selfCreds.Scrub)
             {
@@ -200,7 +200,7 @@ public class Gleam
                     _url,
                     URL_CREDS_OPS
                 )
-            );
+            ).ConfigureAwait(false);
             //
             if (opsCreds.Scrub)
             {

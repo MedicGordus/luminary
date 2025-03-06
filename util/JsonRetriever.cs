@@ -13,10 +13,10 @@ public static class JsonRetriever
         try
         {
             // Fetch the JSON string from the URL
-            HttpResponseMessage response = await Client.GetAsync(_url);
+            HttpResponseMessage response = await Client.GetAsync(_url).ConfigureAwait(false);
             response.EnsureSuccessStatusCode(); // Throws an exception for error status codes
 
-            string jsonResponse = await response.Content.ReadAsStringAsync();
+            string jsonResponse = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
 
             // Deserialize the JSON string into an object of type T
             output.ReturnValue = JsonSerializer.Deserialize<T>(jsonResponse);

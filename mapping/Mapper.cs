@@ -17,6 +17,9 @@ public class Mapper
         ExpectedInputPrismSchema = _expectedInputPrismSchema;
 
         // make sure the steps are one thru length-1 so later during execution, the steps perform as expected
+        //
+        //  Note that the step 0 is considered the mapper input
+        //
         if (_steps != null && _steps.Count != 0)
         {
             for (ulong delta = 1; delta < (ulong)_steps.Count; delta++)
@@ -79,7 +82,7 @@ public class Mapper
     /// <summary>
     /// Obtains the last step's schema and returns it. If there are no steps, returns null.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>The last step's schema (or null if there are no steps).</returns>
     public SchemaJson? GetOutputSchema()
     {
         if(Steps.Count == 0)

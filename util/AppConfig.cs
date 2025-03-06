@@ -18,7 +18,7 @@ public static class AppConfig
         try
         {
             string filePath = Path.Combine(_basePath, PATH_CONFIG);
-            string jsonFileContents = await File.ReadAllTextAsync(filePath);
+            string jsonFileContents = await File.ReadAllTextAsync(filePath).ConfigureAwait(false);
 
             AppConfigJson? json = JsonSerializer.Deserialize<AppConfigJson>(jsonFileContents);
 
