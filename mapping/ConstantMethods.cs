@@ -26,9 +26,6 @@ public static class ConstantMethods
         public const string DECIMAL_UNITS = "decimalunits";
         public const string BOOLEAN = "boolean";
         #endregion
-
-        #region "custom methods"
-        #endregion
     }
 
     public static Dictionary<string, Func<string[], OperatorValue>> MethodCall = new()

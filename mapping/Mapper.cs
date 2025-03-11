@@ -44,7 +44,7 @@ public class Mapper
         Steps = _steps;
     }
 
-    public Prism Execute(PrismOperator _inputPrismPayload)
+    public Prism Execute(MappingFlow _rootFlow, PrismOperator _inputPrismPayload)
     {
         // build filled prism as it is used as input for each step below
         var outputPrism = new Prism(
@@ -54,7 +54,7 @@ public class Mapper
 
         //// progress thru mapping steps, update output each time
         //
-        var context = new MapperContext();
+        var context = new MapperContext(_rootFlow);
         ulong stepCounter = 0;
         //
         // add the input into slot 0
@@ -67,10 +67,10 @@ public class Mapper
         while (Steps.TryGetValue(stepCounter, out var deltaStep))
         {
             outputPrism = new Prism(
-                deltaStep.ProcessMappingActions(context.GetAll()),
+                deltaStep.ProcessMappingActions(context),
                 deltaStep.PrismSchema
             );
-            context.Add(outputPrism);
+            context.Add(outputPrism, stepCounter);
             stepCounter += 1;
         }
         //

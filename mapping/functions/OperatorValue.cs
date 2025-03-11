@@ -83,55 +83,73 @@ public abstract class OperatorValue
     };
 
     public static readonly List<string> MethodNameList =
-        [
-            MethodNames.Filled,
-            MethodNames.BooleanNot,
-            MethodNames.BooleanAnd,
-            MethodNames.BooleanOr,
-            MethodNames.ValueEqual,
-            MethodNames.GreatherThan,
-            MethodNames.LessThan,
-            MethodNames.NotEqual,
-            MethodNames.GreaterOrEqual,
-            MethodNames.LessOrEqual,
-            MethodNames.IfNotFilled,
-            MethodNames.Trim,
-            MethodNames.Substring,
-            MethodNames.Length,
-            MethodNames.ToUpper,
-            MethodNames.ToLower,
-            MethodNames.Concatenate,
-            MethodNames.Join,
-            MethodNames.Split,
-            MethodNames.EqualsIgnoreCase,
-            MethodNames.ConvertToString,
-            MethodNames.ConvertToInteger,
-            MethodNames.ConvertToBigInteger,
-            MethodNames.ConvertToDouble,
-            MethodNames.ConvertToDecimal,
-            MethodNames.ConvertToIntegerUnits,
-            MethodNames.ConvertToBigIntegerUnits,
-            MethodNames.ConvertToDoubleUnits,
-            MethodNames.ConvertToDecimalUnits,
-            MethodNames.MathCeiling,
-            MethodNames.MathFloor,
-            MethodNames.MathRound,
-            MethodNames.MathAverage,
-            MethodNames.MathPower,
-            MethodNames.MathAdd,
-            MethodNames.MathSubtract,
-            MethodNames.MathMultiply,
-            MethodNames.MathDivide,
-            MethodNames.BitwiseLeftShift,
-            MethodNames.BitwiseRightShift,
-            MethodNames.BitwiseXor,
-            MethodNames.BitwiseMod,
-            MethodNames.IndexOf,
-            MethodNames.Replace,
-            MethodNames.StartsWith,
-            MethodNames.EndsWith,
-            MethodNames.Includes
-        ];
+    [
+        // these are functions
+        MethodNames.Filled,
+        MethodNames.BooleanNot,
+        MethodNames.BooleanAnd,
+        MethodNames.BooleanOr,
+        MethodNames.ValueEqual,
+        MethodNames.GreatherThan,
+        MethodNames.LessThan,
+        MethodNames.NotEqual,
+        MethodNames.GreaterOrEqual,
+        MethodNames.LessOrEqual,
+        MethodNames.IfNotFilled,
+        MethodNames.Trim,
+        MethodNames.Substring,
+        MethodNames.Length,
+        MethodNames.ToUpper,
+        MethodNames.ToLower,
+        MethodNames.Concatenate,
+        MethodNames.Join,
+        MethodNames.Split,
+        MethodNames.EqualsIgnoreCase,
+        MethodNames.ConvertToString,
+        MethodNames.ConvertToInteger,
+        MethodNames.ConvertToBigInteger,
+        MethodNames.ConvertToDouble,
+        MethodNames.ConvertToDecimal,
+        MethodNames.ConvertToIntegerUnits,
+        MethodNames.ConvertToBigIntegerUnits,
+        MethodNames.ConvertToDoubleUnits,
+        MethodNames.ConvertToDecimalUnits,
+        MethodNames.MathCeiling,
+        MethodNames.MathFloor,
+        MethodNames.MathRound,
+        MethodNames.MathAverage,
+        MethodNames.MathPower,
+        MethodNames.MathAdd,
+        MethodNames.MathSubtract,
+        MethodNames.MathMultiply,
+        MethodNames.MathDivide,
+        MethodNames.BitwiseLeftShift,
+        MethodNames.BitwiseRightShift,
+        MethodNames.BitwiseXor,
+        MethodNames.BitwiseMod,
+        MethodNames.IndexOf,
+        MethodNames.Replace,
+        MethodNames.StartsWith,
+        MethodNames.EndsWith,
+        MethodNames.Includes,
+
+
+        // these are flows
+        FlowType.GOTO,
+        FlowType.IF,
+        FlowType.WHILE,
+        FlowType.FOR,
+        FlowType.FOR_EACH,
+    ];
+        
+    public static readonly List<string> FlowNameList =
+    [
+        FlowType.GOTO,
+        FlowType.IF,
+        FlowType.WHILE,
+        FlowType.FOR,
+        FlowType.FOR_EACH
+    ];
 
     public readonly struct MethodNames
     {
@@ -184,11 +202,12 @@ public abstract class OperatorValue
         public const string Includes = "includes";
     }
 
+
     private Dictionary<string, Func<OperatorValue[]?, OperatorValue?>> StringMethods;
 
     public OperatorValueType Type;
 
-    protected OperatorValue(OperatorValueType type)
+    protected OperatorValue(OperatorValueType _type)
     {
         StringMethods = new()
         {
@@ -240,120 +259,120 @@ public abstract class OperatorValue
             { MethodNames.EndsWith, EndsWith },
             { MethodNames.Includes, Includes }
         };
-        Type = type;
+        Type = _type;
     }
 
-    public OperatorValue? ExecuteMethod(string methodName, OperatorValue[]? parameters)
+    public OperatorValue? ExecuteMethod(string _methodName, OperatorValue[]? _parameters)
     {
-        if (StringMethods.TryGetValue(methodName.ToLower(), out var _method))
+        if (StringMethods.TryGetValue(_methodName.ToLower(), out var method))
         {
-            return _method(parameters);
+            return method(_parameters);
         }
 
-        throw new ArgumentException("Method not found", nameof(methodName));
+        throw new ArgumentException("Method not found", nameof(_methodName));
     }
 
-    public abstract OperatorValue? Filled(OperatorValue[]? parameters);
+    public abstract OperatorValue? Filled(OperatorValue[]? _parameters);
 
-    public abstract OperatorValue? BooleanNot(OperatorValue[]? parameters);
+    public abstract OperatorValue? BooleanNot(OperatorValue[]? _parameters);
 
-    public abstract OperatorValue? BooleanAnd(OperatorValue[]? parameters);
+    public abstract OperatorValue? BooleanAnd(OperatorValue[]? _parameters);
 
-    public abstract OperatorValue? BooleanOr(OperatorValue[]? parameters);
+    public abstract OperatorValue? BooleanOr(OperatorValue[]? _parameters);
 
-    public abstract OperatorValue? ValueEqual(OperatorValue[]? parameters);
+    public abstract OperatorValue? ValueEqual(OperatorValue[]? _parameters);
 
-    public abstract OperatorValue? GreatherThan(OperatorValue[]? parameters);
+    public abstract OperatorValue? GreatherThan(OperatorValue[]? _parameters);
 
-    public abstract OperatorValue? LessThan(OperatorValue[]? parameters);
+    public abstract OperatorValue? LessThan(OperatorValue[]? _parameters);
 
-    public abstract OperatorValue? NotEqual(OperatorValue[]? parameters);
+    public abstract OperatorValue? NotEqual(OperatorValue[]? _parameters);
 
-    public abstract OperatorValue? GreaterOrEqual(OperatorValue[]? parameters);
+    public abstract OperatorValue? GreaterOrEqual(OperatorValue[]? _parameters);
 
-    public abstract OperatorValue? LessOrEqual(OperatorValue[]? parameters);
+    public abstract OperatorValue? LessOrEqual(OperatorValue[]? _parameters);
 
-    public abstract OperatorValue? IfNotFilled(OperatorValue[]? parameters);
+    public abstract OperatorValue? IfNotFilled(OperatorValue[]? _parameters);
 
-    public abstract OperatorValue? Trim(OperatorValue[]? parameters);
+    public abstract OperatorValue? Trim(OperatorValue[]? _parameters);
 
-    public abstract OperatorValue? Substring(OperatorValue[]? parameters);
+    public abstract OperatorValue? Substring(OperatorValue[]? _parameters);
 
-    public abstract OperatorValue? Length(OperatorValue[]? parameters);
+    public abstract OperatorValue? Length(OperatorValue[]? _parameters);
 
-    public abstract OperatorValue? ToUpper(OperatorValue[]? parameters);
+    public abstract OperatorValue? ToUpper(OperatorValue[]? _parameters);
 
-    public abstract OperatorValue? ToLower(OperatorValue[]? parameters);
+    public abstract OperatorValue? ToLower(OperatorValue[]? _parameters);
 
-    public abstract OperatorValue? Concatenate(OperatorValue[]? parameters);
+    public abstract OperatorValue? Concatenate(OperatorValue[]? _parameters);
 
-    public abstract OperatorValue? Join(OperatorValue[]? parameters);
+    public abstract OperatorValue? Join(OperatorValue[]? _parameters);
 
-    public abstract OperatorValue? Split(OperatorValue[]? parameters);
+    public abstract OperatorValue? Split(OperatorValue[]? _parameters);
 
-    public abstract OperatorValue? EqualsIgnoreCase(OperatorValue[]? parameters);
+    public abstract OperatorValue? EqualsIgnoreCase(OperatorValue[]? _parameters);
 
-    public abstract OperatorValue? ConvertToString(OperatorValue[]? parameters);
+    public abstract OperatorValue? ConvertToString(OperatorValue[]? _parameters);
 
-    public abstract OperatorValue? ConvertToInteger(OperatorValue[]? parameters);
+    public abstract OperatorValue? ConvertToInteger(OperatorValue[]? _parameters);
 
-    public abstract OperatorValue? ConvertToBigInteger(OperatorValue[]? parameters);
+    public abstract OperatorValue? ConvertToBigInteger(OperatorValue[]? _parameters);
 
-    public abstract OperatorValue? ConvertToDouble(OperatorValue[]? parameters);
+    public abstract OperatorValue? ConvertToDouble(OperatorValue[]? _parameters);
 
-    public abstract OperatorValue? ConvertToDecimal(OperatorValue[]? parameters);
+    public abstract OperatorValue? ConvertToDecimal(OperatorValue[]? _parameters);
 
-    public abstract OperatorValue? ConvertToIntegerUnits(OperatorValue[]? parameters);
+    public abstract OperatorValue? ConvertToIntegerUnits(OperatorValue[]? _parameters);
 
-    public abstract OperatorValue? ConvertToBigIntegerUnits(OperatorValue[]? parameters);
+    public abstract OperatorValue? ConvertToBigIntegerUnits(OperatorValue[]? _parameters);
 
-    public abstract OperatorValue? ConvertToDoubleUnits(OperatorValue[]? parameters);
+    public abstract OperatorValue? ConvertToDoubleUnits(OperatorValue[]? _parameters);
 
-    public abstract OperatorValue? ConvertToDecimalUnits(OperatorValue[]? parameters);
+    public abstract OperatorValue? ConvertToDecimalUnits(OperatorValue[]? _parameters);
 
-    public abstract OperatorValue? MathCeiling(OperatorValue[]? parameters);
+    public abstract OperatorValue? MathCeiling(OperatorValue[]? _parameters);
 
-    public abstract OperatorValue? MathFloor(OperatorValue[]? parameters);
+    public abstract OperatorValue? MathFloor(OperatorValue[]? _parameters);
 
-    public abstract OperatorValue? MathRound(OperatorValue[]? parameters);
+    public abstract OperatorValue? MathRound(OperatorValue[]? _parameters);
 
-    public abstract OperatorValue? MathAverage(OperatorValue[]? parameters);
+    public abstract OperatorValue? MathAverage(OperatorValue[]? _parameters);
 
-    public abstract OperatorValue? MathPower(OperatorValue[]? parameters);
+    public abstract OperatorValue? MathPower(OperatorValue[]? _parameters);
 
-    public abstract OperatorValue? MathAdd(OperatorValue[]? parameters);
+    public abstract OperatorValue? MathAdd(OperatorValue[]? _parameters);
 
-    public abstract OperatorValue? MathSubtract(OperatorValue[]? parameters);
+    public abstract OperatorValue? MathSubtract(OperatorValue[]? _parameters);
 
-    public abstract OperatorValue? MathMultiply(OperatorValue[]? parameters);
+    public abstract OperatorValue? MathMultiply(OperatorValue[]? _parameters);
 
-    public abstract OperatorValue? MathDivide(OperatorValue[]? parameters);
+    public abstract OperatorValue? MathDivide(OperatorValue[]? _parameters);
 
-    public abstract OperatorValue? BitwiseLeftShift(OperatorValue[]? parameters);
+    public abstract OperatorValue? BitwiseLeftShift(OperatorValue[]? _parameters);
 
-    public abstract OperatorValue? BitwiseRightShift(OperatorValue[]? parameters);
+    public abstract OperatorValue? BitwiseRightShift(OperatorValue[]? _parameters);
 
-    public abstract OperatorValue? BitwiseXor(OperatorValue[]? parameters);
+    public abstract OperatorValue? BitwiseXor(OperatorValue[]? _parameters);
 
-    public abstract OperatorValue? BitwiseMod(OperatorValue[]? parameters);
+    public abstract OperatorValue? BitwiseMod(OperatorValue[]? _parameters);
 
-    public abstract OperatorValue? IndexOf(OperatorValue[]? parameters);
+    public abstract OperatorValue? IndexOf(OperatorValue[]? _parameters);
 
-    public abstract OperatorValue? Replace(OperatorValue[]? parameters);
+    public abstract OperatorValue? Replace(OperatorValue[]? _parameters);
 
-    public abstract OperatorValue? StartsWith(OperatorValue[]? parameters);
+    public abstract OperatorValue? StartsWith(OperatorValue[]? _parameters);
 
-    public abstract OperatorValue? EndsWith(OperatorValue[]? parameters);
+    public abstract OperatorValue? EndsWith(OperatorValue[]? _parameters);
 
-    public abstract OperatorValue? Includes(OperatorValue[]? parameters);
+    public abstract OperatorValue? Includes(OperatorValue[]? _parameters);
 
     public abstract string ToStringValue();
     public abstract string ToJsonStringValue();
     public abstract void SetValue(OperatorValue _source);
 
-    public static OperatorValue? CreateByType(OperatorValueType type)
+    public static OperatorValue? CreateByType(OperatorValueType _type)
     {
-        return type switch
+        return _type switch
         {
             OperatorValueType.String => new StringOperator(default),
             OperatorValueType.Integer => new IntegerOperator(default),

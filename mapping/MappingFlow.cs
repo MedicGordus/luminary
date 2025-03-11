@@ -1,3 +1,5 @@
+using luminary.mapping.functions;
+
 namespace luminary.mapping;
 
 public struct FlowType
@@ -5,9 +7,9 @@ public struct FlowType
     /// <summary>
     /// goto( <a> )
     /// 
-    /// a == mapper index to goto
+    /// a == mapper id to goto
     /// 
-    /// Nothing special, go to mapper at this index.
+    /// Nothing special, go to mapper with this id.
     /// </summary>
     public const string GOTO = "goto";
 
@@ -15,8 +17,8 @@ public struct FlowType
     /// If( <a> , <b> , <c> )
     /// 
     /// a ==  <input property name>
-    /// b == mapper index to goto if a == true
-    /// c == mapper index to goto if a == false
+    /// b == mapper id to process if a == true
+    /// c == mapper id to process if a == false
     /// 
     /// If a == true, b will be executed, otherwise c.
     /// </summary>
@@ -26,9 +28,9 @@ public struct FlowType
     /// while( <a> , <b> )
     /// 
     /// a == <input property name>
-    /// b == mapper index to goto while a == true
+    /// b == mapper id to goto while a == true
     /// 
-    /// Continually calls b while a is true.
+    /// Continually processes mapper with id b while a is true.
     /// </summary>
     public const string WHILE = "while";
 
@@ -38,8 +40,9 @@ public struct FlowType
     /// a ==  <input property name>
     /// b == ulong start
     /// c == ulong end
+    /// d == mapper id to goto while a == true
     /// 
-    /// Loops from b thru c using a as the iterator.
+    /// Loops from b thru c using a as the iterator, processing d each time.
     /// </summary>
     public const string FOR = "for";
 
@@ -48,154 +51,276 @@ public struct FlowType
     /// 
     /// a == <input property name that is an array>
     /// b == <array type>
-    /// c == mapper index to call for each element of a 
+    /// c == iterator
+    /// d == mapper id to process for each element of an array
     /// 
-    /// Calls c while looping thru a, array holding type b.
+    /// Calls d while looping thru a, array holding type b. Uses c as the iterator.
     /// </summary>
     public const string FOR_EACH = "foreach";
 }
 
 public class MappingFlow
 {
-    public static readonly Dictionary<string, Func<Mapper, Mapper>> Flows = new() {
-        { FlowType.GOTO , },
-        { FlowType.IF , },
-        { FlowType.WHILE , },
-        { FlowType.FOR , },
-        { FlowType.FOR_EACH , },
-    };
+    /// <summary>
+    /// The flows to run, in the order they are to be run.
+    /// </summary>
+    public List<MappingFlowCallJson> Flows;
 
-    public Dictionary<ulong, Mapper> MappersByIndex;
+    /// <summary>
+    /// This holds all the mappers by id, accessed by flows.
+    /// </summary>
+    public Dictionary<string, Mapper> MappersById;
 
-    public MappingFlow(Dictionary<ulong, Mapper> _mappersByIndex)
+    /// <summary>
+    /// The root mapping flow, or if null, we are the root
+    /// </summary>
+    protected readonly MappingFlow RootFlow;
+
+    public MappingFlow(List<MappingFlowCallJson> _flows, Dictionary<string, Mapper> _mappersById, MappingFlow? _rootFlow)
     {
-        MappersByIndex = _mappersByIndex;
+        Flows = _flows;
+        MappersById = _mappersById;
+        RootFlow = _rootFlow ?? this;
     }
 
-    public Prism ExecuteIf()
-    {}
-
-    public void ExecuteWhile()
-    {}
-
-    public void ExecuteForLoop()
-    {}
-
-    public void ExecuteForEachLoop()
-    {}
-}
-
-// everything below is from grok for ideas
-
-public class HttpDataClient
-{
-    private readonly HttpClient HttpClient;
-    
-    public HttpDataClient(HttpClient _httpClient)
+    /// <summary>
+    /// Overload for single function calls (intended for mapper step calls).
+    /// </summary>
+    public MappingFlow(string _functionName, List<string> _parameters, Dictionary<string, Mapper> _mappersById, MappingFlow? _rootFlow) : this (
+        [
+            new() {
+                Function = _functionName,
+                Parameters = _parameters
+            }
+        ],
+        _mappersById,
+        _rootFlow
+    )
     {
-        HttpClient = _httpClient;
     }
 
-    public async Task<Mapper> FetchDataAsync(Mapper _input)
+    public Prism? Process()
     {
-        var request = new HttpRequestMessage(HttpMethod.Get, "your-endpoint");
-        
-        // Configure request based on input
-        foreach (var prop in _input.Properties)
+        Prism? recursivePrism = null;
+
+        foreach(var deltaFlow in Flows)
         {
-            request.Headers.TryAddWithoutValidation(prop.Key, prop.Value);
+            if(recursivePrism == null)
+            {
+                throw new Exception("Something when wrong when processing flow, the recursive prism was unexpectedly null.");
+            }
+            if(deltaFlow?.Parameters == null)
+            {
+                throw new Exception("Something when wrong when processing flow, the flow or it's parameters was unexpectedly null.");
+            }
+
+            recursivePrism = deltaFlow.Function switch {
+                FlowType.GOTO => ExecuteGoTo(recursivePrism, deltaFlow.Parameters),
+                FlowType.IF => ExecuteIf(recursivePrism, deltaFlow.Parameters),
+                FlowType.WHILE => ExecuteWhile(recursivePrism, deltaFlow.Parameters),
+                FlowType.FOR => ExecuteForLoop(recursivePrism, deltaFlow.Parameters),
+                FlowType.FOR_EACH => ExecuteForEachLoop(recursivePrism, deltaFlow.Parameters),
+                _ => null
+            };
         }
 
-        var response = await HttpClient.SendAsync(request);
-        var content = await response.Content.ReadAsStringAsync();
-        
-        // Transform response into CustomObject
-        return new Mapper
+        return recursivePrism;
+    }
+
+    protected Prism ExecuteGoTo(Prism _input, List<string> _parameters)
+    {
+        if(_parameters.Count != 1)
         {
-            Properties = new Dictionary<string, string>
+            throw new ArgumentException($"Cannot execute goto, parameter count should have been 1 but was {_parameters.Count}.");
+        }
+
+        if(MappersById.TryGetValue(_parameters[0], out Mapper? mapper))
+        {
+            return mapper.Execute(RootFlow, _input.Payload);
+        }
+        else
+        {
+            throw new ArgumentException($"Could not find mapper with id of '{_parameters[0]}'.");
+        }
+    }
+
+    protected Prism ExecuteIf(Prism _input, List<string> _parameters)
+    {
+        if(_parameters.Count != 3)
+        {
+            throw new ArgumentException($"Cannot execute if, parameter count should have been 3 but was {_parameters.Count}.");
+        }
+
+        // get the target operator that we are supposed to check
+        OperatorValue? boolToCheck = Helper.GetTarget(
+            _parameters[0],
+            _input.Payload
+        ) ?? throw new ArgumentException($"Could not find bool with id of '{_parameters[0]}'.");
+
+        if(boolToCheck is BooleanOperator booleanOperator)
+        {
+            bool boolValue = booleanOperator.GetValue() ?? throw new ArgumentException($"Boolean with id of '{_parameters[0]}' was unexpectedly null.");
+            if(boolValue)
             {
-                { "Response", content }
-                // Add more properties as needed
+                // for true, process mapper id specified in 1
+                if(MappersById.TryGetValue(_parameters[1], out Mapper? mapper))
+                {
+                    return mapper.Execute(RootFlow, _input.Payload);
+                }
+                else
+                {
+                    throw new ArgumentException($"Could not find mapper with id of '{_parameters[1]}'.");
+                }
             }
+            else
+            {
+                // for false, process mapper id specified in 2
+                if(MappersById.TryGetValue(_parameters[2], out Mapper? mapper))
+                {
+                    return mapper.Execute(RootFlow, _input.Payload);
+                }
+                else
+                {
+                    throw new ArgumentException($"Could not find mapper with id of '{_parameters[2]}'.");
+                }
+            }
+        }
+        else
+        {
+            throw new ArgumentException($"Operator with id of '{_parameters[0]}' was unexpectedly not a boolean.");
+        }
+    }
+
+    protected Prism ExecuteWhile(Prism _input, List<string> _parameters)
+    {
+        if(_parameters.Count != 2)
+        {
+            throw new ArgumentException($"Cannot execute while, parameter count should have been 2 but was {_parameters.Count}.");
+        }
+
+        // get the target operator that we are supposed to check
+        OperatorValue? boolToCheck = Helper.GetTarget(
+            _parameters[0],
+            _input.Payload
+        ) ?? throw new ArgumentException($"Could not find bool with id of '{_parameters[0]}'.");
+
+        if(boolToCheck is BooleanOperator booleanOperator)
+        {
+            if (!MappersById.TryGetValue(_parameters[1], out Mapper? mapper))
+            {
+                throw new ArgumentException($"Could not find mapper with id of '{_parameters[1]}'.");
+            }
+
+            Prism recursivePrism = _input;
+            while(booleanOperator.GetValue() ?? throw new ArgumentException($"Boolean with id of '{_parameters[0]}' was unexpectedly null."))
+            {
+                recursivePrism = mapper.Execute(RootFlow, recursivePrism.Payload);
+            }
+
+            return recursivePrism;
+        }
+        else
+        {
+            throw new ArgumentException($"Operator with id of '{_parameters[0]}' was unexpectedly not a boolean.");
+        }
+    }
+
+    protected Prism ExecuteForLoop(Prism _input, List<string> _parameters)
+    {
+        if(_parameters.Count != 3)
+        {
+            throw new ArgumentException($"Cannot execute for, parameter count should have been 4 but was {_parameters.Count}.");
+        }
+
+        // get the target operator that we are supposed to iterate
+        OperatorValue? intToIterate = Helper.GetTarget(
+            _parameters[0],
+            _input.Payload
+        ) ?? throw new ArgumentException($"Could not find integer with id of '{_parameters[0]}'.");
+
+        if(!int.TryParse(_parameters[1], out int iterationStart) || !int.TryParse(_parameters[1], out int iterationEnd))
+        {
+            throw new ArgumentException($"Could not parse '{_parameters[1]}' or '{_parameters[2]}' to an integer for the for loop.");
+        }
+
+        int diff = iterationEnd > iterationStart ? 1 : -1;
+
+        if(intToIterate is IntegerOperator integerOperator)
+        {
+            if (!MappersById.TryGetValue(_parameters[3], out Mapper? mapper))
+            {
+                throw new ArgumentException($"Could not find mapper with id of '{_parameters[3]}'.");
+            }
+
+            Prism recursivePrism = _input;
+            for(int delta = iterationStart; delta <= iterationEnd; delta += diff)
+            {
+                integerOperator.SetValue(new IntegerOperator(delta));
+                recursivePrism = mapper.Execute(RootFlow, recursivePrism.Payload);
+            }
+
+            return recursivePrism;
+        }
+        else
+        {
+            throw new ArgumentException($"Operator with id of '{_parameters[0]}' was unexpectedly not an array.");
+        }
+    }
+
+    protected Prism ExecuteForEachLoop(Prism _input, List<string> _parameters)
+    {
+        if(_parameters.Count != 4)
+        {
+            throw new ArgumentException($"Cannot execute foreach, parameter count should have been 4 but was {_parameters.Count}.");
+        }
+
+        // get the target operator that we are supposed to check
+        OperatorValue? arrayToIterate = Helper.GetTarget(
+            _parameters[0],
+            _input.Payload
+        ) ?? throw new ArgumentException($"Could not find array with id of '{_parameters[0]}'.");
+
+        if(!int.TryParse(_parameters[1], out int intArrayType))
+        {
+            throw new ArgumentException($"Could not parse '{_parameters[1]}' to an integer for the foreach loop (integer -> array type).");
+        }
+
+        if(arrayToIterate is ArrayOperator arrayOperator)
+        {
+            if (!MappersById.TryGetValue(_parameters[3], out Mapper? mapper))
+            {
+                throw new ArgumentException($"Could not find mapper with id of '{_parameters[3]}'.");
+            }
+
+            OperatorValue iterator = OperatorValue.CreateByType((OperatorValue.OperatorValueType)intArrayType) ?? throw new ArgumentException($"Could not create operatorvalue for foreach from type '{_parameters[1]}' (it unexpectedly returned null).");
+
+
+            Prism recursivePrism = _input;
+            List<OperatorValue> listToIterate = arrayOperator.GetValue() ?? throw new ArgumentException($"Could not create list for foreach from the specified array (it unexpectedly returned null).");;
+            foreach(OperatorValue deltaElement in listToIterate)
+            {
+                iterator.SetValue(deltaElement);
+                recursivePrism = mapper.Execute(RootFlow, recursivePrism.Payload);
+            }
+
+            return recursivePrism;
+        }
+        else
+        {
+            throw new ArgumentException($"Operator with id of '{_parameters[0]}' was unexpectedly not an array.");
+        }
+    }
+
+    protected static Func<Prism, List<string>, Prism> ProcessFlow(MappingFlow _instance, string _flowName)
+    {
+        return _flowName switch {
+            FlowType.GOTO => _instance.ExecuteGoTo,
+            FlowType.IF => _instance.ExecuteIf,
+            FlowType.WHILE => _instance.ExecuteWhile,
+            FlowType.FOR => _instance.ExecuteForLoop,
+            FlowType.FOR_EACH => _instance.ExecuteForEachLoop,
+
+            _ => throw new ArgumentException($"Flow type '{_flowName}' invalid.")
         };
-    }
-}
-
-public class WorkflowOrchestrator
-{
-    private readonly List<Func<Mapper, Mapper>> Steps;
-    
-    public WorkflowOrchestrator()
-    {
-        Steps = new List<Func<Mapper, Mapper>>();
-    }
-
-    // Add a processing step
-    public WorkflowOrchestrator AddStep(Mapper _processor)
-    {
-        Steps.Add(_input => _processor.Process(_input));
-        return this;
-    }
-
-    // Add HTTP client step
-    public WorkflowOrchestrator AddHttpStep(HttpDataClient _client)
-    {
-        Steps.Add(_input => _client.FetchDataAsync(_input).GetAwaiter().GetResult());
-        return this;
-    }
-
-    // Add conditional step
-    public WorkflowOrchestrator AddIf(Func<Mapper, bool> _condition, Mapper _ifTrueProcessor, Mapper _ifFalseProcessor)
-    {
-        Steps.Add(input => 
-            _condition(input) 
-                ? _ifTrueProcessor.Process(input) 
-                : _ifFalseProcessor.Process(input));
-        return this;
-    }
-
-    // Add while loop step
-    public WorkflowOrchestrator AddWhile(Func<Mapper, bool> _condition, Mapper _processor)
-    {
-        Steps.Add(
-            _input =>
-            {
-                var result = _input;
-                while (_condition(result))
-                {
-                    result = _processor.Process(result);
-                }
-                return result;
-            }
-        );
-        return this;
-    }
-
-    // Add for loop step
-    public WorkflowOrchestrator AddFor(int _start, int _end, Func<Mapper, int, Mapper> _processor)
-    {
-        Steps.Add(
-            _input =>
-            {
-                var result = _input;
-                for (int i = _start; i < _end; i++)
-                {
-                    result = _processor(result, i);
-                }
-                return result;
-            }
-        );
-        return this;
-    }
-
-    // Execute the workflow
-    public Mapper Execute(Mapper _input)
-    {
-        var result = _input;
-        foreach (var step in Steps)
-        {
-            result = step(result);
-        }
-        return result;
     }
 }

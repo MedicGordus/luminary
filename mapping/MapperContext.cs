@@ -7,9 +7,22 @@ namespace luminary.mapping;
 /// </summary>
 public class MapperContext
 {
-    protected Dictionary<ulong, Prism> DataStore = [];
+    public Dictionary<ulong, Prism> DataStore = [];
 
     protected ulong StepCounter = 0;
+
+    /// <summary>
+    /// Access to the root mapping flow which we need access to for the other mappers we might touch.
+    /// 
+    /// Typically method calls to flows use this.
+    /// </summary>
+    public MappingFlow RootFlow;
+
+    public MapperContext(MappingFlow _rootFlow)
+    {
+        RootFlow = _rootFlow;
+    }
+
 
     public void Add(Prism _data, ulong? _step = null)
     {
@@ -25,15 +38,5 @@ public class MapperContext
         }
 
         DataStore[_step.Value] = _data;
-    }
-
-    public Prism? Get(ulong _step)
-    {
-        return DataStore.TryGetValue(_step, out var dataStore) ? dataStore : null;
-    }
-
-    public Dictionary<ulong, Prism> GetAll()
-    {
-        return DataStore;
     }
 }

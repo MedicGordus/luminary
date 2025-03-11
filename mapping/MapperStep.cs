@@ -2,6 +2,7 @@ using System.Data;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using luminary.mapping.functions;
+using luminary.util;
 
 namespace luminary.mapping;
 
@@ -55,7 +56,7 @@ public class MapperStep
     /// </summary>
     /// <param name="_context">All Prisms from previous steps, ulong = step, Prism = the output from that step</param>
     /// <returns></returns>
-    public PrismOperator ProcessMappingActions(Dictionary<ulong, Prism> _context)
+    public PrismOperator ProcessMappingActions(MapperContext _context)
     {
         // if there are steps to run, execute them
         if (StepActions != null && StepActions.Count != 0)
@@ -87,7 +88,7 @@ public class MapperStep
     /// <summary>
     /// Builds a new operator with the mapping function value (also runs the mapping function to get this value).
     /// </summary>
-    protected static OperatorValue ApplyMappingFunction(OperatorValue.OperatorValueType _type, string _functionToApply, Dictionary<ulong, Prism> _context)
+    protected static OperatorValue ApplyMappingFunction(OperatorValue.OperatorValueType _type, string _functionToApply, MapperContext _context)
     {
         //// create empty output
         //
@@ -181,6 +182,13 @@ public class MapperStep
                         operatorValue = methodCall([.. parameterBuffer]);
                     }
                 }
+                else if(OperatorValue.FlowNameList.Contains(methodToRun))
+                {
+                    // this is a call to a new flow
+                    MappingFlow callFlow = new(methodToRun, parameterBuffer, _context.RootFlow.MappersById, _context.RootFlow);
+
+                    operatorValue = callFlow.Process()?.Payload ?? throw new Exception($"Flow call '{methodToRun}' unexpectedly returned null.");;
+                }
                 else
                 {
                     // method call to an OperatorValue (the first parameter)
@@ -237,7 +245,7 @@ public class MapperStep
             }
             ulong indexUlong = ulong.Parse(index);
 
-            outputValue = Helper.GetTarget(remainingIdentifier, _context[indexUlong].Payload);
+            outputValue = Helper.GetTarget(remainingIdentifier, _context.DataStore[indexUlong].Payload);
         }
         //
         if (outputValue == null)
@@ -260,7 +268,7 @@ public class MapperStep
     /// <summary>
     /// Loads buffered strings into Operator Values.
     /// </summary>
-    protected static List<OperatorValue> ConvertParametersFromBuffer(List<string> _parameterBuffer, Dictionary<string, OperatorValue> _operatorValueBuffer, Dictionary<ulong, Prism> _context)
+    protected static List<OperatorValue> ConvertParametersFromBuffer(List<string> _parameterBuffer, Dictionary<string, OperatorValue> _operatorValueBuffer, MapperContext _context)
     {
         // collect the parameters
         List<OperatorValue> output = [];
@@ -286,7 +294,7 @@ public class MapperStep
                 }
                 ulong indexUlong = ulong.Parse(index);
 
-                OperatorValue? ovCheckTarget = Helper.GetTarget(remainingIdentifier, _context[indexUlong].Payload) ?? throw new Exception(
+                OperatorValue? ovCheckTarget = Helper.GetTarget(remainingIdentifier, _context.DataStore[indexUlong].Payload) ?? throw new Exception(
                     string.Format(
                         "Could not get the spexified target from '{0}'.",
                         remainingIdentifier
