@@ -352,7 +352,26 @@ class Program
             config.ExpectedInputPrismSchema
         );
         //
-        string? resultingTestPayload = config.Execute(prismOperator).BuildJsonStringPayload();
+        MappingFlow testFlow1 = new MappingFlow(
+            [
+                new MappingFlowCallJson () {
+                    Function = "goto",
+                    Parameters = [
+                        "1"
+                    ]
+                }
+            ],
+            new Dictionary<string, Mapper>() {
+                { "1", config }
+            }
+        );
+        //string? resultingTestPayload = config.Execute(prismOperator).BuildJsonStringPayload();
+        string? resultingTestPayload = testFlow1.Process(
+            new Prism(
+                prismOperator,
+                config.ExpectedInputPrismSchema
+            ) ?? throw new Exception()
+        )?.BuildJsonStringPayload();
         //
         ////
 
@@ -490,7 +509,27 @@ class Program
             schema2
         );
         //
-        string? resultingPayload = config2.Execute(prismOperator).BuildJsonStringPayload();
+        MappingFlow testFlow2 = new MappingFlow(
+            [
+                new MappingFlowCallJson () {
+                    Function = "goto",
+                    Parameters = [
+                        "1"
+                    ]
+                }
+            ],
+            new Dictionary<string, Mapper>() {
+                { "1", config2 }
+            }
+        );
+        //
+        //string? resultingPayload = config2.Execute(prismOperator).BuildJsonStringPayload();
+        string? resultingTestPayload2 = testFlow2.Process(
+            new Prism(
+                prismOperator,
+                config2.ExpectedInputPrismSchema
+            ) ?? throw new Exception()
+        )?.BuildJsonStringPayload();
         //
         ////
     }

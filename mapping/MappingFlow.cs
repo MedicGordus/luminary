@@ -76,7 +76,7 @@ public class MappingFlow
     /// </summary>
     protected readonly MappingFlow RootFlow;
 
-    public MappingFlow(List<MappingFlowCallJson> _flows, Dictionary<string, Mapper> _mappersById, MappingFlow? _rootFlow)
+    public MappingFlow(List<MappingFlowCallJson> _flows, Dictionary<string, Mapper> _mappersById, MappingFlow? _rootFlow = null)
     {
         Flows = _flows;
         MappersById = _mappersById;
@@ -86,7 +86,7 @@ public class MappingFlow
     /// <summary>
     /// Overload for single function calls (intended for mapper step calls).
     /// </summary>
-    public MappingFlow(string _functionName, List<string> _parameters, Dictionary<string, Mapper> _mappersById, MappingFlow? _rootFlow) : this (
+    public MappingFlow(string _functionName, List<string> _parameters, Dictionary<string, Mapper> _mappersById, MappingFlow? _rootFlow = null) : this (
         [
             new() {
                 Function = _functionName,
@@ -99,19 +99,19 @@ public class MappingFlow
     {
     }
 
-    public Prism? Process()
+    public Prism? Process(Prism _input)
     {
-        Prism? recursivePrism = null;
+        Prism? recursivePrism = _input;
 
         foreach(var deltaFlow in Flows)
         {
             if(recursivePrism == null)
             {
-                throw new Exception("Something when wrong when processing flow, the recursive prism was unexpectedly null.");
+                throw new Exception("Something went wrong when processing flow, the recursive prism was unexpectedly null.");
             }
             if(deltaFlow?.Parameters == null)
             {
-                throw new Exception("Something when wrong when processing flow, the flow or it's parameters was unexpectedly null.");
+                throw new Exception("Something went wrong when processing flow, the flow or it's parameters was unexpectedly null.");
             }
 
             recursivePrism = deltaFlow.Function switch {

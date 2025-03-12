@@ -148,7 +148,9 @@ public class MapperStep
                 OperatorValue operatorValue;
                 if (ConstantMethods.MethodCall.TryGetValue(methodToRun, out Func<string[], OperatorValue>? methodCall))
                 {
+                    //
                     // constantvalue method
+                    //
 
                     if (methodToRun == ConstantMethods.MethodNames.ARRAY)
                     {
@@ -184,14 +186,50 @@ public class MapperStep
                 }
                 else if(OperatorValue.FlowNameList.Contains(methodToRun))
                 {
-                    // this is a call to a new flow
-                    MappingFlow callFlow = new(methodToRun, parameterBuffer, _context.RootFlow.MappersById, _context.RootFlow);
+                    //
+                    //  This section is for FLOWS that are called from the mapper.
+                    //
 
-                    operatorValue = callFlow.Process()?.Payload ?? throw new Exception($"Flow call '{methodToRun}' unexpectedly returned null.");;
+
+                    if(parameterBuffer.Count < 2)
+                    {
+                        throw new Exception($"Flows must have at least two parameters, the prism and the schema (string), but unexpectedly had {parameterBuffer.Count} parameters.");
+                    }
+
+                    // extract the prism that is the input for the flow
+                    List<OperatorValue> flowInput = ConvertParametersFromBuffer(parameterBuffer[0 .. 1], operatorValueBuffer, _context);
+
+                    // first param should be the prism
+                    if (flowInput[0] is not PrismOperator flowPrismOperator)
+                    {
+                        throw new Exception("The first parameter of the flow must be the prism but was not.");
+                    }
+
+                    // second param should be the schema
+                    if (flowInput[1] is not StringOperator flowPrismInput)
+                    {
+                        throw new Exception("The second parameter of the flow must be the prism schema (string) but was not.");
+                    }
+
+                    // build call to a new flow (pass in the rest of the parameters)
+                    MappingFlow callFlow = new(methodToRun, [.. parameterBuffer.Skip(2)], _context.RootFlow.MappersById, _context.RootFlow);
+
+                    // execute the flow and retrieve the value
+                    operatorValue = callFlow.Process(
+                        new Prism(
+                            flowPrismOperator,
+                            SchemaJson.Build(
+                                flowPrismInput.GetValue()
+                            )
+                        )
+                    )?.Payload ?? throw new Exception($"Flow call '{methodToRun}' unexpectedly returned null.");
                 }
                 else
                 {
+                    //
                     // method call to an OperatorValue (the first parameter)
+                    //
+
 
                     // collect the parameters
                     List<OperatorValue> parameters = ConvertParametersFromBuffer(parameterBuffer, operatorValueBuffer, _context);

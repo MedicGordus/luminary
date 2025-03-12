@@ -1,4 +1,5 @@
 
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace luminary.mapping;
@@ -73,4 +74,14 @@ public class SchemaJson
     [JsonPropertyName("properties")]
     public Dictionary<string, SchemaJson>? Properties { get; set; }
 
+
+    public static SchemaJson? Build(string? _json)
+    {
+        if(_json == null)
+        {
+            return null;
+        }
+
+        return JsonSerializer.Deserialize<SchemaJson>(_json);
+    }
 }
