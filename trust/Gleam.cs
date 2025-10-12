@@ -181,11 +181,7 @@ public class Gleam
             if (selfCreds.Scrub)
             {
                 output.AddResult(
-                    string.Format(
-                        "Attempt to retrieve self creds for '{0}' failed, the message was: '{1}'.",
-                        _url,
-                        selfCreds.GetException().Message
-                    )
+                    $"Attempt to retrieve self creds for '{_url}' failed, the message was: '{selfCreds.GetException().Message}'."
                 );
                 return output;
             }
@@ -194,22 +190,12 @@ public class Gleam
 
             //// get self creds for the organization
             //
-            Scrubbable<CredsOpsJson?> opsCreds = await JsonRetriever.GetJsonAsync<CredsOpsJson>(
-                string.Format(
-                    "{0}{1}",
-                    _url,
-                    URL_CREDS_OPS
-                )
-            ).ConfigureAwait(false);
+            Scrubbable<CredsOpsJson?> opsCreds = await JsonRetriever.GetJsonAsync<CredsOpsJson>($"{_url}{URL_CREDS_OPS}").ConfigureAwait(false);
             //
             if (opsCreds.Scrub)
             {
                 output.AddResult(
-                    string.Format(
-                        "Attempt to retrieve ops creds for '{0}' failed, the message was: '{1}'.",
-                        _url,
-                        opsCreds.GetException().Message
-                    )
+                    $"Attempt to retrieve ops creds for '{_url}' failed, the message was: '{opsCreds.GetException().Message}'."
                 );
                 return output;
             }

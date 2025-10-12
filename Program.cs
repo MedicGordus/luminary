@@ -365,13 +365,14 @@ class Program
                 { "1", config }
             }
         );
-        //string? resultingTestPayload = config.Execute(prismOperator).BuildJsonStringPayload();
         string? resultingTestPayload = testFlow1.Process(
             new Prism(
                 prismOperator,
                 config.ExpectedInputPrismSchema
             ) ?? throw new Exception()
         )?.BuildJsonStringPayload();
+        //
+        Console.WriteLine($"Test 1 result: '{resultingTestPayload}'");
         //
         ////
 
@@ -523,13 +524,14 @@ class Program
             }
         );
         //
-        //string? resultingPayload = config2.Execute(prismOperator).BuildJsonStringPayload();
         string? resultingTestPayload2 = testFlow2.Process(
             new Prism(
                 prismOperator,
                 config2.ExpectedInputPrismSchema
             ) ?? throw new Exception()
         )?.BuildJsonStringPayload();
+        //
+        Console.WriteLine($"Test 2 result: '{resultingTestPayload2}'");
         //
         ////
     }

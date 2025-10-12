@@ -1,6 +1,3 @@
-
-
-
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using luminary.util;
@@ -159,7 +156,9 @@ public class Spook
     /// List of parallel tasks processing messages.
     /// </summary>
     /// <remarks>
-    /// Be aware the health loop cleans this up and awaits these before shutting down.
+    /// Be aware the health loop cleans this up* and awaits these before shutting down.
+    /// 
+    /// *only completed/cancelled tasks are cleaned up as expected.
     /// </remarks>
     protected readonly List<Task> MessageProcessing;
 
@@ -298,7 +297,7 @@ public class Spook
                 break;
 
             // if a single integration fails while the top spook is healthy it
-            //  will try to offload that process to another spook.
+            //  will try to offload that process to another spook (1 spook).
             case "OFFLOAD":
                 process = Task.Run(() => HandleOffloadAsync(payload));
                 break;
@@ -327,6 +326,7 @@ public class Spook
                 break;
 
             default:
+                await LogAsync($"Receieved unexpected payload type '{type}' - ignoring.").ConfigureAwait(false);
                 return;
         }
 
@@ -399,11 +399,14 @@ public class Spook
 
         if (ExpectedTangleSpooks.Contains(healthStatus.Address))
         {
-            HealthUpdate? previousHealthUpdate;
+            // if someone in our tangle sent a health update
+
+
+            HealthUpdate? previousHealthUpdate = null;
 
             using (await HealthyTangleSpookLock.LockAsync().ConfigureAwait(false))
             {
-                // if this tangle was certainly unhealthy before, add back to healthy
+                // if this tangle was certainly unhealthy before, add back to healthy (by removing from unhealthy)
                 //
                 //  note that healthy doesn't mean entangled.
                 //
@@ -439,6 +442,10 @@ public class Spook
     private async Task UpdatePrecedenceAsync()
     {
         // do nothing if we are in a peer tangle
+        //
+        //  Note: If all nodes are peers, no list of who is the top/bottom matters.
+        //        This is also a method to run a single node in an emergency.
+        //
         if (CurrentPrecedence == SpookPrecedence.Peer)
         {
             return;
@@ -492,7 +499,9 @@ public class Spook
         if (spookCount == 1 || (((double)spookCount) / ((double)ExpectedTangleSpooks.Count) <= 0.5d))
         {
             // if there is only one spook in our tangle, or less or equal to half reachable, we assume the other spooks are handling things.
-            todo("we have to dim until we have a quorum");
+            await UpdateSpookTangleStateAsync(SpookTangledState.Dim, $"Cannot form a quorum with {spookCount} of {ExpectedTangleSpooks.Count} spooks healthy.");
+
+            return;
         }
         ////
         //////
@@ -550,7 +559,7 @@ public class Spook
                 {
                     topPrecendenceCount += 1;
 
-                    // once we have more than one, we exit the loop as that is all we need to know.
+                    // if we collect more than one, we exit the loop as that is all we need to know.
                     if (topPrecendenceCount > 1)
                     {
                         break;
@@ -569,17 +578,48 @@ public class Spook
         //
         //  ultimately, the top configured spook isn't the top one at this point.
         //
+        // at this point there is a spook that should be the top but it isn't, so we need to vote it in
         if (topScorers.Count == 1)
         {
+            // we know who should be the top since there's only one
 
-            // at this point there is a spook that should be the top but it isn't, so we need to vote it in
-            todo("vote top scorer");
+            await BroadcastAsync($"BALLOT|${SelfAddress},vote,${topScorers[0]}");
         }
         else
         {
+            // we know a group where one should be the top
 
-            // at this point there is a spook that should be the top but it isn't, so we need to vote it in
-            todo("vote top scorer");
+            string? topAddress;
+            using (await HealthyTangleSpookLock.LockAsync().ConfigureAwait(false))
+            {
+                topAddress = (
+                    from
+                        _item in TangleHealthUpdates
+                    where
+                        topScorers.Contains(_item.Key)
+                    group
+                        _item by _item.Key into _grouped
+                    select (
+                        from
+                            _groupedItem in _grouped
+                        orderby _groupedItem.Value.LastHealthUpdateReceived descending
+                        select _groupedItem.Key
+                    ).FirstOrDefault()
+                ).FirstOrDefault();
+            }
+
+            if(topAddress == null)
+            {
+                // we have no top scorers anymore, this is an edge-case race condition and possible
+                //
+                //  for now, we will exit out
+                return;
+            }
+            else
+            {
+                // vote for who we received the most recent health update from
+                await BroadcastAsync($"BALLOT|${SelfAddress},vote,${topAddress}");
+            }
         }
         //
         ////
@@ -618,15 +658,9 @@ public class Spook
                 }
             }
 
-            ///////////////////////////////////////////////
-            // this section is about performing updates based on health changes?
-            ///////////////////////////////////////////////
 
+            // make sure the precedece is still calculated, based on potential health changes
             await UpdatePrecedenceAsync().ConfigureAwait(false);
-
-            // Update state
-            todo("this is wrong, need a more rigorous mechanism for this lol");
-            ///////////////////////////////////////////////
 
 
             // Send health update
@@ -641,17 +675,20 @@ public class Spook
             }
 
 
-            // wait for the health interval minus how long ^ this took to run
-            long durationTicks = DateTime.Now.Ticks - startTicks;
-            if (durationTicks > 0)
+            // calculate the health interval, minus how long all ^ this took to run
+            TimeSpan waitDuration = HealthInterval.Add(new TimeSpan(-(DateTime.Now.Ticks - startTicks)));
+            if (waitDuration > TimeSpan.Zero)
             {
-                // wait the duration or when this spook shuts down
-                await Task.WhenAny(Task.Delay(HealthInterval.Add(new TimeSpan(-durationTicks))), StopSpook.Task).ConfigureAwait(false);
+                // wait for the health interval minus the duration, or when this spook shuts down
+                await Task.WhenAny(Task.Delay(waitDuration), StopSpook.Task).ConfigureAwait(false);
             }
         }
 
-        // make sure all our messages are done processing before we dim
-        await Task.WhenAll(MessageProcessing);
+        using (await MessageProcessingLock.LockAsync().ConfigureAwait(false))
+        {
+            // make sure all our messages are done processing before we dim
+            await Task.WhenAll(MessageProcessing);
+        }
 
         // let tangle know we are going down
         await BroadcastAsync($"DIMMING|{SelfAddress}").ConfigureAwait(false);
@@ -728,6 +765,14 @@ public class Spook
     {
         using(await CurrentTangledStateLock.LockAsync().ConfigureAwait(false))
         {
+            await LogAsync();
+
+            // don't try to chance states if we already are in requested state
+            if(CurrentTangledState == _state)
+            {
+                return;
+            }
+
             switch(CurrentTangledState)
             {
                 // was in a good state
@@ -829,30 +874,57 @@ public class Spook
         );
     }
 
+    /// <summary>
+    /// Distribution of a data payload from another Spook.
+    /// </summary>
     private async Task HandleDataAsync(string _data)
     {
         throw new NotImplementedException();
     }
 
+    /// <summary>
+    /// Special case where top spook has an integration that fails and they offload it onto us.
+    /// </summary>
     public async Task HandleOffloadAsync(string _payload)
     {
         throw new NotImplementedException();
     }
+
+    /// <summary>
+    /// Called when another spook noticed top spook issues (or by top spook going down).
+    /// </summary>
     public async Task HandleBallotAsync(string _payload)
     {
+        // 0 = address
+        // 1 = task
+        // 2 = top voted
+        string[] voteOptions = _payload.Split(',');
+
         throw new NotImplementedException();
     }
+
+    /// <summary>
+    /// Receiving tally from another spook on ballots for the next top spook.
+    /// </summary>
     public async Task HandleTuneAsync(string _payload)
     {
         throw new NotImplementedException();
     }
+
+    /// <summary>
+    /// Called by a spook that is about to shut down.
+    /// </summary>
     public async Task HandleDimmingAsync(string _payload)
     {
         throw new NotImplementedException();
     }
 
 
-    protected static void todo(string? _test = null)
+    /// <summary>
+    /// Method to silence all my todo markers. Rename to see where work needs to be done
+    /// </summary>
+    /// <param name="_test"></param>
+    protected static void todo0(string? _test = null)
     {
         Console.WriteLine(_test);
     }

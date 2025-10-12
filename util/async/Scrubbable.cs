@@ -8,7 +8,7 @@ namespace luminary.util;
 /// Usage:
 ///     public Task<Scrubbable<bool>> TestAsync() {}
 ///     
-///     Scrubbable<bool> _test = await Test();
+///     Scrubbable<bool> _test = await TestAsync();
 ///     if(_test.Scrub)
 ///     {
 ///         //cancel
