@@ -212,7 +212,7 @@ class Program
     {
         try
         {
-            // -1 = wait forever, so we basically are just waitinf for the cancellation token to fire
+            // -1 = wait forever, so we basically are just waiting for the cancellation token to fire
             await Task.Delay(-1, ShutdownCts.Token).ConfigureAwait(false);
         }
         catch (OperationCanceledException)

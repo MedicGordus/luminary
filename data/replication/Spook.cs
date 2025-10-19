@@ -78,6 +78,8 @@ public class Spook
 
     protected readonly AsyncLock CurrentTangledStateLock;
 
+    protected readonly Log Logger;
+
     /// <summary>
     /// What this Spook is configured for (not necessarily what is actual).
     /// </summary>
@@ -148,6 +150,13 @@ public class Spook
     protected readonly TaskCompletionSource StopSpook;
 
     /// <summary>
+    /// Used to as rapidly as possible send a health update.
+    /// 
+    /// Uses of this should cache the value as it is reset every time it is triggered.
+    /// </summary>
+    protected TaskCompletionSource ManuallyTriggerHealthUpdate;
+
+    /// <summary>
     /// Reference to the health task which runs on a parallel thread.
     /// </summary>
     protected Task? HealthUpdator;
@@ -170,12 +179,14 @@ public class Spook
     /// <summary>
     /// Constructor.
     /// </summary>
+    /// <param name="_logger">Instance of logger that we can use to log.</param>
     /// <param name="_expectedTangleSpooks">Other spooks we expect within the Tangle (some may go dim at times).</param>
     /// <param name="_selfAddress">What we identify as within the Tangle.</param>
     /// <param name="_healthIntervalSeconds">How many seconds to wait before pinging a health update to the Tangle</param>
     /// <param name="_healthTimeoutSeconds">How many seconds to wait before other Spooks within our Tangle are assumed drifted.</param>
-    public Spook(List<string> _expectedTangleSpooks, string _selfAddress, int _healthIntervalSeconds, int _healthTimeoutSeconds)
+    public Spook(Log _logger, List<string> _expectedTangleSpooks, string _selfAddress, int _healthIntervalSeconds, int _healthTimeoutSeconds)
     {
+        Logger = _logger;
         ExpectedTangleSpooks = [];
         foreach (var deltaSpook in _expectedTangleSpooks)
         {
@@ -185,6 +196,7 @@ public class Spook
         HealthInterval = TimeSpan.FromSeconds(_healthIntervalSeconds);
         HealthTimeout = TimeSpan.FromSeconds(_healthTimeoutSeconds);
 
+        ManuallyTriggerHealthUpdate = new();
         StopSpook = new();
         CurrentTangledState = SpookTangledState.Dim;
         CurrentTangledStateLock = AsyncLock.Create();
@@ -219,6 +231,35 @@ public class Spook
         StartListening();
         HealthUpdator = Task.Run(StartHealthUpdatesAsync);
         JoinTangle(_tangleAddresses);
+    }
+
+    public async Task StopAsync(string _stopReason)
+    {
+        SpookTangledState? stateGoingTo;
+        using (await CurrentTangledStateLock.LockAsync().ConfigureAwait(false))
+        {
+            stateGoingTo = CurrentTangledState switch
+            {
+                SpookTangledState.Entangled => SpookTangledState.Dim,
+                SpookTangledState.Drifting => SpookTangledState.Dim,
+                SpookTangledState.Snapping => SpookTangledState.Dim,
+                _ => null
+            };
+        }
+        if(stateGoingTo != null)
+        {
+            // update state
+            await UpdateSpookTangleStateAsync(stateGoingTo.Value, _stopReason).ConfigureAwait(false);
+        }
+
+        // send a health update
+        ManuallyTriggerHealthUpdate.SetResult();
+
+        // free up anything waiting for the spook to stop
+        StopSpook.SetResult();
+
+        // TBD
+        todo("anything else needed to stop the spook");
     }
 
     // Called by external class to distribute data
@@ -271,8 +312,10 @@ public class Spook
         string type = parts[0];
         string payload = parts[1];
 
+        // holds reference to the parallel process
         Task process;
 
+        // starts the parallel process
         switch (type)
         {
             // this is called by new spooks joining the tangle
@@ -326,10 +369,11 @@ public class Spook
                 break;
 
             default:
-                await LogAsync($"Receieved unexpected payload type '{type}' - ignoring.").ConfigureAwait(false);
+                await Logger.LogEntryAsync(Severity.AnnoyingIssue, $"Receieved unexpected payload type '{type}' and payload '{payload}' - ignoring.").ConfigureAwait(false);
                 return;
         }
 
+        // catalog reference to the parallel process so we can make sure it completes
         using (await MessageProcessingLock.LockAsync().ConfigureAwait(false))
         {
             MessageProcessing.Add(process);
@@ -496,10 +540,10 @@ public class Spook
         }
         ////// verifies we have a quorum
         ////
-        if (spookCount == 1 || (((double)spookCount) / ((double)ExpectedTangleSpooks.Count) <= 0.5d))
+        if (spookCount < 2 || (((double)spookCount) / ((double)ExpectedTangleSpooks.Count) <= 0.5d))
         {
             // if there is only one spook in our tangle, or less or equal to half reachable, we assume the other spooks are handling things.
-            await UpdateSpookTangleStateAsync(SpookTangledState.Dim, $"Cannot form a quorum with {spookCount} of {ExpectedTangleSpooks.Count} spooks healthy.");
+            await UpdateSpookTangleStateAsync(SpookTangledState.Dim, $"Cannot form a quorum with {spookCount} of {ExpectedTangleSpooks.Count} spooks healthy.").ConfigureAwait(false);
 
             return;
         }
@@ -538,7 +582,7 @@ public class Spook
             }
 
             // this call handles the steps to change into drifting mode
-            await UpdateSpookTangleStateAsync(SpookTangledState.Drifting, "Spook is alone and unable to form a quorum.");
+            await UpdateSpookTangleStateAsync(SpookTangledState.Drifting, "Spook is alone and unable to form a quorum.").ConfigureAwait(false);
 
             // nothing else to do here
             return;
@@ -627,10 +671,20 @@ public class Spook
 
     private async Task StartHealthUpdatesAsync()
     {
+        TaskCompletionSource manuallyTriggerHealthUpdate = ManuallyTriggerHealthUpdate;
+
         while (!StopSpook.Task.IsCompleted)
         {
             // capture start ticks so we can deduct the duration of processing from the wait
             long startTicks = DateTime.Now.Ticks;
+
+
+            // reset the manual trigger if it was completed
+            if(manuallyTriggerHealthUpdate.Task.IsCompleted)
+            {
+                ManuallyTriggerHealthUpdate = new();
+                manuallyTriggerHealthUpdate = ManuallyTriggerHealthUpdate;
+            }
 
 
             // update the list of healthy and unhealthy spooks based on our last received health from each
@@ -680,7 +734,7 @@ public class Spook
             if (waitDuration > TimeSpan.Zero)
             {
                 // wait for the health interval minus the duration, or when this spook shuts down
-                await Task.WhenAny(Task.Delay(waitDuration), StopSpook.Task).ConfigureAwait(false);
+                await Task.WhenAny(Task.Delay(waitDuration), manuallyTriggerHealthUpdate.Task, StopSpook.Task).ConfigureAwait(false);
             }
         }
 
@@ -765,22 +819,26 @@ public class Spook
     {
         using(await CurrentTangledStateLock.LockAsync().ConfigureAwait(false))
         {
-            await LogAsync();
 
-            // don't try to chance states if we already are in requested state
+            // don't try to change states if we already are in requested state
             if(CurrentTangledState == _state)
             {
                 return;
             }
-
+            
             switch(CurrentTangledState)
             {
                 // was in a good state
                 case SpookTangledState.Entangled:
+
                     switch (_state)
                     {
                         // failure within tangle/self
                         case SpookTangledState.Drifting:
+
+                            // log the change
+                            await Logger.LogEntryAsync(Severity.UnexpectedIssue, $"Unexpected state change from '{CurrentTangledState}' to '{_state}'.");
+
                             todo();
 
                             CurrentTangledState = SpookTangledState.Drifting;
@@ -788,6 +846,10 @@ public class Spook
 
                         // expected shut down call
                         case SpookTangledState.Dim:
+
+                            // log the change
+                            await Logger.LogEntryAsync(Severity.AnnoyingIssue, $"State change from '{CurrentTangledState}' to '{_state}'.");
+
                             todo();
 
                             CurrentTangledState = SpookTangledState.Dim;
@@ -801,6 +863,10 @@ public class Spook
                     {
                         // successful starting up
                         case SpookTangledState.Snapping:
+
+                            // log the change
+                            await Logger.LogEntryAsync(Severity.AnnoyingIssue, $"State change from '{CurrentTangledState}' to '{_state}'.");
+
                             todo();
 
                             CurrentTangledState = SpookTangledState.Snapping;
@@ -808,6 +874,10 @@ public class Spook
 
                         // issue starting up
                         case SpookTangledState.Drifting:
+
+                            // log the change
+                            await Logger.LogEntryAsync(Severity.UnexpectedIssue, $"Unexpected state change from '{CurrentTangledState}' to '{_state}'.");
+
                             todo();
 
                             CurrentTangledState = SpookTangledState.Drifting;
@@ -821,6 +891,9 @@ public class Spook
                     {
                         // synchronized
                         case SpookTangledState.Entangled:
+
+                            // log the change
+                            await Logger.LogEntryAsync(Severity.AnnoyingIssue, $"State change from '{CurrentTangledState}' to '{_state}'.");
                             todo();
 
                             CurrentTangledState = SpookTangledState.Entangled;
@@ -829,12 +902,19 @@ public class Spook
                         // expected shut down call during sync
                         case SpookTangledState.Dim:
 
-                            CurrentTangledState = SpookTangledState.Dim;
+                            // log the change
+                            await Logger.LogEntryAsync(Severity.AnnoyingIssue, $"State change from '{CurrentTangledState}' to '{_state}'.");
                             todo();
+
+                            CurrentTangledState = SpookTangledState.Dim;
                             return;
 
                         // unexpected issue during sync
                         case SpookTangledState.Drifting:
+
+                            // log the change
+                            await Logger.LogEntryAsync(Severity.UnexpectedIssue, $"Unexpected state change from '{CurrentTangledState}' to '{_state}'.");
+
                             todo();
 
                             CurrentTangledState = SpookTangledState.Drifting;
@@ -848,6 +928,10 @@ public class Spook
                     {
                         // recovering from a failure
                         case SpookTangledState.Snapping:
+
+                            // log the change
+                            await Logger.LogEntryAsync(Severity.AnnoyingIssue, $"State change from '{CurrentTangledState}' to '{_state}'.");
+
                             todo();
 
                             CurrentTangledState = SpookTangledState.Snapping;
@@ -855,6 +939,10 @@ public class Spook
 
                         // expected shut down call during failure
                         case SpookTangledState.Dim:
+
+                            // log the change
+                            await Logger.LogEntryAsync(Severity.UnexpectedIssue, $"Unexpected state change from '{CurrentTangledState}' to '{_state}'.");
+
                             todo();
 
                             CurrentTangledState = SpookTangledState.Dim;
