@@ -37,14 +37,14 @@ public struct FlowType
     public const string WHILE = "while";
 
     /// <summary>
-    /// for( <a> , <b>, <c> )
+    /// for( <a> , <b> , <c> , <d> )
     /// 
-    /// a ==  <input property name>
+    /// a == <input property name>
     /// b == ulong start
     /// c == ulong end
     /// d == mapper id to goto while a == true
     /// 
-    /// Loops from b thru c using a as the iterator, processing d each time.
+    /// Loops from b thru c using a as the iterator (integer), processing d each time.
     /// </summary>
     public const string FOR = "for";
 
@@ -52,11 +52,10 @@ public struct FlowType
     /// foreach( <a> , <b> , <c> )
     /// 
     /// a == <input property name that is an array>
-    /// b == <array type>
-    /// c == iterator
-    /// d == mapper id to process for each element of an array
+    /// b == <array details (JSON)>
+    /// c == mapper id to process for each element of an array
     /// 
-    /// Calls d while looping thru a, array holding type b. Uses c as the iterator.
+    /// Calls c while looping thru a, array holding type (and other details) from b.
     /// </summary>
     public const string FOR_EACH = "foreach";
 }
@@ -235,7 +234,7 @@ public class MappingFlow : Flow
 
     protected Prism ExecuteForLoop(Prism _input, List<string> _parameters)
     {
-        if (_parameters.Count != 3)
+        if (_parameters.Count != 4)
         {
             throw new ArgumentException($"Cannot execute for, parameter count should have been 4 but was {_parameters.Count}.");
         }
@@ -271,7 +270,7 @@ public class MappingFlow : Flow
         }
         else
         {
-            throw new ArgumentException($"Operator with id of '{_parameters[0]}' was unexpectedly not an array.");
+            throw new ArgumentException($"Operator with id of '{_parameters[0]}' was unexpectedly not an integer.");
         }
     }
 
@@ -382,7 +381,7 @@ public class MappingFlow : Flow
         {
             throw new ArgumentException($"Operator with id of '{_parameters[0]}' was unexpectedly not an array.");
         }
-        }
+    }
 
     public static Func<Prism, List<string>, Prism> ProcessFlow(MappingFlow _instance, string _flowType)
     {
