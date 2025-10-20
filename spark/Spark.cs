@@ -1,4 +1,6 @@
+using luminary.flow;
 using luminary.mapping;
+using luminary.mapping.functions;
 using luminary.util;
 
 namespace luminary.spark;
@@ -70,11 +72,17 @@ public abstract class Spark
     protected readonly Prism FlowInput;
 
     /// <summary>
+    /// Configuration required by spark for non-mapping functionality.
+    /// </summary>
+    protected readonly PrismOperator SparkConfiguration;
+
+    /// <summary>
     /// Constructor.
     /// </summary>
     /// <param name="_flow">Holds reference to the mapping flow related to this event trigger.</param>
     /// <param name="_input">Holds the input prism used for the mapping flow.</param>
-    public Spark(MappingFlow _flow, Prism _input)
+    /// <param name="_sparkConfiguration">Configuration required by spark for non-mapping functionality.</param>
+    public Spark(MappingFlow _flow, Prism _input, PrismOperator _sparkConfiguration)
     {
         State = SparkState.NotStarted;
         PanicException = null;
@@ -82,6 +90,9 @@ public abstract class Spark
         TriggeredTask = null;
         Flow = _flow;
         FlowInput = _input;
+        SparkConfiguration = _sparkConfiguration;
+
+        ValidateConfiguration();
     }
 
     /// <summary>
@@ -141,56 +152,71 @@ public abstract class Spark
     }
 
     /// <summary>
-    /// Spark types handle the trigger process as per their spark type.
-    /// </summary>
-    /// <returns>N/A</returns>
-    protected abstract Task<Panicable<Prism?>> TriggerDefinitionAsync();
-
-    /// <summary>
     /// Helper call, creates and triggers the Spark as configured.
     /// </summary>
     /// <param name="_type">Type of spark.</param>
     /// <param name="_flow">Holds reference to the mapping flow related to this event trigger.</param>
     /// <param name="_input">Holds the input prism used for the mapping flow.</param>
-    /// <returns></returns>
-    public static async Task<Panicable<Spark>> CreateAndTriggerAsync(SparkType _type, MappingFlow _flow, Prism _input)
+    /// <param name="_sparkConfiguration">Configuration required by spark for non-mapping functionality.</param>
+    /// <returns>Panicable with the requested spark / exception if it failed.</returns>
+    public static async Task<Panicable<Spark>> CreateAndTriggerAsync(SparkType _type, MappingFlow _flow, Prism _input, PrismOperator _sparkConfiguration)
     {
-        // create the non abstract spark
-        Spark? spark = _type switch
+
+        Panicable<Spark>? output = null;
+            
+        try
         {
-            SparkType.Beacon => new BeaconSpark(_flow, _input),
-            SparkType.Fiber => new FiberSpark(_flow, _input),
-            SparkType.Laser => new LaserSpark(_flow, _input),
-            SparkType.Mushroom => new MushroomSpark(_flow, _input),
-            _ => null
-        };
 
-        Panicable<Spark>? output;
-
-        // ensure the spark type was valid
-        if (spark == null)
-        {
-            output = new();
-            output.ActivatePanic(
-                new Exception($"Cannot create and trigger spark as type '{_type}' is unknown, expected 1, 2, 3, 4 (Beacon, Fiber, Laser, Mushroom).")
-            );
-        }
-        else
-        {
-            // set the output
-            output = new(spark);
-
-            // get the result of the trigger
-            Panicable result = await spark.TriggerAsync().ConfigureAwait(false);
-
-            // forward the panic exception if it paniced
-            if (result.Paniced)
+            // create the non abstract spark
+            Spark? spark = _type switch
             {
-                output.ActivatePanic(result.GetException());
+                SparkType.Beacon => new BeaconSpark(_flow, _input, _sparkConfiguration),
+                SparkType.Fiber => new FiberSpark(_flow, _input, _sparkConfiguration),
+                SparkType.Laser => new LaserSpark(_flow, _input, _sparkConfiguration),
+                SparkType.Mushroom => new MushroomSpark(_flow, _input, _sparkConfiguration),
+                _ => null
+            };
+
+            // ensure the spark type was valid
+            if (spark == null)
+            {
+                output = new();
+                output.ActivatePanic(
+                    new Exception($"Cannot create and trigger spark as type '{_type}' is unknown, expected 1, 2, 3, 4 (Beacon, Fiber, Laser, Mushroom).")
+                );
             }
+            else
+            {
+                // set the output
+                output = new(spark);
+
+                // get the result of the trigger
+                Panicable result = await spark.TriggerAsync().ConfigureAwait(false);
+
+                // forward the panic exception if it paniced
+                if (result.Paniced)
+                {
+                    output.ActivatePanic(result.GetException());
+                }
+            }
+        }
+        catch(Exception e)
+        {
+            (output ??= new()).ActivatePanic(e);
         }
 
         // return the spark in the panicable
         return output;
     }
+
+    /// <summary>
+    /// Spark implementations need to validate the configuration and throw an exception if there is a problem.
+    /// </summary>
+    public abstract void ValidateConfiguration();
+
+    /// <summary>
+    /// Spark types handle the trigger process as per their spark type.
+    /// </summary>
+    /// <returns>N/A</returns>
+    protected abstract Task<Panicable<Prism?>> TriggerDefinitionAsync();
 }

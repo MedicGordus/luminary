@@ -1,10 +1,10 @@
-using System.Text.Json;
+using luminary.flow;
 using luminary.mapping.functions;
 
 namespace luminary.mapping;
 
 /// <summary>
-/// This class holds the mapping configuration for a series of steps.
+/// This class holds the mapping configuration for a series of steps (intended to work with MappingFlowCall).
 /// </summary>
 public class Mapper
 {
@@ -27,11 +27,7 @@ public class Mapper
                 if (!_steps.ContainsKey(delta))
                 {
                     throw new ArgumentException(
-                        string.Format(
-                            "Invalid steps, must start at 1 and have no gaps (issue at position {0}, step count is {1}).",
-                            delta,
-                            _steps.Count
-                        )
+                        $"Invalid steps, must start at 1 and have no gaps (issue at position {delta}, step count is {_steps.Count})."
                     );
                 }
             }

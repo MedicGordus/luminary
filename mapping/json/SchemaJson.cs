@@ -4,6 +4,15 @@ using System.Text.Json.Serialization;
 
 namespace luminary.mapping;
 
+/// <summary>
+/// Loosely follows the json-schema.org definitions.
+/// 
+/// Does not comply with the $schema and $id rules.
+/// 
+/// For help, see:
+///     https://json-schema.org/learn/getting-started-step-by-step
+/// 
+/// </summary>
 public class SchemaJson
 {
     public readonly struct JsonTypes
@@ -17,10 +26,20 @@ public class SchemaJson
         public const string NULL = "null";
     }
 
+    /// <summary>
+    /// State the intent of the schema.
+    /// 
+    /// This keyword doesn't add any constraints to the data being validated.
+    /// </summary>
     [JsonPropertyName("title")]
     public string? Title { get; set; }
 
 
+    /// <summary>
+    /// State the intent of the schema.
+    /// 
+    /// This keyword doesn't add any constraints to the data being validated.
+    /// </summary>
     [JsonPropertyName("description")]
     public string? Description { get; set; }
 
@@ -37,7 +56,9 @@ public class SchemaJson
     ///     null
     /// </summary>
     /// <remarks>
-    /// Officially, json schema type could be a string or an array of options. For our case, we will enforce only single types.
+    /// Officially, json schema type could be (A) a string (what type it is) or (B) an array of multiple types it could be.
+    /// 
+    /// For our case, we will enforce only single types.
     /// </remarks>
     [JsonPropertyName("type")]
     public string? Type { get; set; }
@@ -53,20 +74,10 @@ public class SchemaJson
     public string? Format { get; set; }
 
     /// <summary>
-    /// (Unofficial) Used to indicate what the array type is (for arrays), in conjunction with ArrayFormat.
-    /// 
-    /// Same values as Type, see Type.
+    /// Used if the type is array.
     /// </summary>
-    [JsonPropertyName("array-type")]
-    public string? ArrayType { get; set; }
-
-    /// <summary>
-    /// (Unofficial) Used to indicate what the array format is (for arrays), in conjunction with ArrayType.
-    /// 
-    /// Same values as Format, see Format.
-    /// </summary>
-    [JsonPropertyName("array-format")]
-    public string? ArrayFormat { get; set; }
+    [JsonPropertyName("items")]
+    public ArrayItemsSchemaJson? Items { get; set; }
 
     /// <summary>
     /// (Official) Properties expected within this schema.
@@ -77,7 +88,7 @@ public class SchemaJson
 
     public static SchemaJson? Build(string? _json)
     {
-        if(_json == null)
+        if (_json == null)
         {
             return null;
         }

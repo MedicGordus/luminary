@@ -1,6 +1,8 @@
 using System.Data;
 using System.Text.Json;
 using System.Text.RegularExpressions;
+
+using luminary.flow;
 using luminary.mapping.functions;
 using luminary.util;
 
@@ -92,6 +94,8 @@ public class MapperStep
     {
         //// create empty output
         //
+        //  This should never create an object (prism) or an array, if it does it will crash.
+        //
         OperatorValue? output = OperatorValue.CreateByType(_type);
         //
         // if null is returned, something went wrong
@@ -159,12 +163,18 @@ public class MapperStep
                         // convert the parameters into object values, skip first parameter since that is the array type
                         var arrayList = ConvertParametersFromBuffer(parameterBuffer[1..], operatorValueBuffer, _context);
 
+                        // build the array schema
+                        var arraySchema = JsonSerializer.Deserialize<ArrayItemsSchemaJson>(parameterBuffer[0]) ?? throw new Exception(
+                            "Unable to build Array as the json could not be parsed to a ArrayItemsSchemaJson."
+                        );
+
                         // build the array (unless there is an error with the array type at position 0)
-                        if (OperatorValue.OperatorValueTypeLookup.TryGetValue(parameterBuffer[0] ?? "", out var arrayType))
+                        if (OperatorValue.OperatorValueTypeLookup.TryGetValue(arraySchema.Type ?? "", out var arrayType))
                         {
                             operatorValue = new ArrayOperator(
                                 arrayType,
-                                arrayList
+                                arrayList,
+                                arraySchema
                             );
                         }
                         else
@@ -323,20 +333,12 @@ public class MapperStep
                 (var index, var remainingIdentifier) = Helper.RetrieveNextJsonName(deltaParam);
                 if (index == null)
                 {
-                    throw new Exception(
-                        string.Format(
-                            "Could not parse the specified leading index from '{0}', sorry.", // appended "sorry" so it differs from the error below lol
-                            deltaParam
-                        )
-                    );
+                    throw new Exception($"Could not parse the specified leading index from '{deltaParam}', sorry."); // appended "sorry" so it differs from the error below lol
                 }
                 ulong indexUlong = ulong.Parse(index);
 
                 OperatorValue? ovCheckTarget = Helper.GetTarget(remainingIdentifier, _context.DataStore[indexUlong].Payload) ?? throw new Exception(
-                    string.Format(
-                        "Could not get the spexified target from '{0}'.",
-                        remainingIdentifier
-                    )
+                    $"Could not get the spexified target from '{remainingIdentifier}'."
                 );
                 output.Add(ovCheckTarget);
             }

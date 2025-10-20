@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Text.Json;
 using System.Windows.Markup;
 
 namespace luminary.mapping.functions;
@@ -14,10 +15,13 @@ public class ArrayOperator : OperatorValue
 
     public OperatorValueType ArrayType;
 
-    public ArrayOperator(OperatorValueType _arrayType, List<OperatorValue> _nullableValue) : base(OperatorValueType.Array)
+    public readonly ArrayItemsSchemaJson ArrayItemsSchema;
+
+    public ArrayOperator(OperatorValueType _arrayType, List<OperatorValue> _nullableValue, ArrayItemsSchemaJson _arrayContentSchema) : base(OperatorValueType.Array)
     {
         NullableValue = _nullableValue;
         ArrayType = _arrayType;
+        ArrayItemsSchema = _arrayContentSchema;
     }
 
     public override OperatorValue? BooleanAnd(OperatorValue[]? _parameters)
@@ -65,7 +69,7 @@ public class ArrayOperator : OperatorValue
             }
         }
 
-        return new ArrayOperator(ArrayType, newArray);
+        return new ArrayOperator(ArrayType, newArray, ArrayItemsSchema);
     }
 
     protected List<OperatorValue> AppendArrayList(ArrayOperator _array)
@@ -169,7 +173,7 @@ public class ArrayOperator : OperatorValue
     {
         if (NullableValue != null)
         {
-            return new ArrayOperator(ArrayType, NullableValue);
+            return new ArrayOperator(ArrayType, NullableValue, ArrayItemsSchema);
         }
 
         if (_parameters == null || _parameters.Length == 0)
@@ -324,7 +328,7 @@ public class ArrayOperator : OperatorValue
             }
         }
 
-        return new ArrayOperator(ArrayType, outputContents);
+        return new ArrayOperator(ArrayType, outputContents, ArrayItemsSchema);
     }
 
     public override OperatorValue? Split(OperatorValue[]? _parameters)
@@ -437,7 +441,7 @@ public class ArrayOperator : OperatorValue
     /// <summary>
     /// 
     /// </summary>
-    /// <param name="_input"></param>
+    /// <param name="_input">Must be JSON string of a ArrayItemsSchemaJson</param>
     /// <returns>EMPTY ARRAY - caller is expected to fill it</returns>
     public static OperatorValue BuildFromString(string? _input)
     {
@@ -446,18 +450,18 @@ public class ArrayOperator : OperatorValue
             throw new ArgumentException("Cannot create an array without a designated OperatorValueType.");
         }
 
-        if (OperatorValue.OperatorValueTypeLookup.TryGetValue(_input, out var arrayType))
+        ArrayItemsSchemaJson arrayItemsSchema = JsonSerializer.Deserialize<ArrayItemsSchemaJson?>(_input) ?? throw new Exception
+        (
+            "Unable to build blank array from string as the string was null or could not serialize to a ArrayItemsSchemaJson."
+        );
+
+        if (OperatorValue.OperatorValueTypeLookup.TryGetValue(arrayItemsSchema.Type ?? "", out var arrayType))
         {
-            return new ArrayOperator(arrayType, []);
+            return new ArrayOperator(arrayType, [], arrayItemsSchema);
         }
         else
         {
-            throw new Exception(
-                string.Format(
-                    "Unable to build blank array, specified type '{0}' null or unknown.",
-                    _input
-                )
-            );
+            throw new Exception($"Unable to build blank array, specified type '{arrayItemsSchema.Type}' null or unknown.");
         }
     }
 

@@ -1,16 +1,35 @@
+using luminary.flow;
 using luminary.mapping;
+using luminary.mapping.functions;
 using luminary.util;
 
 namespace luminary.spark;
 
+/// <summary>
+/// The mushroom spark is unique in that it has two event triggers:
+/// 
+///     1. Receive a payload
+/// 
+///         When receiving a payload, the mushroom spark will buffer the payload into
+///             now/later storage.
+/// 
+///     2. Receive request for data
+/// 
+///         Retrieves the payload from storage and forwards it to the callback url.
+/// </summary>
 public class MushroomSpark : Spark
 {
-    public MushroomSpark(MappingFlow _flow, Prism _input) : base(_flow, _input)
+    public MushroomSpark(MappingFlow _flow, Prism _input, PrismOperator _sparkConfiguration) : base(_flow, _input, _sparkConfiguration)
     {
+    }
+
+    public override void ValidateConfiguration()
+    {
+        todo();
     }
 
     protected override Task<Panicable<Prism?>> TriggerDefinitionAsync()
     {
-        throw new NotImplementedException();
+        todo();
     }
 }

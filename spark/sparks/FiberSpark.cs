@@ -1,4 +1,6 @@
+using luminary.flow;
 using luminary.mapping;
+using luminary.mapping.functions;
 using luminary.util;
 
 namespace luminary.spark;
@@ -12,12 +14,17 @@ namespace luminary.spark;
 /// </summary>
 public class FiberSpark : Spark
 {
-    public FiberSpark(MappingFlow _flow, Prism _input) : base(_flow, _input)
+    public FiberSpark(MappingFlow _flow, Prism _input, PrismOperator _sparkConfiguration) : base(_flow, _input, _sparkConfiguration)
     {
+    }
+
+    public override void ValidateConfiguration()
+    {
+        todo();
     }
 
     protected override Task<Panicable<Prism?>> TriggerDefinitionAsync()
     {
-        throw new NotImplementedException();
+        todo();
     }
 }

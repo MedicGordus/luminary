@@ -1,7 +1,5 @@
-using System.Reflection.Metadata;
-using System.Runtime.InteropServices;
-using System.Security.Cryptography.X509Certificates;
-using Microsoft.AspNetCore.Hosting.StaticWebAssets;
+using luminary.flow;
+
 
 namespace luminary.mapping.functions;
 
@@ -141,7 +139,7 @@ public abstract class OperatorValue
         FlowType.FOR,
         FlowType.FOR_EACH,
     ];
-        
+
     public static readonly List<string> FlowNameList =
     [
         FlowType.GOTO,
@@ -370,6 +368,9 @@ public abstract class OperatorValue
     public abstract string ToJsonStringValue();
     public abstract void SetValue(OperatorValue _source);
 
+    /// <summary>
+    /// Caller must handle array and prism uniquely and not expect this to handle those types.
+    /// </summary>
     public static OperatorValue? CreateByType(OperatorValueType _type)
     {
         return _type switch
@@ -382,7 +383,6 @@ public abstract class OperatorValue
             OperatorValueType.Date => new DateOperator(default),
             OperatorValueType.Time => new TimeOperator(default),
             OperatorValueType.DateTimeOffset => new DateTimeOffsetOperator(default),
-            OperatorValueType.Array => new ArrayOperator(OperatorValueType.z_error, []),
             OperatorValueType.Duration => new DurationOperator(default),
             OperatorValueType.DateTimeOffsetWithDuration => new DateTimeOffsetWithDurationOperator(default, default),
             OperatorValueType.IntegerUnits => new IntegerUnitsOperator(default, ""),
@@ -390,7 +390,12 @@ public abstract class OperatorValue
             OperatorValueType.DoubleUnits => new DoubleUnitsOperator(default, ""),
             OperatorValueType.DecimalUnits => new DecimalUnitsOperator(default, ""),
             OperatorValueType.Boolean => new BooleanOperator(default),
-            OperatorValueType.Prism => new PrismOperator([]),
+
+            // these two shouldn't be called - the caller must handle them appropriately (see helper.cs ~line34 or so)
+            //OperatorValueType.Array => new ArrayOperator(OperatorValueType.z_error, []),
+            //OperatorValueType.Prism => new PrismOperator([]),
+            //
+
             _ => null
         };
     }

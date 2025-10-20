@@ -30,31 +30,30 @@ public static class Helper
                 var deltaType = GetOperatorValueTypeFromSchema(deltaSchema.Value);
                 OperatorValue? deltaOv = null;
 
-                // setup further structure for objects (prisms) and arrays
-                if (deltaSchema.Value.Properties != null && deltaSchema.Value.Properties.Count != 0)
+                // setup further structure for arrays and objects (prisms)
+                if (deltaType == OperatorValue.OperatorValueType.Array)
                 {
-                    if (deltaType == OperatorValue.OperatorValueType.Prism)
+                    if (deltaSchema.Value.Items != null)
                     {
-                        Dictionary<string, OperatorValue> parameters = new();
-                        BuildPrismOperatorDictionaryFromJsonSchema(deltaSchema.Value, parameters);
-                        deltaOv = new PrismOperator(parameters);
-                    }
-                    else if (deltaType == OperatorValue.OperatorValueType.Array)
-                    {
-                        if (OperatorValue.OperatorValueTypeLookup.TryGetValue(deltaSchema.Value.ArrayFormat ?? "", out var arrayType))
+                        if (OperatorValue.OperatorValueTypeLookup.TryGetValue(deltaSchema.Value.Items.Type ?? "", out var arrayType))
                         {
-                            deltaOv = new ArrayOperator(arrayType, []);
+                            deltaOv = new ArrayOperator(arrayType, [], deltaSchema.Value.Items);
                         }
                         else
                         {
-                            throw new Exception(
-                                string.Format(
-                                    "Unable to build array, specified type '{0}' null or unknown.",
-                                    deltaSchema.Value.ArrayFormat
-                                )
-                            );
+                            throw new Exception($"Unable to build array, specified type '{deltaSchema.Value.Items?.Type}' null or unknown.");
                         }
                     }
+                    else
+                    {
+                        throw new Exception($"Unable to build array when the items property is null.");
+                    }
+                }
+                else if (deltaType == OperatorValue.OperatorValueType.Prism)
+                {
+                    Dictionary<string, OperatorValue> parameters = new();
+                    BuildPrismOperatorDictionaryFromJsonSchema(deltaSchema.Value, parameters);
+                    deltaOv = new PrismOperator(parameters);
                 }
                 else
                 {
@@ -325,7 +324,36 @@ public static class Helper
                 foreach (var deltaArrayElement in _element.EnumerateArray())
                 {
                     // create blank ov
-                    var deltaData = OperatorValue.CreateByType(arrayType) ?? throw new Exception("Null operator value returned, array type must be bad.");
+                    OperatorValue? deltaData;
+
+                    if (arrayType == OperatorValue.OperatorValueType.Prism)
+                    {
+                        // create an empty object (prism)
+
+                        Dictionary<string, OperatorValue> parameters = new();
+                        BuildPrismOperatorDictionaryFromJsonSchema(
+                            ((ArrayOperator)_data).ArrayItemsSchema.ObjectSchema ?? throw new Exception("The object array must have the object schema set but it was unexpectedly null."),
+                            parameters
+                        );
+
+                        deltaData = new PrismOperator(parameters);
+                    }
+                    else if (arrayType == OperatorValue.OperatorValueType.Array)
+                    {
+                        // create an empty array
+
+                        deltaData = new ArrayOperator(
+                            arrayType,
+                            [],
+                            ((ArrayOperator)_data).ArrayItemsSchema
+                        );
+                    }
+                    else
+                    {
+                        // create an empty operator value (not an array or object (prism))
+
+                        deltaData = OperatorValue.CreateByType(arrayType) ?? throw new Exception("Null operator value returned, array type must be bad.");
+                    }
 
                     // fill with data
                     MapPropertyPerSchema(deltaData, deltaArrayElement);
@@ -333,7 +361,7 @@ public static class Helper
                     // add to list
                     arrayData.Add(deltaData);
                 }
-                _data.SetValue(new ArrayOperator(arrayType, arrayData));
+                _data.SetValue(new ArrayOperator(arrayType, arrayData, ((ArrayOperator)_data).ArrayItemsSchema));
 
                 break;
             //
@@ -375,19 +403,17 @@ public static class Helper
                     )
                 );
 
-                switch (deltaKeyValuePair.Value.Type)
+                if (deltaKeyValuePair.Value.Type == OperatorValue.OperatorValueType.Prism)
                 {
-                    case OperatorValue.OperatorValueType.Prism:
-                        output.Append(
-                            ConvertPrismOperatorToJsonString(((PrismOperator)deltaKeyValuePair.Value).GetValue())
-                        );
-                        break;
-
-                    default:
-                        output.Append(
-                            deltaKeyValuePair.Value.ToJsonStringValue()
-                        );
-                        break;
+                    output.Append(
+                        ConvertPrismOperatorToJsonString(((PrismOperator)deltaKeyValuePair.Value).GetValue())
+                    );
+                }
+                else
+                {
+                    output.Append(
+                        deltaKeyValuePair.Value.ToJsonStringValue()
+                    );
                 }
                 output.Append(',');
             }

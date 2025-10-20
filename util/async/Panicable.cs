@@ -30,15 +30,15 @@ public class Panicable
         Paniced = false;
     }
 
-    public void ActivatePanic(Exception e)
+    public void ActivatePanic(Exception _e)
     {
-        E = e;
+        E = _e;
         Paniced = true;
     }
 
-    public void ManuallyPanic(string message)
+    public void ManuallyPanic(string _message)
     {
-        E = new Exception(message);
+        E = new Exception(_message);
         Paniced = true;
     }
 
