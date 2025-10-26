@@ -431,7 +431,14 @@ public class StringOperator : OperatorValue
             strings.Add(new StringOperator(deltaString));
         }
 
-        return new ArrayOperator(OperatorValueType.String, strings);
+        return new ArrayOperator(
+            OperatorValueType.String,
+            strings,
+            new ()
+            {
+                Type = SchemaJson.JsonTypes.STRING
+            }
+        );
     }
 
     public override OperatorValue? StartsWith(OperatorValue[]? _parameters)

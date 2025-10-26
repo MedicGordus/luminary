@@ -196,7 +196,7 @@ public class HttpRequestAsyncFlow : AsyncFlow
 
 
             // Send the request
-            var response = await Client.SendAsync(request);
+            var response = await Client.SendAsync(request).ConfigureAwait(false);
 
 
             // gather the reply into our object
@@ -205,6 +205,8 @@ public class HttpRequestAsyncFlow : AsyncFlow
             {
                 StatusCode = (int)response.StatusCode,
                 Payload = await response.Content.ReadAsStringAsync().ConfigureAwait(false),
+
+                // set the headers to blank, they will be filled below
                 Headers = []
             };
             //

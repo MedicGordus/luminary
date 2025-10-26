@@ -218,6 +218,14 @@ public class BeaconSpark : Spark
             ) ?? throw new Exception("Destination payload mapping failed as the resulting Prism is unexectedly null.");
 
             // collect the http reply/response from the destination by calling the destination url while passing mapper output
+            //
+            // http request
+            var httpRequest = new HttpRequestAsyncFlow();
+            var destinationResponse = await httpRequest.ProcessAsync(todo());
+            //
+            //  MERGE THE ABOVE LINE WITH THE ONE BELOW SOMEHOW LOL
+            //      Then use the same pattern for the callback call in this function below
+            //
             Prism payloadToMapForCallback = await todo("send to destination url", DestinationUrl, prismToSendToDestination).ConfigureAwait(false) ?? throw new Exception("The response to the url call to the destination url is unexectedly null.");
 
             // call the callback mapper using the above http response as the input and collecting the reply/response
