@@ -1,3 +1,4 @@
+using luminary.data.storage;
 using luminary.flow;
 using luminary.mapping;
 using luminary.mapping.functions;
@@ -19,7 +20,7 @@ namespace luminary.spark;
 /// </summary>
 public class MushroomSpark : Spark
 {
-    public MushroomSpark(MappingFlow _flow, Prism _input, PrismOperator _sparkConfiguration) : base(_flow, _input, _sparkConfiguration)
+    public MushroomSpark(MappingFlow _flow, Prism _input, PrismOperator _sparkConfiguration, Mushroom _mushroom) : base(_flow, _input, _sparkConfiguration)
     {
     }
 

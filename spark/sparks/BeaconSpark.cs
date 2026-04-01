@@ -220,25 +220,37 @@ public class BeaconSpark : Spark
             // collect the http reply/response from the destination by calling the destination url while passing mapper output
             //
             // http request
-            var httpRequest = new HttpRequestAsyncFlow();
-            var destinationResponse = await httpRequest.ProcessAsync(todo());
-            //
-            //  MERGE THE ABOVE LINE WITH THE ONE BELOW SOMEHOW LOL
-            //      Then use the same pattern for the callback call in this function below
-            //
-            Prism payloadToMapForCallback = await todo("send to destination url", DestinationUrl, prismToSendToDestination).ConfigureAwait(false) ?? throw new Exception("The response to the url call to the destination url is unexectedly null.");
+            var httpDestination = new HttpRequestAsyncFlow();
+            var payloadToMapForCallback = await httpDestination.ProcessAsync(prismToSendToDestination).ConfigureAwait(false);
+            if (payloadToMapForCallback.Paniced)
+            {
+                throw payloadToMapForCallback.GetException();
+            }
+            if(payloadToMapForCallback == null || payloadToMapForCallback.ReturnValue == null)
+            {
+                throw new Exception("HttpRequestAsyncFlow unexpectedly returned null when we should have received a specially crafted prism.");
+            }
 
             // call the callback mapper using the above http response as the input and collecting the reply/response
             Prism prismToSendToCallback = MappingFlow.ProcessFlow(
                 Flow,
                 CallbackFlowType ?? throw new Exception()
             )(
-                payloadToMapForCallback,
+                payloadToMapForCallback.ReturnValue,
                 CallbackFlowParameters ?? throw new Exception()
             ) ?? throw new Exception("Callback payload mapping failed as the resulting Prism is unexectedly null.");
 
             // return the output of the http call to the callback url
-            output.ReturnValue = await todo("send to callback url", CallbackUrl, prismToSendToCallback).ConfigureAwait(false);
+            var httpCallback = new HttpRequestAsyncFlow();
+            var callbackPanicable = await httpCallback.ProcessAsync(prismToSendToCallback).ConfigureAwait(false);
+            if(callbackPanicable.Paniced)
+            {
+                output.ActivatePanic(callbackPanicable.GetException());
+            }
+            else
+            {
+                output.ReturnValue = callbackPanicable.ReturnValue;
+            }
         }
         catch (Exception e)
         {
