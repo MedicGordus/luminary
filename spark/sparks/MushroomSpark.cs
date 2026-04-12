@@ -20,7 +20,12 @@ namespace luminary.spark;
 /// </summary>
 public class MushroomSpark : Spark
 {
-    public MushroomSpark(MappingFlow _flow, Prism _input, PrismOperator _sparkConfiguration, Mushroom _mushroom) : base(_flow, _input, _sparkConfiguration)
+    /// <summary>
+    /// This is used to configure storage for this spark, setup via settings in the prismoperator.
+    /// </summary>
+    private readonly Mushroom Mushroom;
+
+    public MushroomSpark(MappingFlow _flow, Prism _input, PrismOperator _sparkConfiguration) : base(_flow, _input, _sparkConfiguration)
     {
     }
 
