@@ -21,7 +21,7 @@ public class FileRetrievalFlowInputSchemaJson
         );
         if (!basePrism.TryGetValue(FILE_PATH_JSON_NAME, out var filePath) || filePath == null || filePath is not StringOperator filePathString)
         {
-            throw new Exception("Cannot build FileRetrievalFlowInputSchemaJson from prism as the file path was missing, null, or was not a string.");
+            throw new Exception($"Cannot build FileRetrievalFlowInputSchemaJson from prism as the file path '{FILE_PATH_JSON_NAME}' was missing, null, or was not a string.");
         }
 
         return new()

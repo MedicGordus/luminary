@@ -383,6 +383,16 @@ public class MappingFlow : Flow
         }
     }
 
+    /// <summary>
+    /// Helper function to return the related function so it can be called independently.
+    /// </summary>
+    /// <param name="_instance">MappingFlow instance to call the related function on.</param>
+    /// <param name="_flowType">Function to return (goto, if, etc.)</param>
+    /// <returns>The requested function.</returns>
+    /// <exception cref="ArgumentException">Non existing flow type (string) passed.</exception>
+    /// <remarks>
+    /// This is used for reuse of the same flow with non-default input (calling this exposes the raw function).
+    /// </remarks>
     public static Func<Prism, List<string>, Prism> ProcessFlow(MappingFlow _instance, string _flowType)
     {
         return _flowType switch {

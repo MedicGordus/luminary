@@ -9,10 +9,14 @@ namespace luminary.trust.json;
 /// <summary>
 /// This is the object sent to the auth update endpoint of luminary as an indicator they need to update their keys for this organization.
 /// </summary>
+/// <remarks>To prevent bad actors from spamming valid changes, valid payloads with previously received paired datetime and nuance are ignored.</remarks>
 public class AuthUpdateJson
 {
     [JsonPropertyName("url")]
     public string? Url { get; set; }
+
+    [JsonPropertyName("datetime-stamp")]
+    public string? DatetimeStamp { get; set; }
 
     [JsonPropertyName("nuance")]
     public string? Nuance { get; set; }
@@ -25,7 +29,7 @@ public class AuthUpdateJson
 
     public string? GetSignableData()
     {
-        if (Url == null || Nuance == null)
+        if (Url == null || Nuance == null || DatetimeStamp == null)
         {
             return null;
         }

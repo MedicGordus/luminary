@@ -72,7 +72,16 @@ public class Gleam
     {
         try
         {
-            if (_update != null && _update.Url != null && _update.PublicKey != null && _update.SignatureBase64 != null)
+            if (
+                _update is
+                {
+                    Url: not null,
+                    PublicKey: not null,
+                    Nuance: not null,
+                    DatetimeStamp: not null,
+                    SignatureBase64: not null
+                }
+            )
             {
                 var messageBytes = _update.GetSignableData()?.ToUtf8Bytes();
 
@@ -102,6 +111,12 @@ public class Gleam
                     {
                         return;
                     }
+
+                    // store the public key, time and nuance to prevent receiving the same payload more than once
+                    //
+                    //  This handles a special case where a malicious actor repeatedly sends a valid payload.
+                    //
+                    todo();
 
                     // collect the new information
                     ScrubbableResult<Organization> org = await BuildOrganizationFromUrlAsync(lowercaseUrl).ConfigureAwait(false);
@@ -220,6 +235,7 @@ public class Gleam
 
     public static async Task<ScrubbableResult<ApiSecretJson>> RetrieveSecretForOrganizationAsync(string _organizationUrl, string _organizationGroup)
     {
+        todo();
         throw new NotImplementedException();
     }
 }
